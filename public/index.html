@@ -19,7 +19,9 @@
             }
 
         </style>
+        <script type="text/javascript" src="scripts/engine.js"></script>
         <script type="text/javascript" src="scripts/sprite.js"></script>
+        <script type="text/javascript" src="scripts/player.js"></script>
     </head>
 
     <body>
@@ -51,6 +53,9 @@
                 const context = canvas.getContext('2d');
                 context.imageSmoothingEnabled = false;
 
+                // Engine start
+                const engine = new Engine();
+
                 // Ground
                 const ground = new Sprite({
                     canvas,
@@ -61,6 +66,8 @@
                     cell: 16,
                     scale: 4,
                 });
+
+                engine.env.ground.push(ground);
 
                 const tiles = [
                     [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
@@ -81,7 +88,7 @@
                 ground.renderArea(-10, -8, tiles);
 
                 // Player
-                const player = new Sprite({
+                const player = new Player({
                     canvas,
                     context,
                     resource: '#char1',
@@ -91,7 +98,7 @@
                     rows: 4,
                     scale: 4,
                 });
-                player.render({x: 0, y: 0, col: 1, row: 1});
+                player.render();
 
             });
 
