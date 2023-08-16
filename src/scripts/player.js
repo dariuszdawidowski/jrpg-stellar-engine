@@ -1,3 +1,5 @@
+import Sprite from './sprite.js';
+
 class Player extends Sprite {
 
     constructor(args) {
@@ -46,3 +48,5 @@ class Player extends Sprite {
         this.transform.x -= this.transform.speed;
     }
 }
+
+export default Player;
