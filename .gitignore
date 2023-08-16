@@ -133,3 +133,6 @@ dist
 .DS_Store
 Thumbs.db
 .vsconfig
+
+# Custom
+public/bundle.js

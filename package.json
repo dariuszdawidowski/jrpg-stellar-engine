@@ -1,0 +1,39 @@
+{
+  "name": "stellar-engine",
+  "version": "0.1.0",
+  "description": "Retro JRPG browser game engine.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "build": "webpack --config ./webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dariuszdawidowski/stellar-engine.git"
+  },
+  "keywords": [
+    "jrpg",
+    "pixelart",
+    "engine",
+    "javascript",
+    "browser"
+  ],
+  "license": "MIT",
+  "author": [
+    {
+      "name": "Dariusz Dawidowski"
+    },
+    {
+      "name": "Jagoda Dawidowska"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/dariuszdawidowski/stellar-engine/issues"
+  },
+  "homepage": "https://github.com/dariuszdawidowski/stellar-engine#readme",
+  "devDependencies": {
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}
