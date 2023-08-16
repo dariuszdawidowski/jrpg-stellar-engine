@@ -3,9 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
-        script1: 'src/scripts/engine.js',
-        script2: 'src/scripts/player.js',
-        script3: 'src/scripts/sprite.js'
+        bundle: ['./src/scripts/engine.js', './src/scripts/player.js', './src/scripts/sprite.js']
     },
     output: {
         filename: 'bundle.js',
