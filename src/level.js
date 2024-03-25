@@ -1,4 +1,4 @@
-class Engine {
+class Level {
 
     constructor() {
         this.env = {

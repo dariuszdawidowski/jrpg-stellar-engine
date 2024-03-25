@@ -40,7 +40,7 @@ class TileSet {
     }
 
     /**
-     * Draw tile 
+     * Draw single tile
      * Coordinates 0,0 are recalculated as center of canvas
      * @param x: Number - x coordinate in pixels
      * @param y: Number - y coordinate in pixels
@@ -51,7 +51,7 @@ class TileSet {
      * @param nr: Number 0..n - index number instead of row and col
      */
 
-    render(args = {}) {
+    renderSingle(args = {}) {
         const sx = 'col' in args ? this.tile.width * args.col : 'nr' in args ? this.tile.width * (args.nr % this.atlas.cols) : 0;
         const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.height * Math.floor(args.nr / this.atlas.cols) : 0;
         const dx = 'x' in args ? args.x + this.origin.x : (args.gx * this.tile.scaled.width) + this.origin.x;
@@ -71,35 +71,21 @@ class TileSet {
 
     /**
      * Draw array of tiles
-     * @param tiles: array [[gx, gy, col, row], ...] or [[gx, gy, nr], ...]
-     */
-
-    renderAll(tiles) {
-        tiles.forEach(tile => {
-            if (tile.length == 3) this.render({gx: tile[0], gy: tile[1], nr: tile[2]});
-            else this.render({gx: tile[0], gy: tile[1], col: tile[2], row: tile[3]});
-        });
-    }
-
-    /**
-     * Draw rectangular area of packed tiles info
-     * @param gx: Number - left column of area to start
-     * @param gy: Number - top row of area to start
+     * @param x: Number - x coordinate of top left corner
+     * @param y: Number - y coordinate of top left corner
      * @param tiles: array [[nr, nr, ...], ...]
      */
 
-    renderArea(gx, gy, tiles) {
-        let x = gx;
-        let y = gy;
-        tiles.forEach(line => {
+    renderList(args = {}) {
+        let x = args.x;
+        let y = args.y;
+        args.tiles.forEach(line => {
             line.forEach(nr => {
-                if (nr != null) {
-                    this.render({gx: x, gy: y, nr});
-                }
-                x += 1;
+                if (nr != null) this.renderSingle({x, y, nr});
+                x += this.tile.scaled.width;
             });
-            x = gx;
-            y += 1;
+            x = args.x;
+            y += this.tile.scaled.height;
         });
     }
 

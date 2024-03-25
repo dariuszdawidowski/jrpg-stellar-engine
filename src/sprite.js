@@ -5,6 +5,7 @@ class Sprite extends TileSet {
      * @param all Tile params plus:
      * @param speed: Number - movement speed (pixels on second)
      * @param anim: Object - map of animations { speed: seconds, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] }
+     * @param scroll: Object - range for scroll { top: Number, bottom: Number, left: Number, right: Number }
      */
 
     constructor(args) {
@@ -20,6 +21,9 @@ class Sprite extends TileSet {
         // Animation map
         this.anim = 'anim' in args ? args.anim : { speed: 0, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] };
         this.anim.speed = this.anim.speed / 100.0;
+
+        // Scroll range
+        this.scroll = 'scroll' in args ? args.scroll : null;
 
         // Current frame
         this.frame = 0;
@@ -42,6 +46,7 @@ class Sprite extends TileSet {
      */
 
     idle() {
+        this.frame = this.anim.idle[0];
     }
 
     /**
@@ -60,7 +65,13 @@ class Sprite extends TileSet {
         this.frame = this.anim.moveUp[this.frameCounterV];
 
         // Move
-        this.transform.y -= this.transform.speed * deltaTime;
+        const pixels = this.transform.speed * deltaTime;
+        if (this.scroll && this.transform.y > this.scroll.top) {
+            this.transform.y -= pixels;
+            return 0;
+        }
+
+        return pixels;
     }
 
     /**
@@ -79,7 +90,13 @@ class Sprite extends TileSet {
         this.frame = this.anim.moveDown[this.frameCounterV];
 
         // Move
-        this.transform.y += this.transform.speed * deltaTime;
+        const pixels = this.transform.speed * deltaTime;
+        if (this.scroll && this.transform.y < this.scroll.bottom) {
+            this.transform.y += pixels;
+            return 0;
+        }
+
+        return pixels;
     }
 
     /**
@@ -98,7 +115,13 @@ class Sprite extends TileSet {
         this.frame = this.anim.moveRight[this.frameCounterH];
 
         // Move
-        this.transform.x += this.transform.speed * deltaTime;
+        const pixels = this.transform.speed * deltaTime
+        if (this.scroll && this.transform.x < this.scroll.right) {
+            this.transform.x += pixels;
+            return 0;
+        }
+
+        return pixels;
     }
 
     /**
@@ -117,7 +140,13 @@ class Sprite extends TileSet {
         this.frame = this.anim.moveLeft[this.frameCounterH];
 
         // Move
-        this.transform.x -= this.transform.speed * deltaTime;
+        const pixels = this.transform.speed * deltaTime;
+        if (this.scroll && this.transform.x > this.scroll.left) {
+            this.transform.x -= pixels;
+            return 0;
+        }
+
+        return pixels;
     }
 
     /**
@@ -125,7 +154,7 @@ class Sprite extends TileSet {
      */
 
     render() {
-        super.render({x: this.transform.x, y: this.transform.y, nr: this.frame});
+        super.renderSingle({x: this.transform.x, y: this.transform.y, nr: this.frame});
     }
 
 }

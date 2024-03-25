@@ -94,6 +94,7 @@
             let player = null;
             let tileset = null;
             let level = null;
+            const scroll = {x: 0, y: 0};
 
             // Round number
             function roundToNearestEven(number) {
@@ -162,13 +163,25 @@
                 const deltaTime = (currentTime - lastTime) / 1000;
 
                 // Background
-                tileset.renderArea(-10, -8, level);
+                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level});
 
                 // Player movement
-                if (input.up) player.moveUp(deltaTime);
-                else if (input.down) player.moveDown(deltaTime);
-                if (input.left) player.moveLeft(deltaTime);
-                else if (input.right) player.moveRight(deltaTime);
+                if (input.up) {
+                    const pixels = player.moveUp(deltaTime);
+                    scroll.y += pixels;
+                }
+                else if (input.down) {
+                    const pixels = player.moveDown(deltaTime);
+                    scroll.y -= pixels;
+                }
+                if (input.left) {
+                    const pixels = player.moveLeft(deltaTime);
+                    scroll.x += pixels;
+                }
+                else if (input.right) {
+                    const pixels = player.moveRight(deltaTime);
+                    scroll.x -= pixels;
+                }
                 player.render();
 
                 // Time udpate
@@ -185,14 +198,6 @@
                 fitCanvas();
                 const context = canvas.getContext('2d');
                 context.imageSmoothingEnabled = false;
-
-                // Tileset for ground
-                const loaderTSX = new LoaderTSX({canvas, context});
-                tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1');
-
-                // Map
-                const loaderTMX = new LoaderTMX();
-                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText).layer0;
 
                 // Player
                 player = new Sprite({
@@ -212,8 +217,25 @@
                         moveDown: [0, 1, 2],
                         moveLeft: [3, 4, 5],
                         moveRight: [6, 7, 8],
+                    },
+                    scroll: {
+                        top: -150,
+                        bottom: 150,
+                        left: -150,
+                        right: 150
                     }
                 });
+                player.idle();
+
+                // Tileset for ground
+                const loaderTSX = new LoaderTSX({canvas, context});
+                tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1');
+
+                // Map
+                const loaderTMX = new LoaderTMX();
+                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText).layer0;
+                scroll.x = -1 * (((level[0].length * tileset.tile.scaled.width) / 2) - (player.tile.scaled.width / 2));
+                scroll.y = -1 * (((level.length * tileset.tile.scaled.height) / 2) - (player.tile.scaled.height / 2));
 
                 // Start
                 requestAnimationFrame(function(currentTime) {
