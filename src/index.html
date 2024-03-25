@@ -25,8 +25,8 @@
 
         <!-- Scripts -->
         <script src="engine.js"></script>
+        <script src="tile.js"></script>
         <script src="sprite.js"></script>
-        <script src="player.js"></script>
 
         <!-- Resources -->
         <div style="display: none;">
@@ -45,6 +45,24 @@
             let player = null;
             let ground = null;
 
+            // Map
+            const tiles = [
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36,  0,  1,  1,  1,  2, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 40, 41, 41, 41, 42, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+            ];
+
             // Round number
             function roundToNearestEven(number) {
                 let roundedNumber = Math.round(number);
@@ -58,7 +76,7 @@
                 canvas.height = roundToNearestEven(window.innerHeight);
             }
 
-            // Input acrions
+            // Input actions
             const input = {
                 up: false,
                 down: false,
@@ -100,36 +118,30 @@
                 }
             };
 
-            // Map
-            const tiles = [
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36,  0,  1,  1,  1,  2, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 40, 41, 41, 41, 42, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-            ];
+            // Keyboard input
+            document.addEventListener('keydown', keyDownHandler);
+            document.addEventListener('keyup', keyUpHandler);
 
             // Main loop
-            const mainLoop = () => {
+            let lastTime = 0;
+            const mainLoop = (currentTime) => {
+
+                // Universal frame time
+                const deltaTime = (currentTime - lastTime) / 1000;
 
                 // Background
                 ground.renderArea(-10, -8, tiles);
 
-                // Player
-                if (input.up) player.moveUp();
-                else if (input.down) player.moveDown();
-                else if (input.left) player.moveLeft();
-                else if (input.right) player.moveRight();
+                // Player 400 pixels per second
+                const playerSpeed = 320 * deltaTime;
+                if (input.up) player.moveUp(playerSpeed);
+                else if (input.down) player.moveDown(playerSpeed);
+                else if (input.left) player.moveLeft(playerSpeed);
+                else if (input.right) player.moveRight(playerSpeed);
                 player.render();
+
+                // Time udpate
+                lastTime = currentTime;
 
                 // Display synchro
                 requestAnimationFrame(mainLoop);
@@ -144,7 +156,7 @@
                 context.imageSmoothingEnabled = false;
 
                 // Ground
-                ground = new Sprite({
+                ground = new Tile({
                     canvas,
                     context,
                     resource: '#env1',
@@ -156,7 +168,7 @@
                 ground.renderArea(-10, -8, tiles);
 
                 // Player
-                player = new Player({
+                player = new Sprite({
                     canvas,
                     context,
                     resource: '#char1',
@@ -169,9 +181,10 @@
                 player.render();
 
                 // Start
-                document.addEventListener('keydown', keyDownHandler);
-                document.addEventListener('keyup', keyUpHandler);
-                mainLoop();
+                requestAnimationFrame(function(currentTime) {
+                    lastTime = currentTime;
+                    mainLoop(currentTime);
+                });
 
             });
 
