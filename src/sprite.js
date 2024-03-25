@@ -1,4 +1,4 @@
-class Sprite extends TileGrid {
+class Sprite extends TileSet {
 
     /**
      * Create sprite

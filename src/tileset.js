@@ -1,4 +1,4 @@
-class TileGrid {
+class TileSet {
 
     /**
      * Constructor
