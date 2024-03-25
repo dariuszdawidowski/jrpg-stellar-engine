@@ -1,4 +1,4 @@
-import Sprite from './sprite.js';
+//import Sprite from './sprite.js';
 
 class Player extends Sprite {
 
@@ -49,4 +49,4 @@ class Player extends Sprite {
     }
 }
 
-export default Player;
+//export default Player;

@@ -3,11 +3,11 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Stellar Engine</title>
+        <title>Stellar Engine Demo</title>
         <style type="text/css">
 
             html, body {
-                width: 100%;    
+                width: 100%;
                 height: 100%;
                 margin: 0;
                 padding: 0;
@@ -22,6 +22,12 @@
     </head>
 
     <body>
+
+        <!-- Scripts -->
+        <script src="engine.js"></script>
+        <script src="sprite.js"></script>
+        <script src="player.js"></script>
+
         <!-- Resources -->
         <div style="display: none;">
             <img id="char1" src="../public/sprites/characters/chara_0.png">
@@ -30,6 +36,89 @@
 
         <!-- Main canvas window -->
         <canvas id="main"></canvas>
+
+        <!-- Init -->
+        <script type="text/javascript">
+
+            // Globals
+            const canvas = document.getElementById('main');
+
+            // Round number
+            function roundToNearestEven(number) {
+                let roundedNumber = Math.round(number);
+                if (roundedNumber % 2 !== 0) roundedNumber += 1;
+                return roundedNumber;
+            }
+
+            // Window
+            function fitCanvas() {
+                canvas.width = roundToNearestEven(window.innerWidth);
+                canvas.height = roundToNearestEven(window.innerHeight);
+            }            
+
+            // Init
+            window.addEventListener('load', () => {
+
+                // Canvas init
+                fitCanvas();
+                const context = canvas.getContext('2d');
+                context.imageSmoothingEnabled = false;
+
+                // Engine start
+                const engine = new Engine();
+
+                // Ground
+                const ground = new Sprite({
+                    canvas,
+                    context,
+                    resource: '#env1',
+                    width: 320,
+                    height: 48,
+                    cell: 16,
+                    scale: 4,
+                });
+
+                engine.env.ground.push(ground);
+
+                const tiles = [
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36,  0,  1,  1,  1,  2, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 40, 41, 41, 41, 42, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                ];
+                ground.renderArea(-10, -8, tiles);
+
+                // Player
+                const player = new Player({
+                    canvas,
+                    context,
+                    resource: '#char1',
+                    width: 48,
+                    height: 80,
+                    cols: 3,
+                    rows: 4,
+                    scale: 4,
+                });
+                player.render();
+
+            });
+
+            // Resize
+            window.addEventListener('resize', () => {
+                fitCanvas();
+            });
+
+        </script>
 
     </body>
 
