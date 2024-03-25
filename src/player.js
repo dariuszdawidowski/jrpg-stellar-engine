@@ -1,5 +1,3 @@
-//import Sprite from './sprite.js';
-
 class Player extends Sprite {
 
     constructor(args) {
@@ -9,23 +7,6 @@ class Player extends Sprite {
             y : 0,
             speed : 10
         };
-        document.body.addEventListener('keydown', (event) => {
-            switch (event.key) {
-                case 'ArrowRight':
-                    this.moveRight();
-                    break;
-                case 'ArrowLeft':
-                    this.moveLeft();
-                    break;
-                case 'ArrowUp':
-                    this.moveUp();
-                    break;
-                case 'ArrowDown':
-                    this.moveDown();
-                    break;
-            }
-            this.render();
-        });
     }
 
     render() {
@@ -48,5 +29,3 @@ class Player extends Sprite {
         this.transform.x -= this.transform.speed;
     }
 }
-
-//export default Player;

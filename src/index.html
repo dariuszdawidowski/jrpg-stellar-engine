@@ -42,6 +42,8 @@
 
             // Globals
             const canvas = document.getElementById('main');
+            let player = null;
+            let ground = null;
 
             // Round number
             function roundToNearestEven(number) {
@@ -54,7 +56,84 @@
             function fitCanvas() {
                 canvas.width = roundToNearestEven(window.innerWidth);
                 canvas.height = roundToNearestEven(window.innerHeight);
-            }            
+            }
+
+            // Input acrions
+            const input = {
+                up: false,
+                down: false,
+                left: false,
+                right: false
+            };
+
+            const keyDownHandler = (event) => {
+                switch (event.key) {
+                    case 'ArrowRight':
+                        input.right = true;
+                        break;
+                    case 'ArrowLeft':
+                        input.left = true;
+                        break;
+                    case 'ArrowUp':
+                        input.up = true;
+                        break;
+                    case 'ArrowDown':
+                        input.down = true;
+                        break;
+                }
+            };
+
+            const keyUpHandler = (event) => {
+                switch (event.key) {
+                    case 'ArrowRight':
+                        input.right = false;
+                        break;
+                    case 'ArrowLeft':
+                        input.left = false;
+                        break;
+                    case 'ArrowUp':
+                        input.up = false;
+                        break;
+                    case 'ArrowDown':
+                        input.down = false;
+                        break;
+                }
+            };
+
+            // Map
+            const tiles = [
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36,  0,  1,  1,  1,  2, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 40, 41, 41, 41, 42, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+                [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
+            ];
+
+            // Main loop
+            const mainLoop = () => {
+
+                // Background
+                ground.renderArea(-10, -8, tiles);
+
+                // Player
+                if (input.up) player.moveUp();
+                else if (input.down) player.moveDown();
+                else if (input.left) player.moveLeft();
+                else if (input.right) player.moveRight();
+                player.render();
+
+                // Display synchro
+                requestAnimationFrame(mainLoop);
+            }
 
             // Init
             window.addEventListener('load', () => {
@@ -64,11 +143,8 @@
                 const context = canvas.getContext('2d');
                 context.imageSmoothingEnabled = false;
 
-                // Engine start
-                const engine = new Engine();
-
                 // Ground
-                const ground = new Sprite({
+                ground = new Sprite({
                     canvas,
                     context,
                     resource: '#env1',
@@ -77,29 +153,10 @@
                     cell: 16,
                     scale: 4,
                 });
-
-                engine.env.ground.push(ground);
-
-                const tiles = [
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36,  0,  1,  1,  1,  2, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 20, 21, 21, 21, 22, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 40, 41, 41, 41, 42, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                    [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36],
-                ];
                 ground.renderArea(-10, -8, tiles);
 
                 // Player
-                const player = new Player({
+                player = new Player({
                     canvas,
                     context,
                     resource: '#char1',
@@ -110,6 +167,11 @@
                     scale: 4,
                 });
                 player.render();
+
+                // Start
+                document.addEventListener('keydown', keyDownHandler);
+                document.addEventListener('keyup', keyUpHandler);
+                mainLoop();
 
             });
 
