@@ -1,16 +1,16 @@
-class Tile {
+class TileGrid {
 
     /**
      * Constructor
-     * @param canvas <HTMLCanvasElement>: canvas context
-     * @param context <CanvasRenderingContext2D>: canvas context
-     * @params resource <string>: selector for image preloaded resource
-     * @params width <Number>: image width in pixels
-     * @params height <Number>: image height in pixels
-     * @params cols [Number]: number of columns in atlas
-     * @params rows [Number]: number of rows in atlas
-     * @params cell [Number]: grid cell size in pixels instead of providing rows and cols
-     * @params scale [Number]: scale image
+     * @param canvas: HTMLCanvasElement - canvas context
+     * @param context: CanvasRenderingContext2D - canvas context
+     * @params resource: string - selector for image preloaded resource
+     * @params width: Number - image width in pixels
+     * @params height: Number - image height in pixels
+     * @params cols: Number - number of columns in atlas (optional)
+     * @params rows: Number - number of rows in atlas (optional)
+     * @params cell: Number - grid cell size in pixels instead of providing rows and cols (optional)
+     * @params scale: Number - scale image (optional)
      */
 
     constructor(args = {}) {
@@ -42,18 +42,18 @@ class Tile {
     /**
      * Draw tile 
      * Coordinates 0,0 are recalculated as center of canvas
-     * @param x [Number]: x coordinate in pixels
-     * @param y [Number]: y coordinate in pixels
-     * @param gx [Number]: column number in grid units
-     * @param gy [Number]: row number in grid units
-     * @param col [Number 0..n]: which atlas column to draw
-     * @param row [Number 0..n]: which atlas row to draw
-     * @param nr [Number 0..n]: index number instead of row and col
+     * @param x: Number - x coordinate in pixels
+     * @param y: Number - y coordinate in pixels
+     * @param gx: Number - column number in grid units
+     * @param gy: Number - row number in grid units
+     * @param col: Number 0..n - which atlas column to draw
+     * @param row: Number 0..n - which atlas row to draw
+     * @param nr: Number 0..n - index number instead of row and col
      */
 
     render(args = {}) {
         const sx = 'col' in args ? this.tile.width * args.col : 'nr' in args ? this.tile.width * (args.nr % this.atlas.cols) : 0;
-        const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.width * Math.floor(args.nr / this.atlas.cols) : 0;
+        const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.height * Math.floor(args.nr / this.atlas.cols) : 0;
         const dx = 'x' in args ? args.x + this.origin.x : (args.gx * this.tile.scaled.width) + this.origin.x;
         const dy = 'y' in args ? args.y + this.origin.y : (args.gy * this.tile.scaled.height) + this.origin.y;
         this.context.drawImage(
@@ -71,7 +71,7 @@ class Tile {
 
     /**
      * Draw array of tiles
-     * @param tiles <array>: [[gx, gy, col, row], ...] or [[gx, gy, nr], ...]
+     * @param tiles: array [[gx, gy, col, row], ...] or [[gx, gy, nr], ...]
      */
 
     renderAll(tiles) {
@@ -83,9 +83,9 @@ class Tile {
 
     /**
      * Draw rectangular area of packed tiles info
-     * @param gx <Number>: left column of area to start
-     * @param gy <Number>: top row of area to start
-     * @param tiles <array>: [[nr, nr, ...], ...]
+     * @param gx: Number - left column of area to start
+     * @param gy: Number - top row of area to start
+     * @param tiles: array [[nr, nr, ...], ...]
      */
 
     renderArea(gx, gy, tiles) {

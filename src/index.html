@@ -43,7 +43,7 @@
             // Globals
             const canvas = document.getElementById('main');
             let player = null;
-            let ground = null;
+            let level = null;
 
             // Map
             const tiles = [
@@ -130,14 +130,13 @@
                 const deltaTime = (currentTime - lastTime) / 1000;
 
                 // Background
-                ground.renderArea(-10, -8, tiles);
+                level.renderArea(-10, -8, tiles);
 
-                // Player 400 pixels per second
-                const playerSpeed = 320 * deltaTime;
-                if (input.up) player.moveUp(playerSpeed);
-                else if (input.down) player.moveDown(playerSpeed);
-                else if (input.left) player.moveLeft(playerSpeed);
-                else if (input.right) player.moveRight(playerSpeed);
+                // Player movement
+                if (input.up) player.moveUp(deltaTime);
+                else if (input.down) player.moveDown(deltaTime);
+                if (input.left) player.moveLeft(deltaTime);
+                else if (input.right) player.moveRight(deltaTime);
                 player.render();
 
                 // Time udpate
@@ -155,8 +154,8 @@
                 const context = canvas.getContext('2d');
                 context.imageSmoothingEnabled = false;
 
-                // Ground
-                ground = new Tile({
+                // Level
+                level = new TileGrid({
                     canvas,
                     context,
                     resource: '#env1',
@@ -165,7 +164,6 @@
                     cell: 16,
                     scale: 4,
                 });
-                ground.renderArea(-10, -8, tiles);
 
                 // Player
                 player = new Sprite({
@@ -177,8 +175,16 @@
                     cols: 3,
                     rows: 4,
                     scale: 4,
+                    speed: 320,
+                    anim: {
+                        speed: 0.1,
+                        idle: [1],
+                        moveUp: [9, 10, 11],
+                        moveDown: [0, 1, 2],
+                        moveLeft: [3, 4, 5],
+                        moveRight: [6, 7, 8],
+                    }
                 });
-                player.render();
 
                 // Start
                 requestAnimationFrame(function(currentTime) {

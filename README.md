@@ -1,13 +1,15 @@
-# Stellar Engine
+<h1 align="center">
+Stellar Engine
+</h1>
+<p align="center">
 Retro JRPG browser game engine.
+</p>
+<p align="center">
+v0.1.4
+</p>
 
 # Quick start
-Open src/demo.html in the browser
-
-# Full server start
-npm install
-npm run build
-npm run start
+Open src/index.html in the browser
 
 # License
 Library code is distributed under MIT License (see LICENSE file for details).
