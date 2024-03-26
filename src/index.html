@@ -101,6 +101,7 @@
             let player = null;
             let tileset = null;
             let level = null;
+            const scale = 4;
             const scroll = {x: 0, y: 0};
 
             // Round number
@@ -170,12 +171,6 @@
             let lastTime = 0;
             const mainLoop = (currentTime) => {
 
-                // CLS
-                /*context.clearRect(0, 0, canvas.width, canvas.height);
-                context.rect(0, 0, canvas.width, canvas.height);
-                context.fillStyle = '#444';
-                context.fill();*/
-
                 // Universal frame time
                 const deltaTime = (currentTime - lastTime) / 1000;
 
@@ -223,7 +218,7 @@
                     height: 80,
                     cols: 3,
                     rows: 4,
-                    scale: 4,
+                    scale: scale,
                     speed: 320,
                     anim: {
                         speed: 10,
@@ -243,7 +238,7 @@
                 player.idle();
 
                 // Tileset for ground
-                const loaderTSX = new LoaderTSX({canvas, context});
+                const loaderTSX = new LoaderTSX({canvas, context, scale});
                 tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1');
 
                 // Map

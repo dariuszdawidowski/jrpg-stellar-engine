@@ -3,6 +3,7 @@ class LoaderTSX {
     constructor(args) {
         this.canvas = args.canvas;
         this.context = args.context;
+        this.scale = 'scale' in args ? args.scale : 1;
     }
 
     parseTileSet(xmlStr, resource) {
@@ -19,7 +20,7 @@ class LoaderTSX {
                     width: image.getAttribute('width'),
                     height: image.getAttribute('height'),
                     cell: tileset.getAttribute('tilewidth'),
-                    scale: 4,
+                    scale: this.scale,
                 });
 
             }
