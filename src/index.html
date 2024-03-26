@@ -91,6 +91,7 @@
 
             // Globals
             const canvas = document.getElementById('main');
+            const context = canvas.getContext('2d');
             let player = null;
             let tileset = null;
             let level = null;
@@ -107,6 +108,7 @@
             function fitCanvas() {
                 canvas.width = roundToNearestEven(window.innerWidth);
                 canvas.height = roundToNearestEven(window.innerHeight);
+                context.imageSmoothingEnabled = false;
             }
 
             // Input actions
@@ -159,6 +161,12 @@
             let lastTime = 0;
             const mainLoop = (currentTime) => {
 
+                // CLS
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.rect(0, 0, canvas.width, canvas.height);
+                context.fillStyle = '#444';
+                context.fill();
+
                 // Universal frame time
                 const deltaTime = (currentTime - lastTime) / 1000;
 
@@ -196,8 +204,6 @@
 
                 // Canvas init
                 fitCanvas();
-                const context = canvas.getContext('2d');
-                context.imageSmoothingEnabled = false;
 
                 // Player
                 player = new Sprite({
