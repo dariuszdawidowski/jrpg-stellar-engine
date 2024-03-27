@@ -25,6 +25,14 @@
                 -ms-interpolation-mode: nearest-neighbor;
              }
 
+             #fps {
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                color: white;
+                font-size: 14px;
+             }
+
         </style>
     </head>
 
@@ -164,6 +172,8 @@
         <!-- Main canvas window -->
         <canvas id="main"></canvas>
 
+        <div id="fps">FPS:</div>
+
         <!-- Init -->
         <script type="text/javascript">
 
@@ -242,10 +252,14 @@
 
             // Main loop
             let lastTime = 0;
+            let fpsContainer = document.querySelector('#fps');
             const mainLoop = (currentTime) => {
 
                 // Universal frame time
                 const deltaTime = (currentTime - lastTime) / 1000;
+
+                // Calculate FPS
+                fpsContainer.textContent = `FPS: ${Math.round(1 / deltaTime)}`;
 
                 // Calculate collisions
                 const allow = player.collide({left: scroll.x, top: scroll.y, tiles: level.env.colliders});
