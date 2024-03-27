@@ -16,13 +16,14 @@
 
             #canvas {
                 display: block;
+                /*image-rendering: pixelated;*/
                 image-rendering: optimizeSpeed;
                 image-rendering: -moz-crisp-edges;
                 image-rendering: -webkit-optimize-contrast;
                 image-rendering: -o-crisp-edges;
                 image-rendering: optimize-contrast;
                 -ms-interpolation-mode: nearest-neighbor;
-            }
+             }
 
         </style>
     </head>
@@ -32,6 +33,7 @@
         <!-- Scripts -->
         <script src="tileset.js"></script>
         <script src="sprite.js"></script>
+        <script src="player.js"></script>
         <script src="level.js"></script>
         <script src="loader-tsx.js"></script>
         <script src="loader-tmx.js"></script>
@@ -287,7 +289,7 @@
                 fitCanvas();
 
                 // Player
-                player = new Sprite({
+                player = new Player({
                     canvas,
                     context,
                     resource: '#char1',
