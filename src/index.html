@@ -41,6 +41,7 @@
         <!-- Resources -->
         <div style="display: none;">
             <img id="char1" src="../public/sprites/characters/chara_0.png">
+            <img id="mob1" src="../public/sprites/characters/pinguin_22x22.png">
             <img id="env1" src="../public/sprites/environment/ground.png">
         </div>
 
@@ -170,6 +171,7 @@
             const canvas = document.getElementById('main');
             const context = canvas.getContext('2d');
             let player = null;
+            let mob = null;
             let tileset = null;
             let level = null;
             const scale = 4;
@@ -245,20 +247,23 @@
                 // Universal frame time
                 const deltaTime = (currentTime - lastTime) / 1000;
 
+                // Calculate collisions
+                const allow = player.collide({left: scroll.x, top: scroll.y, tiles: level.env.colliders});
+
                 // Player movement
-                if (input.up) {
+                if (input.up && allow.up) {
                     const pixels = player.moveUp(deltaTime);
                     scroll.y += pixels;
                 }
-                else if (input.down) {
+                else if (input.down && allow.down) {
                     const pixels = player.moveDown(deltaTime);
                     scroll.y -= pixels;
                 }
-                if (input.left) {
+                if (input.left && allow.left) {
                     const pixels = player.moveLeft(deltaTime);
                     scroll.x += pixels;
                 }
-                else if (input.right) {
+                else if (input.right && allow.right) {
                     const pixels = player.moveRight(deltaTime);
                     scroll.x -= pixels;
                 }
@@ -270,6 +275,7 @@
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.colliders});
 
                 // Render characters
+                mob.render({x: scroll.x + 1000, y: scroll.y + 1000});
                 player.render();
 
                 // Cover layer
@@ -315,6 +321,28 @@
                     }
                 });
                 player.idle();
+
+                // MOB
+                mob = new Sprite({
+                    canvas,
+                    context,
+                    resource: '#mob1',
+                    width: 88,
+                    height: 88,
+                    cols: 4,
+                    rows: 4,
+                    scale: scale,
+                    speed: 320,
+                    anim: {
+                        speed: 10,
+                        idle: [1],
+                        moveUp: [8, 9, 10],
+                        moveDown: [0, 1, 2],
+                        moveLeft: [12, 13, 14],
+                        moveRight: [4, 5, 6],
+                    }
+                });
+                mob.idle();
 
                 // Tileset for ground
                 const loaderTSX = new LoaderTSX({canvas, context, scale});

@@ -157,11 +157,25 @@ class Sprite extends TileSet {
     }
 
     /**
-     * Render sprite
+     * Calculate collisions
+     * @param left: Number - left corner of collision layer
+     * @param top: Number - top corner of collision layer
+     * @param tiles: [Array] - collision tiles layer
+     * @return {up: bool, down: bool, left: bool, right: bool} - allow move in direction
      */
 
-    render() {
-        super.renderSingle({x: this.transform.x, y: this.transform.y, nr: this.frame});
+    collide(args) {
+        const allow = {up: true, down: true, left: true, right: true};
+        return allow;
+    }
+
+    /**
+     * Render sprite
+     * @attr origin {x: Number, y: Number} - scroll correction
+     */
+
+    render(origin = {x: 0, y: 0}) {
+        super.renderSingle({x: this.transform.x + origin.x, y: this.transform.y + origin.y, nr: this.frame});
     }
 
 }
