@@ -32,6 +32,7 @@
         <!-- Scripts -->
         <script src="tileset.js"></script>
         <script src="sprite.js"></script>
+        <script src="level.js"></script>
         <script src="loader-tsx.js"></script>
         <script src="loader-tmx.js"></script>
 
@@ -242,9 +243,6 @@
                 // Universal frame time
                 const deltaTime = (currentTime - lastTime) / 1000;
 
-                // Background
-                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level});
-
                 // Player movement
                 if (input.up) {
                     const pixels = player.moveUp(deltaTime);
@@ -262,7 +260,18 @@
                     const pixels = player.moveRight(deltaTime);
                     scroll.x -= pixels;
                 }
+
+                // Ground layer
+                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.ground});
+
+                // Colliders layer
+                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.colliders});
+
+                // Render characters
                 player.render();
+
+                // Cover layer
+                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.cover});
 
                 // Time udpate
                 lastTime = currentTime;
@@ -311,9 +320,9 @@
 
                 // Map
                 const loaderTMX = new LoaderTMX();
-                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText).ground;
-                scroll.x = -1 * (((level[0].length * tileset.tile.scaled.width) / 2) - (player.tile.scaled.width / 2));
-                scroll.y = -1 * (((level.length * tileset.tile.scaled.height) / 2) - (player.tile.scaled.height / 2));
+                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText);
+                scroll.x = -1 * (((level.env.ground[0].length * tileset.tile.scaled.width) / 2) - (player.tile.scaled.width / 2));
+                scroll.y = -1 * (((level.env.ground.length * tileset.tile.scaled.height) / 2) - (player.tile.scaled.height / 2));
 
                 // Start
                 requestAnimationFrame(function(currentTime) {

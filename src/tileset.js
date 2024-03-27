@@ -77,16 +77,18 @@ class TileSet {
      */
 
     renderList(args = {}) {
-        let x = args.x;
-        let y = args.y;
-        args.tiles.forEach(line => {
-            line.forEach(nr => {
-                if (nr != null) this.renderSingle({x, y, nr});
-                x += this.tile.scaled.width;
+        if (args.tiles) {
+            let x = args.x;
+            let y = args.y;
+            args.tiles.forEach(line => {
+                line.forEach(nr => {
+                    if (nr != null && nr > -1) this.renderSingle({x, y, nr});
+                    x += this.tile.scaled.width;
+                });
+                x = args.x;
+                y += this.tile.scaled.height;
             });
-            x = args.x;
-            y += this.tile.scaled.height;
-        });
+        }
     }
 
 }
