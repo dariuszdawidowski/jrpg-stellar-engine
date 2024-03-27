@@ -261,26 +261,27 @@
                 // Calculate FPS
                 fpsContainer.textContent = `FPS: ${Math.round(1 / deltaTime)}`;
 
-                // Calculate collisions
-                const allow = player.collide({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
-
                 // Player movement
-                if (input.up && allow.up) {
+                if (input.up) {
                     const pixels = player.moveUp(deltaTime);
                     scroll.y += pixels;
                 }
-                else if (input.down && allow.down) {
+                else if (input.down) {
                     const pixels = player.moveDown(deltaTime);
                     scroll.y -= pixels;
                 }
-                if (input.left && allow.left) {
+                if (input.left) {
                     const pixels = player.moveLeft(deltaTime);
                     scroll.x += pixels;
                 }
-                else if (input.right && allow.right) {
+                else if (input.right) {
                     const pixels = player.moveRight(deltaTime);
                     scroll.x -= pixels;
                 }
+
+                // Cross section odjąć
+                // Calculate collisions
+                const cross = player.collide({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
 
                 // Ground layer
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.ground});
@@ -296,8 +297,8 @@
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.cover});
 
                 // Debug
-                player.debugDrawCollider();
-                player.debugDrawColliders({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
+                // player.debugDrawCollider(cross);
+                // player.debugDrawColliders({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
 
                 // Time udpate
                 lastTime = currentTime;
@@ -332,9 +333,9 @@
                         moveRight: [6, 7, 8],
                     },
                     collider: {
-                        x: 2,
+                        x: 7,
                         y: 50,
-                        width: 60,
+                        width: 50,
                         height: 30
                     },
                     scroll: {
