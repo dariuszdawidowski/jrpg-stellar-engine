@@ -11,11 +11,25 @@ class Sprite extends TileSet {
     constructor(args) {
         super(args);
 
-        // Position in space
-        this.transform = {
-            x : 0,
-            y : 0,
+        // Stats
+        this.stats = {
             speed: args.speed,
+        };
+
+        /**
+         * Position in space
+         * v: vertical action (n=north,s=south)
+         * h: horizontal action (w=west,e=east)
+         * x,y: screen
+         * wx,wy: world
+         */
+        this.transform = {
+            v: '',
+            h: '',
+            x: 0,
+            y: 0,
+            wx: 0,
+            wy: 0,
         };
 
         // Animation map
@@ -47,6 +61,8 @@ class Sprite extends TileSet {
 
     idle() {
         this.frame = this.anim.idle[0];
+        this.transform.v = '';
+        this.transform.h = '';
     }
 
     /**
@@ -64,8 +80,12 @@ class Sprite extends TileSet {
         }
         this.frame = this.anim.moveUp[this.frameCounterV];
 
+        // Vertical action
+        this.transform.v = 'n';
+
         // Move
-        const pixels = this.transform.speed * deltaTime;
+        const pixels = this.stats.speed * deltaTime;
+        this.transform.wy -= pixels;
         if (this.scroll && this.transform.y > this.scroll.top) {
             this.transform.y -= pixels;
             return 0;
@@ -89,8 +109,12 @@ class Sprite extends TileSet {
         }
         this.frame = this.anim.moveDown[this.frameCounterV];
 
+        // Vertical action
+        this.transform.v = 's';
+
         // Move
-        const pixels = this.transform.speed * deltaTime;
+        const pixels = this.stats.speed * deltaTime;
+        this.transform.wy += pixels;
         if (this.scroll && this.transform.y < this.scroll.bottom) {
             this.transform.y += pixels;
             return 0;
@@ -114,8 +138,12 @@ class Sprite extends TileSet {
         }
         this.frame = this.anim.moveRight[this.frameCounterH];
 
+        // Horizontal action
+        this.transform.h = 'e';
+
         // Move
-        const pixels = this.transform.speed * deltaTime
+        const pixels = this.stats.speed * deltaTime
+        this.transform.wx += pixels;
         if (this.scroll && this.transform.x < this.scroll.right) {
             this.transform.x += pixels;
             return 0;
@@ -139,8 +167,12 @@ class Sprite extends TileSet {
         }
         this.frame = this.anim.moveLeft[this.frameCounterH];
 
+        // Horizontal action
+        this.transform.h = 'w';
+
         // Move
-        const pixels = this.transform.speed * deltaTime;
+        const pixels = this.stats.speed * deltaTime;
+        this.transform.wx -= pixels;
         if (this.scroll && this.transform.x > this.scroll.left) {
             this.transform.x -= pixels;
             return 0;
