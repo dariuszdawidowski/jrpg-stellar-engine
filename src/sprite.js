@@ -5,6 +5,7 @@ class Sprite extends TileSet {
      * All TileSet params plus:
      * @param speed: Number - movement speed (pixels on second)
      * @param anim: Object - map of animations { speed: seconds, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] }
+     * @param collider: {x, y, width, height}
      */
 
     constructor(args) {
@@ -29,6 +30,9 @@ class Sprite extends TileSet {
             // wx: 0,
             // wy: 0,
         };
+
+        // Collider
+        this.collider = 'collider' in args ? args.collider : null;
 
         // Animation map
         this.anim = 'anim' in args ? args.anim : { speed: 0, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] };
@@ -166,7 +170,51 @@ class Sprite extends TileSet {
 
     collide(args) {
         const allow = {up: true, down: true, left: true, right: true};
+        let x = args.left;
+        let y = args.top;
+        args.tiles.forEach(line => {
+            line.forEach(nr => {
+                // if (nr != null && nr > -1) ...
+                x += this.tile.scaled.width;
+            });
+            x = args.left;
+            y += this.tile.scaled.height;
+        });
         return allow;
+    }
+
+    /**
+     * Debug render own collider shape
+     */
+
+    debugDrawCollider() {
+        this.context.fillStyle = 'rgba(225,0,255,0.5)';
+        this.context.fillRect(
+            this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
+            this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
+            this.collider.width,
+            this.collider.height
+        );
+    }
+
+    /**
+     * Render debug colliders against given tiles
+     */
+
+    debugDrawColliders(args) {
+        let x = args.left;
+        let y = args.top;
+        this.context.fillStyle = 'rgba(225,0,0,0.5)';
+        args.tiles.forEach(line => {
+            line.forEach(nr => {
+                if (nr != null && nr > -1) {
+                    this.context.fillRect(x, y, args.edge, args.edge);
+                }
+                x += args.edge;
+            });
+            x = args.left;
+            y += args.edge;
+        });
     }
 
     /**
