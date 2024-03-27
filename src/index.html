@@ -279,9 +279,27 @@
                     scroll.x -= pixels;
                 }
 
-                // Cross section odjąć
                 // Calculate collisions
                 const cross = player.collide({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
+
+                // Undo move horizontal
+                if (cross.left > 0) {
+                    scroll.x -= cross.left;
+                    player.transform.x += cross.left;
+                }
+                // else if (cross.right > 0) {
+                //     scroll.x += cross.right;
+                //     player.transform.x -= cross.right;
+                // }
+                // // Undo move vertical
+                // if (cross.top > 0) {
+                //     scroll.y -= cross.top;
+                //     player.transform.y += cross.top;
+                // }
+                // else if (cross.bottom > 0) {
+                //     scroll.y += cross.bottom;
+                //     player.transform.y -= cross.bottom;
+                // }
 
                 // Ground layer
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.ground});
@@ -297,8 +315,8 @@
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.cover});
 
                 // Debug
-                // player.debugDrawCollider(cross);
-                // player.debugDrawColliders({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
+                player.debugDrawCollider(cross);
+                player.debugDrawColliders({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
 
                 // Time udpate
                 lastTime = currentTime;

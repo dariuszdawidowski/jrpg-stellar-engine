@@ -165,22 +165,49 @@ class Sprite extends TileSet {
      * @param left: Number - left corner of collision layer
      * @param top: Number - top corner of collision layer
      * @param tiles: [Array] - collision tiles layer
-     * @return {up: bool, down: bool, left: bool, right: bool} - allow move in direction
+     * @return {top: Number, bottom: Number, left: Number, right: Number} - table od cross secting (how deep my character sink into obstacle)
      */
 
     collide(args) {
-        const allow = {up: true, down: true, left: true, right: true};
+        const cross = {top: 0, bottom: 0, left: 0, right: 0};
         let x = args.left;
         let y = args.top;
+        const my = {
+            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
+            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
+            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
+            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
+        };
         args.tiles.forEach(line => {
             line.forEach(nr => {
-                // if (nr != null && nr > -1) ...
-                x += this.tile.scaled.width;
+                if (nr != null && nr > -1) {
+                    const other = {
+                        left: x,
+                        top: y,
+                        right: x + args.edge,
+                        bottom: y + args.edge,
+                    };
+                    this.context.fillRect(
+                        x,
+                        y,
+                        args.edge,
+                        args.edge
+                    );
+                    // My left-top
+                    if (my.left <= other.right && my.left >= other.left && my.top <= other.bottom && my.top >= other.top) {
+                        const crossLeft = other.right - my.left;
+                        if (cross.left < crossLeft) cross.left = crossLeft;
+                        // const crossTop = other.bottom - my.top;
+                        // if (cross.top < crossTop) cross.top = crossTop;
+                        // console.log('collide', cross)
+                    }
+                }
+                x += args.edge;
             });
             x = args.left;
-            y += this.tile.scaled.height;
+            y += args.edge;
         });
-        return allow;
+        return cross;
     }
 
     /**
@@ -188,7 +215,7 @@ class Sprite extends TileSet {
      */
 
     debugDrawCollider() {
-        this.context.fillStyle = 'rgba(225,0,255,0.5)';
+        this.context.fillStyle = 'rgba(225,0,0,0.5)';
         this.context.fillRect(
             this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
             this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
