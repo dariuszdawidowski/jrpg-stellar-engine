@@ -263,43 +263,53 @@
 
                 // Player movement
                 if (input.up) {
-                    const pixels = player.moveUp(deltaTime);
+                    const pixels = player.collideUp({
+                        deltaTime,
+                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                        tiles: level.env.colliders,
+                        edge: 16 * scale
+                    });
+                    player.animUp(deltaTime);
+                    player.moveUp(pixels);
                     scroll.y += pixels;
                 }
                 else if (input.down) {
-                    const pixels = player.moveDown(deltaTime);
+                    const pixels = player.collideDown({
+                        deltaTime,
+                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                        tiles: level.env.colliders,
+                        edge: 16 * scale
+                    });
+                    player.animDown(deltaTime);
+                    player.moveDown(pixels);
                     scroll.y -= pixels;
                 }
                 if (input.left) {
-                    const pixels = player.moveLeft(deltaTime);
+                    const pixels = player.collideLeft({
+                        deltaTime,
+                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                        tiles: level.env.colliders,
+                        edge: 16 * scale
+                    });
+                    player.animLeft(deltaTime);
+                    player.moveLeft(pixels);
                     scroll.x += pixels;
                 }
                 else if (input.right) {
-                    const pixels = player.moveRight(deltaTime);
+                    const pixels = player.collideRight({
+                        deltaTime,
+                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                        tiles: level.env.colliders,
+                        edge: 16 * scale
+                    });
+                    player.animRight(deltaTime);
+                    player.moveRight(pixels);
                     scroll.x -= pixels;
                 }
-
-                // Calculate collisions
-                const cross = player.collide({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
-
-                // Undo move horizontal
-                if (cross.left > 0) {
-                    scroll.x -= cross.left;
-                    player.transform.x += cross.left;
-                }
-                // else if (cross.right > 0) {
-                //     scroll.x += cross.right;
-                //     player.transform.x -= cross.right;
-                // }
-                // // Undo move vertical
-                // if (cross.top > 0) {
-                //     scroll.y -= cross.top;
-                //     player.transform.y += cross.top;
-                // }
-                // else if (cross.bottom > 0) {
-                //     scroll.y += cross.bottom;
-                //     player.transform.y -= cross.bottom;
-                // }
 
                 // Ground layer
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.ground});
@@ -315,7 +325,7 @@
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.cover});
 
                 // Debug
-                player.debugDrawCollider(cross);
+                player.debugDrawCollider();
                 player.debugDrawColliders({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
 
                 // Time udpate

@@ -65,10 +65,77 @@ class Sprite extends TileSet {
     }
 
     /**
-     * Up movement
+     * Up collision checking
+     * @param args.deltaTime Number - time passed since last frame
+     * @param args.left: Number - left corner of collision layer
+     * @param args.top: Number - top corner of collision layer
+     * @param args.tiles: [Array] - collision tiles layer
+     * @param args.edge: Number - single tile edge size (square)
      */
 
-    moveUp(deltaTime) {
+    collideUp(args) {
+
+        // Move by pixels
+        let pixels = this.stats.speed * args.deltaTime;
+
+        // My collider
+        const my = {
+            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
+            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
+            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
+            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
+        };
+
+        // Check intersection with all tiles
+        let x = args.left;
+        let y = args.top;
+        args.tiles.forEach(line => {
+            line.forEach(nr => {
+                if (nr != null && nr > -1) {
+                    // Tile collider
+                    const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
+                    // Up side
+                    if (my.top <= other.bottom && my.top >= other.top && my.right >= other.left && my.left <= other.right) {
+                        const crossUp = my.top + other.bottom;
+                        pixels -= crossUp;
+                        if (pixels < 0) pixels = 0;
+                    }
+                }
+                x += args.edge;
+            });
+            x = args.left;
+            y += args.edge;
+        });
+
+        return pixels;
+    }
+
+    /**
+     * Animate to the up side
+     * @param deltaTime Number - time passed since last frame
+     */
+
+    animUp(deltaTime) {
+        // Anim
+        this.frameTimeV -= deltaTime;
+        if (this.frameTimeV <= 0) {
+            this.frameTimeV = this.anim.speed - this.frameTimeV;
+            this.frameCounterV ++;
+            if (this.frameCounterV == this.anim.moveUp.length) this.frameCounterV = 0;
+        }
+        this.frame = this.anim.moveUp[this.frameCounterV];
+    }
+
+    /**
+     * Transfrom to the up side
+     * @param pixels Number - how many pixels to move (constant or calculated by collideUp)
+     */
+
+    moveUp(pixels) {
+        this.transform.y -= pixels;
+    }
+
+    /*moveUp(deltaTime) {
 
         // Anim
         this.frameTimeV -= deltaTime;
@@ -86,13 +153,88 @@ class Sprite extends TileSet {
         const pixels = this.stats.speed * deltaTime;
         this.transform.y -= pixels;
         return pixels;
-    }
+    }*/
 
     /**
      * Down movement
      */
 
-    moveDown(deltaTime) {
+    /**
+     * Down collision checking
+     * @param args.deltaTime Number - time passed since last frame
+     * @param args.left: Number - left corner of collision layer
+     * @param args.top: Number - top corner of collision layer
+     * @param args.tiles: [Array] - collision tiles layer
+     * @param args.edge: Number - single tile edge size (square)
+     */
+
+    collideDown(args) {
+
+        // Move by pixels
+        let pixels = this.stats.speed * args.deltaTime;
+
+        // My collider
+        const my = {
+            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
+            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
+            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
+            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
+        };
+
+        // Check intersection with all tiles
+        let x = args.left;
+        let y = args.top;
+        args.tiles.forEach(line => {
+            line.forEach(nr => {
+                if (nr != null && nr > -1) {
+                    // Tile collider
+                    const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
+                    // Down side
+                    if (my.bottom >= other.top && my.bottom <= other.bottom && my.right >= other.left && my.left <= other.right) {
+                        const crossDown = my.top + other.bottom;
+                        pixels -= crossDown;
+                        if (pixels < 0) pixels = 0;
+                    }
+                }
+                x += args.edge;
+            });
+            x = args.left;
+            y += args.edge;
+        });
+
+        return pixels;
+    }
+
+    /**
+     * Animate to the up side
+     * @param deltaTime Number - time passed since last frame
+     */
+
+    animDown(deltaTime) {
+        // Anim
+        this.frameTimeV -= deltaTime;
+        if (this.frameTimeV <= 0) {
+            this.frameTimeV = this.anim.speed - this.frameTimeV;
+            this.frameCounterV ++;
+            if (this.frameCounterV == this.anim.moveDown.length) this.frameCounterV = 0;
+        }
+        this.frame = this.anim.moveDown[this.frameCounterV];
+    }
+
+    /**
+     * Transfrom to the down side
+     * @param pixels Number - how many pixels to move (constant or calculated by collideDown)
+     */
+
+    moveDown(pixels) {
+        this.transform.y += pixels;
+    }
+
+    /**
+     * Up movement
+     */
+
+    /*moveDown(deltaTime) {
 
         // Anim
         this.frameTimeV -= deltaTime;
@@ -110,13 +252,84 @@ class Sprite extends TileSet {
         const pixels = this.stats.speed * deltaTime;
         this.transform.y += pixels;
         return pixels;
+    }*/
+
+    /**
+     * Right collision checking
+     * @param args.deltaTime Number - time passed since last frame
+     * @param args.left: Number - left corner of collision layer
+     * @param args.top: Number - top corner of collision layer
+     * @param args.tiles: [Array] - collision tiles layer
+     * @param args.edge: Number - single tile edge size (square)
+     */
+
+    collideRight(args) {
+
+        // Move by pixels
+        let pixels = this.stats.speed * args.deltaTime;
+
+        // My collider
+        const my = {
+            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
+            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
+            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
+            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
+        };
+
+        // Check intersection with all tiles
+        let x = args.left;
+        let y = args.top;
+        args.tiles.forEach(line => {
+            line.forEach(nr => {
+                if (nr != null && nr > -1) {
+                    // Tile collider
+                    const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
+                    // Right side
+                    if (my.right >= other.left && my.right <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
+                        const crossRight = my.right - other.left;
+                        pixels -= crossRight;
+                        if (pixels < 0) pixels = 0;
+                    }
+                }
+                x += args.edge;
+            });
+            x = args.left;
+            y += args.edge;
+        });
+
+        return pixels;
+    }
+
+    /**
+     * Animate to the right side
+     * @param deltaTime Number - time passed since last frame
+     */
+
+    animRight(deltaTime) {
+        // Anim
+        this.frameTimeH -= deltaTime;
+        if (this.frameTimeH <= 0) {
+            this.frameTimeH = this.anim.speed - this.frameTimeH;
+            this.frameCounterH ++;
+            if (this.frameCounterH == this.anim.moveRight.length) this.frameCounterH = 0;
+        }
+        this.frame = this.anim.moveRight[this.frameCounterH];
+    }
+
+    /**
+     * Transfrom to the right side
+     * @param pixels Number - how many pixels to move (constant or calculated by collideRight)
+     */
+
+    moveRight(pixels) {
+        this.transform.x += pixels;
     }
 
     /**
      * Right movement
      */
 
-    moveRight(deltaTime) {
+    /*moveRight(deltaTime) {
 
         // Anim
         this.frameTimeH -= deltaTime;
@@ -134,14 +347,60 @@ class Sprite extends TileSet {
         const pixels = this.stats.speed * deltaTime
         this.transform.x += pixels;
         return pixels;
+    }*/
+
+    /**
+     * Left collision checking
+     * @param args.deltaTime Number - time passed since last frame
+     * @param args.left: Number - left corner of collision layer
+     * @param args.top: Number - top corner of collision layer
+     * @param args.tiles: [Array] - collision tiles layer
+     * @param args.edge: Number - single tile edge size (square)
+     */
+
+    collideLeft(args) {
+
+        // Move by pixels
+        let pixels = this.stats.speed * args.deltaTime;
+
+        // My collider
+        const my = {
+            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
+            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
+            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
+            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
+        };
+
+        // Check intersection with all tiles
+        let x = args.left;
+        let y = args.top;
+        args.tiles.forEach(line => {
+            line.forEach(nr => {
+                if (nr != null && nr > -1) {
+                    // Tile collider
+                    const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
+                    // Left side
+                    if (my.left <= other.right && my.left >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
+                        const crossLeft = other.right - my.left;
+                        pixels -= crossLeft;
+                        if (pixels < 0) pixels = 0;
+                    }
+                }
+                x += args.edge;
+            });
+            x = args.left;
+            y += args.edge;
+        });
+
+        return pixels;
     }
 
     /**
-     * Left movement
+     * Animate to the left side
+     * @param deltaTime Number - time passed since last frame
      */
 
-    moveLeft(deltaTime) {
-
+    animLeft(deltaTime) {
         // Anim
         this.frameTimeH -= deltaTime;
         if (this.frameTimeH <= 0) {
@@ -150,14 +409,15 @@ class Sprite extends TileSet {
             if (this.frameCounterH == this.anim.moveLeft.length) this.frameCounterH = 0;
         }
         this.frame = this.anim.moveLeft[this.frameCounterH];
+    }
 
-        // Horizontal action
-        this.transform.h = 'w';
+    /**
+     * Transfrom to the left side
+     * @param pixels Number - how many pixels to move (constant or calculated by collideLeft)
+     */
 
-        // Move
-        const pixels = this.stats.speed * deltaTime;
+    moveLeft(pixels) {
         this.transform.x -= pixels;
-        return pixels;
     }
 
     /**
@@ -168,7 +428,7 @@ class Sprite extends TileSet {
      * @return {top: Number, bottom: Number, left: Number, right: Number} - table od cross secting (how deep my character sink into obstacle)
      */
 
-    collide(args) {
+    /*collide(args) {
         const cross = {top: 0, bottom: 0, left: 0, right: 0};
         let x = args.left;
         let y = args.top;
@@ -208,7 +468,7 @@ class Sprite extends TileSet {
             y += args.edge;
         });
         return cross;
-    }
+    }*/
 
     /**
      * Debug render own collider shape

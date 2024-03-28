@@ -16,7 +16,7 @@ class Player extends Sprite {
     /**
      * Up movement
      */
-
+/*
     moveUp(deltaTime) {
 
         // Anim
@@ -41,11 +41,11 @@ class Player extends Sprite {
 
         return pixels;
     }
-
+*/
     /**
      * Down movement
      */
-
+/*
     moveDown(deltaTime) {
 
         // Anim
@@ -70,11 +70,11 @@ class Player extends Sprite {
 
         return pixels;
     }
-
+*/
     /**
      * Right movement
      */
-
+/*
     moveRight(deltaTime) {
 
         // Anim
@@ -99,11 +99,11 @@ class Player extends Sprite {
 
         return pixels;
     }
-
+*/
     /**
      * Left movement
      */
-
+/*
     moveLeft(deltaTime) {
 
         // Anim
@@ -128,5 +128,5 @@ class Player extends Sprite {
 
         return pixels;
     }
-
+*/
 }
