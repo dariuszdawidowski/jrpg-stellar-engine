@@ -7,9 +7,9 @@ class Level {
     constructor() {
         this.env = {
             background: null,
-            ground: null,
-            colliders: null,
-            cover: null
+            ground: [],
+            colliders: [],
+            cover: []
         };
 
         this.characters = {
