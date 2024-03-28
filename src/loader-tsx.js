@@ -1,3 +1,7 @@
+/**
+ * Loads .tsx Tiled Editor tileset file
+ */
+
 class LoaderTSX {
 
     constructor(args) {
@@ -22,7 +26,6 @@ class LoaderTSX {
                     cell: tileset.getAttribute('tilewidth'),
                     scale: this.scale,
                 });
-
             }
         }
         return null;

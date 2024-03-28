@@ -89,7 +89,7 @@ class Sprite extends TileSet {
         let y = args.top;
         for (const line of args.tiles) {
             for (const nr of line) {
-                if (nr != null && nr > -1) {
+                if (nr != null && nr > 0) {
                     // Tile collider
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Up side
@@ -169,7 +169,7 @@ class Sprite extends TileSet {
         let y = args.top;
         for (const line of args.tiles) {
             for (const nr of line) {
-                if (nr != null && nr > -1) {
+                if (nr != null && nr > 0) {
                     // Tile collider
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Down side
@@ -245,7 +245,7 @@ class Sprite extends TileSet {
         let y = args.top;
         for (const line of args.tiles) {
             for (const nr of line) {
-                if (nr != null && nr > -1) {
+                if (nr != null && nr > 0) {
                     // Tile collider
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Right side
@@ -321,7 +321,7 @@ class Sprite extends TileSet {
         let y = args.top;
         for (const line of args.tiles) {
             for (const nr of line) {
-                if (nr != null && nr > -1) {
+                if (nr != null && nr > 0) {
                     // Tile collider
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Left side
@@ -394,7 +394,7 @@ class Sprite extends TileSet {
         this.context.fillStyle = 'rgba(225,0,0,0.5)';
         args.tiles.forEach(line => {
             line.forEach(nr => {
-                if (nr != null && nr > -1) {
+                if (nr != null && nr > 0) {
                     this.context.fillRect(x, y, args.edge, args.edge);
                 }
                 x += args.edge;

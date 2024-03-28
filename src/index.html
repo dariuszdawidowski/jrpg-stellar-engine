@@ -308,17 +308,17 @@
                 }
 
                 // Ground layer
-                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.ground});
+                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.ground, first: 1});
 
                 // Colliders layer
-                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.colliders});
+                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.colliders, first: 1});
 
                 // Render characters
                 mob.render({x: scroll.x + 1000, y: scroll.y + 1000});
                 player.render();
 
                 // Cover layer
-                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.cover});
+                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.cover, first: 1});
 
                 // Debug
                 // player.debugDrawCollider();

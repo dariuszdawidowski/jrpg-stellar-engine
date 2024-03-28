@@ -74,21 +74,26 @@ class TileSet {
      * @param x: Number - x coordinate of top left corner
      * @param y: Number - y coordinate of top left corner
      * @param tiles: array [[nr, nr, ...], ...]
+     * @param first: Number - first index of tile numbering [optional]
      */
 
     renderList(args = {}) {
+
         if (args.tiles) {
+            const firstIndex = 'first' in args ? args.first : 0;
             let x = args.x;
             let y = args.y;
             args.tiles.forEach(line => {
                 line.forEach(nr => {
-                    if (nr != null && nr > -1) this.renderSingle({x, y, nr});
+                    const index = nr - firstIndex;
+                    if (index > -1) this.renderSingle({x, y, nr: index});
                     x += this.tile.scaled.width;
                 });
                 x = args.x;
                 y += this.tile.scaled.height;
             });
         }
+
     }
 
 }

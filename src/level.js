@@ -5,6 +5,11 @@ class Level {
      */
 
     constructor() {
+
+        // Tileset definitions {'tileset id': Number of starting index}
+        this.tileset = {};
+
+        // Environment layers
         this.env = {
             background: null,
             ground: [],
