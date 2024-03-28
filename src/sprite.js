@@ -27,8 +27,6 @@ class Sprite extends TileSet {
             h: '',
             x: 0,
             y: 0,
-            // wx: 0,
-            // wy: 0,
         };
 
         // Collider
@@ -96,8 +94,7 @@ class Sprite extends TileSet {
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Up side
                     if (my.top - pixels <= other.bottom && my.top - pixels >= other.top && my.right >= other.left && my.left <= other.right) {
-                        const crossUp = my.top + other.bottom;
-                        pixels -= crossUp;
+                        pixels -= other.bottom - (my.top - pixels - 1);
                         if (pixels < 0) pixels = 0;
                         return pixels;
                     }
@@ -133,28 +130,13 @@ class Sprite extends TileSet {
      */
 
     moveUp(pixels) {
-        this.transform.y -= pixels;
-    }
-
-    /*moveUp(deltaTime) {
-
-        // Anim
-        this.frameTimeV -= deltaTime;
-        if (this.frameTimeV <= 0) {
-            this.frameTimeV = this.anim.speed - this.frameTimeV;
-            this.frameCounterV ++;
-            if (this.frameCounterV == this.anim.moveUp.length) this.frameCounterV = 0;
-        }
-        this.frame = this.anim.moveUp[this.frameCounterV];
 
         // Vertical action
         this.transform.v = 'n';
 
         // Move
-        const pixels = this.stats.speed * deltaTime;
         this.transform.y -= pixels;
-        return pixels;
-    }*/
+    }
 
     /**
      * Down movement
@@ -192,8 +174,7 @@ class Sprite extends TileSet {
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Down side
                     if (my.bottom + pixels >= other.top && my.bottom + pixels <= other.bottom && my.right >= other.left && my.left <= other.right) {
-                        const crossDown = my.top + other.bottom;
-                        pixels -= crossDown;
+                        pixels -= (my.bottom + pixels + 1) - other.top;
                         if (pixels < 0) pixels = 0;
                         return pixels;
                     }
@@ -229,32 +210,13 @@ class Sprite extends TileSet {
      */
 
     moveDown(pixels) {
-        this.transform.y += pixels;
-    }
-
-    /**
-     * Up movement
-     */
-
-    /*moveDown(deltaTime) {
-
-        // Anim
-        this.frameTimeV -= deltaTime;
-        if (this.frameTimeV <= 0) {
-            this.frameTimeV = this.anim.speed - this.frameTimeV;
-            this.frameCounterV ++;
-            if (this.frameCounterV == this.anim.moveDown.length) this.frameCounterV = 0;
-        }
-        this.frame = this.anim.moveDown[this.frameCounterV];
 
         // Vertical action
         this.transform.v = 's';
 
         // Move
-        const pixels = this.stats.speed * deltaTime;
         this.transform.y += pixels;
-        return pixels;
-    }*/
+    }
 
     /**
      * Right collision checking
@@ -288,8 +250,7 @@ class Sprite extends TileSet {
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Right side
                     if (my.right + pixels >= other.left && my.right + pixels <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
-                        const crossRight = my.right - other.left;
-                        pixels -= crossRight;
+                        pixels -= (my.right + pixels + 1) - other.left;
                         if (pixels < 0) pixels = 0;
                         return pixels;
                     }
@@ -325,32 +286,13 @@ class Sprite extends TileSet {
      */
 
     moveRight(pixels) {
-        this.transform.x += pixels;
-    }
-
-    /**
-     * Right movement
-     */
-
-    /*moveRight(deltaTime) {
-
-        // Anim
-        this.frameTimeH -= deltaTime;
-        if (this.frameTimeH <= 0) {
-            this.frameTimeH = this.anim.speed - this.frameTimeH;
-            this.frameCounterH ++;
-            if (this.frameCounterH == this.anim.moveRight.length) this.frameCounterH = 0;
-        }
-        this.frame = this.anim.moveRight[this.frameCounterH];
 
         // Horizontal action
         this.transform.h = 'e';
 
         // Move
-        const pixels = this.stats.speed * deltaTime
         this.transform.x += pixels;
-        return pixels;
-    }*/
+    }
 
     /**
      * Left collision checking
@@ -384,8 +326,7 @@ class Sprite extends TileSet {
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Left side
                     if (my.left - pixels <= other.right && my.left - pixels >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
-                        const crossLeft = other.right - my.left;
-                        pixels -= crossLeft;
+                        pixels += other.right - (my.left + pixels + 1);
                         if (pixels < 0) pixels = 0;
                         return pixels;
                     }
@@ -421,58 +362,13 @@ class Sprite extends TileSet {
      */
 
     moveLeft(pixels) {
+
+        // Horizontal action
+        this.transform.h = 'e';
+
+        // Move
         this.transform.x -= pixels;
     }
-
-    /**
-     * Calculate collisions
-     * @param left: Number - left corner of collision layer
-     * @param top: Number - top corner of collision layer
-     * @param tiles: [Array] - collision tiles layer
-     * @return {top: Number, bottom: Number, left: Number, right: Number} - table od cross secting (how deep my character sink into obstacle)
-     */
-
-    /*collide(args) {
-        const cross = {top: 0, bottom: 0, left: 0, right: 0};
-        let x = args.left;
-        let y = args.top;
-        const my = {
-            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
-            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
-            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
-            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
-        };
-        args.tiles.forEach(line => {
-            line.forEach(nr => {
-                if (nr != null && nr > -1) {
-                    const other = {
-                        left: x,
-                        top: y,
-                        right: x + args.edge,
-                        bottom: y + args.edge,
-                    };
-                    this.context.fillRect(
-                        x,
-                        y,
-                        args.edge,
-                        args.edge
-                    );
-                    // My left-top
-                    if (my.left <= other.right && my.left >= other.left && my.top <= other.bottom && my.top >= other.top) {
-                        const crossLeft = other.right - my.left;
-                        if (cross.left < crossLeft) cross.left = crossLeft;
-                        // const crossTop = other.bottom - my.top;
-                        // if (cross.top < crossTop) cross.top = crossTop;
-                        // console.log('collide', cross)
-                    }
-                }
-                x += args.edge;
-            });
-            x = args.left;
-            y += args.edge;
-        });
-        return cross;
-    }*/
 
     /**
      * Debug render own collider shape
