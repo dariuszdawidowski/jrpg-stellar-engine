@@ -271,8 +271,7 @@
                         edge: 16 * scale
                     });
                     player.animUp(deltaTime);
-                    player.moveUp(pixels);
-                    scroll.y += pixels;
+                    scroll.y += player.moveUp(pixels);
                 }
                 else if (input.down) {
                     const pixels = player.collideDown({
@@ -283,8 +282,7 @@
                         edge: 16 * scale
                     });
                     player.animDown(deltaTime);
-                    player.moveDown(pixels);
-                    scroll.y -= pixels;
+                    scroll.y -= player.moveDown(pixels);
                 }
                 if (input.left) {
                     const pixels = player.collideLeft({
@@ -295,8 +293,7 @@
                         edge: 16 * scale
                     });
                     player.animLeft(deltaTime);
-                    player.moveLeft(pixels);
-                    scroll.x += pixels;
+                    scroll.x += player.moveLeft(pixels);
                 }
                 else if (input.right) {
                     const pixels = player.collideRight({
@@ -307,8 +304,7 @@
                         edge: 16 * scale
                     });
                     player.animRight(deltaTime);
-                    player.moveRight(pixels);
-                    scroll.x -= pixels;
+                    scroll.x -= player.moveRight(pixels);
                 }
 
                 // Ground layer

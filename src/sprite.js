@@ -89,23 +89,24 @@ class Sprite extends TileSet {
         // Check intersection with all tiles
         let x = args.left;
         let y = args.top;
-        args.tiles.forEach(line => {
-            line.forEach(nr => {
+        for (const line of args.tiles) {
+            for (const nr of line) {
                 if (nr != null && nr > -1) {
                     // Tile collider
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Up side
-                    if (my.top <= other.bottom && my.top >= other.top && my.right >= other.left && my.left <= other.right) {
+                    if (my.top - pixels <= other.bottom && my.top - pixels >= other.top && my.right >= other.left && my.left <= other.right) {
                         const crossUp = my.top + other.bottom;
                         pixels -= crossUp;
                         if (pixels < 0) pixels = 0;
+                        return pixels;
                     }
                 }
                 x += args.edge;
-            });
+            }
             x = args.left;
             y += args.edge;
-        });
+        }
 
         return pixels;
     }
@@ -184,23 +185,24 @@ class Sprite extends TileSet {
         // Check intersection with all tiles
         let x = args.left;
         let y = args.top;
-        args.tiles.forEach(line => {
-            line.forEach(nr => {
+        for (const line of args.tiles) {
+            for (const nr of line) {
                 if (nr != null && nr > -1) {
                     // Tile collider
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Down side
-                    if (my.bottom >= other.top && my.bottom <= other.bottom && my.right >= other.left && my.left <= other.right) {
+                    if (my.bottom + pixels >= other.top && my.bottom + pixels <= other.bottom && my.right >= other.left && my.left <= other.right) {
                         const crossDown = my.top + other.bottom;
                         pixels -= crossDown;
                         if (pixels < 0) pixels = 0;
+                        return pixels;
                     }
                 }
                 x += args.edge;
-            });
+            }
             x = args.left;
             y += args.edge;
-        });
+        }
 
         return pixels;
     }
@@ -279,23 +281,24 @@ class Sprite extends TileSet {
         // Check intersection with all tiles
         let x = args.left;
         let y = args.top;
-        args.tiles.forEach(line => {
-            line.forEach(nr => {
+        for (const line of args.tiles) {
+            for (const nr of line) {
                 if (nr != null && nr > -1) {
                     // Tile collider
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Right side
-                    if (my.right >= other.left && my.right <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
+                    if (my.right + pixels >= other.left && my.right + pixels <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
                         const crossRight = my.right - other.left;
                         pixels -= crossRight;
                         if (pixels < 0) pixels = 0;
+                        return pixels;
                     }
                 }
                 x += args.edge;
-            });
+            }
             x = args.left;
             y += args.edge;
-        });
+        }
 
         return pixels;
     }
@@ -374,23 +377,24 @@ class Sprite extends TileSet {
         // Check intersection with all tiles
         let x = args.left;
         let y = args.top;
-        args.tiles.forEach(line => {
-            line.forEach(nr => {
+        for (const line of args.tiles) {
+            for (const nr of line) {
                 if (nr != null && nr > -1) {
                     // Tile collider
                     const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
                     // Left side
-                    if (my.left <= other.right && my.left >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
+                    if (my.left - pixels <= other.right && my.left - pixels >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
                         const crossLeft = other.right - my.left;
                         pixels -= crossLeft;
                         if (pixels < 0) pixels = 0;
+                        return pixels;
                     }
                 }
                 x += args.edge;
-            });
+            }
             x = args.left;
             y += args.edge;
-        });
+        }
 
         return pixels;
     }

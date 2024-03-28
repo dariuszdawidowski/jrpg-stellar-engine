@@ -16,6 +16,19 @@ class Player extends Sprite {
     /**
      * Up movement
      */
+
+    moveUp(pixels) {
+
+        // Transform but no scroll
+        if (this.scroll && this.transform.y > this.scroll.top) {
+            this.transform.y -= pixels;
+            return 0;
+        }
+
+        // Scroll only
+        return pixels;
+    }
+
 /*
     moveUp(deltaTime) {
 
@@ -45,6 +58,19 @@ class Player extends Sprite {
     /**
      * Down movement
      */
+
+    moveDown(pixels) {
+
+        // Transform but no scroll
+        if (this.scroll && this.transform.y < this.scroll.bottom) {
+            this.transform.y += pixels;
+            return 0;
+        }
+
+        // Scroll only
+        return pixels;
+    }
+
 /*
     moveDown(deltaTime) {
 
@@ -74,6 +100,19 @@ class Player extends Sprite {
     /**
      * Right movement
      */
+
+    moveRight(pixels) {
+
+        // Transform but no scroll
+        if (this.scroll && this.transform.x < this.scroll.right) {
+            this.transform.x += pixels;
+            return 0;
+        }
+
+        // Scroll only
+        return pixels;
+    }
+
 /*
     moveRight(deltaTime) {
 
@@ -103,6 +142,19 @@ class Player extends Sprite {
     /**
      * Left movement
      */
+
+    moveLeft(pixels) {
+
+        // Transform but no scroll
+        if (this.scroll && this.transform.x > this.scroll.left) {
+            this.transform.x -= pixels;
+            return 0;
+        }
+
+        // Scroll only
+        return pixels;
+    }
+
 /*
     moveLeft(deltaTime) {
 
