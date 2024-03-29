@@ -371,6 +371,42 @@ class Sprite extends TileSet {
     }
 
     /**
+     * Generic collision checking
+     * @param other: any abstract object supports transform {x, y} and collider {x, y, width, height}
+     */
+
+    collideWith(other, scroll) {
+
+        // My collider
+        const my = {
+            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
+            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
+            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
+            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
+        };
+
+        // That collider
+        const that = {
+            left: other.transform.x + (window.innerWidth / 2) - (other.tile.scaled.width / 2) + other.collider.x + scroll.x,
+            top: other.transform.y + (window.innerHeight / 2) - (other.tile.scaled.height / 2) + other.collider.y + scroll.y,
+            right: other.transform.x + (window.innerWidth / 2) - (other.tile.scaled.width / 2) + other.collider.x  + scroll.x + (other.collider.width * other.tile.scaled.factor),
+            bottom: other.transform.y + (window.innerHeight / 2) - (other.tile.scaled.height / 2) + other.collider.y + scroll.y + (other.collider.height * other.tile.scaled.factor)
+        };
+
+        // Check crossections for all corners
+        // Left-top
+        if (my.left > that.left && my.left < that.right && my.top > that.top && my.top < that.bottom) return true;
+        // Right-top
+        else if (my.right > that.left && my.right < that.right && my.top > that.top && my.top < that.bottom) return true;
+        // Left-bottom
+        else if (my.left > that.left && my.left < that.right && my.bottom > that.top && my.bottom < that.bottom) return true;
+        // Right-bottom
+        else if (my.right > that.left && my.right < that.right && my.bottom > that.top && my.bottom < that.bottom) return true;
+
+        return false;
+    }
+
+    /**
      * Debug render own collider shape
      */
 
