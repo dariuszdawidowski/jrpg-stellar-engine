@@ -185,7 +185,6 @@
             let player = null;
             let mob = null;
             let tileset = null;
-            let chest = null;
             let level = null;
             const scale = 4;
             const scroll = {x: 0, y: 0, ox: 0, oy: 0};
@@ -319,7 +318,7 @@
 
                 // Player actions
                 if (input.action) {
-                    if (player.collideWith(chest, {x: scroll.x - scroll.ox, y: scroll.y - scroll.oy})) chest.animate('open');
+                    if (player.collideWith(level.items.chest, {x: scroll.x - scroll.ox, y: scroll.y - scroll.oy})) level.items.chest.animate('open');
                 }
 
                 // Ground layer
@@ -329,7 +328,7 @@
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.colliders, first: 1});
 
                 // Items layer
-                chest.render({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
+                level.renderItems({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
 
                 // Render characters
                 mob.render({x: scroll.x + 1000, y: scroll.y + 1000});
@@ -340,7 +339,7 @@
 
                 // Debug
                 // player.debugDrawCollider();
-                // chest.debugDrawCollider({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
+                // level.items.chest.debugDrawCollider({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
                 // player.debugDrawColliders({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
 
                 // Time udpate
@@ -390,6 +389,16 @@
                 });
                 player.idle();
 
+                // Tileset for ground
+                const loaderTSX = new LoaderTSX({canvas, context, scale});
+                tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1');
+
+                // Map
+                const loaderTMX = new LoaderTMX();
+                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText);
+                scroll.x = scroll.ox = -1 * (((level.env.ground[0].length * tileset.tile.scaled.width) / 2) - (player.tile.scaled.width / 2));
+                scroll.y = scroll.oy = -1 * (((level.env.ground.length * tileset.tile.scaled.height) / 2) - (player.tile.scaled.height / 2));
+
                 // MOB
                 mob = new Sprite({
                     canvas,
@@ -413,7 +422,7 @@
                 mob.idle();
 
                 // Chest
-                chest = new Item({
+                level.items['chest'] = new Item({
                     canvas,
                     context,
                     resource: '#chest1',
@@ -437,17 +446,7 @@
                         height: 30
                     }
                 });
-                chest.animate('closed');
-
-                // Tileset for ground
-                const loaderTSX = new LoaderTSX({canvas, context, scale});
-                tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1');
-
-                // Map
-                const loaderTMX = new LoaderTMX();
-                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText);
-                scroll.x = scroll.ox = -1 * (((level.env.ground[0].length * tileset.tile.scaled.width) / 2) - (player.tile.scaled.width / 2));
-                scroll.y = scroll.oy = -1 * (((level.env.ground.length * tileset.tile.scaled.height) / 2) - (player.tile.scaled.height / 2));
+                level.items.chest.animate('closed');
 
                 // Start
                 requestAnimationFrame(function(currentTime) {

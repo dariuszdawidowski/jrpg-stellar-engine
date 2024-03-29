@@ -17,11 +17,17 @@ class Level {
             cover: []
         };
 
-        this.characters = {
-            player: null,
-            npc: null,
-            mob: null
-        }
+        // Items
+        this.items = {};
+
+    }
+
+    /**
+     * Render all items
+     */
+
+    renderItems(scroll) {
+        Object.values(this.items).forEach(item => item.render(scroll));
     }
 
 }
