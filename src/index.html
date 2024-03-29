@@ -42,6 +42,7 @@
         <script src="tileset.js"></script>
         <script src="sprite.js"></script>
         <script src="player.js"></script>
+        <script src="item.js"></script>
         <script src="level.js"></script>
         <script src="loader-tsx.js"></script>
         <script src="loader-tmx.js"></script>
@@ -51,6 +52,7 @@
             <img id="char1" src="../public/sprites/characters/chara_0.png">
             <img id="mob1" src="../public/sprites/characters/pinguin_22x22.png">
             <img id="env1" src="../public/sprites/environment/ground.png">
+            <img id="chest1" src="../public/sprites/items/chest.png">
         </div>
 
         <!-- TSX -->
@@ -183,6 +185,7 @@
             let player = null;
             let mob = null;
             let tileset = null;
+            let chest = null;
             let level = null;
             const scale = 4;
             const scroll = {x: 0, y: 0};
@@ -313,6 +316,9 @@
                 // Colliders layer
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.colliders, first: 1});
 
+                // Items layer
+                chest.render({x: scroll.x + 930, y: scroll.y + 300});
+
                 // Render characters
                 mob.render({x: scroll.x + 1000, y: scroll.y + 1000});
                 player.render();
@@ -392,6 +398,18 @@
                     }
                 });
                 mob.idle();
+
+                // Chest
+                chest = new Item({
+                    canvas,
+                    context,
+                    resource: '#chest1',
+                    width: 32,
+                    height: 16,
+                    cols: 2,
+                    rows: 1,
+                    scale: scale,
+                });
 
                 // Tileset for ground
                 const loaderTSX = new LoaderTSX({canvas, context, scale});
