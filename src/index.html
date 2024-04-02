@@ -200,7 +200,6 @@
             function fitCanvas() {
                 canvas.width = roundToNearestEven(window.innerWidth);
                 canvas.height = roundToNearestEven(window.innerHeight);
-                context.translate(0.5, 0.5);
                 context.imageSmoothingEnabled = false;
                 context.webkitImageSmoothingEnabled = false;
                 context.mozImageSmoothingEnabled = false;
@@ -270,6 +269,9 @@
                 // Calculate FPS
                 fpsContainer.textContent = `FPS: ${Math.round(1 / deltaTime)}`;
 
+                // Clear screen
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
                 // Player movement
                 if (input.up) {
                     const pixels = player.collideUp({
@@ -280,7 +282,7 @@
                         edge: 16 * scale
                     });
                     player.animUp(deltaTime);
-                    scroll.y += player.moveUp(pixels);
+                    scroll.y += player.moveUp(Math.round(pixels));
                 }
                 else if (input.down) {
                     const pixels = player.collideDown({
@@ -291,7 +293,7 @@
                         edge: 16 * scale
                     });
                     player.animDown(deltaTime);
-                    scroll.y -= player.moveDown(pixels);
+                    scroll.y -= player.moveDown(Math.round(pixels));
                 }
                 if (input.left) {
                     const pixels = player.collideLeft({
@@ -302,7 +304,7 @@
                         edge: 16 * scale
                     });
                     player.animLeft(deltaTime);
-                    scroll.x += player.moveLeft(pixels);
+                    scroll.x += player.moveLeft(Math.round(pixels));
                 }
                 else if (input.right) {
                     const pixels = player.collideRight({
@@ -313,7 +315,7 @@
                         edge: 16 * scale
                     });
                     player.animRight(deltaTime);
-                    scroll.x -= player.moveRight(pixels);
+                    scroll.x -= player.moveRight(Math.round(pixels));
                 }
 
                 // Player actions
