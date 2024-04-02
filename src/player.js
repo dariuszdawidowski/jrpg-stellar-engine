@@ -19,6 +19,9 @@ class Player extends Sprite {
 
     moveUp(pixels) {
 
+        // Vertical action
+        this.transform.v = 'n';
+
         // Transform but no scroll
         if (this.scroll && this.transform.y > this.scroll.top) {
             this.transform.y -= pixels;
@@ -34,6 +37,9 @@ class Player extends Sprite {
      */
 
     moveDown(pixels) {
+
+        // Vertical action
+        this.transform.v = 's';
 
         // Transform but no scroll
         if (this.scroll && this.transform.y < this.scroll.bottom) {
@@ -51,6 +57,9 @@ class Player extends Sprite {
 
     moveRight(pixels) {
 
+        // Horizontal action
+        this.transform.h = 'e';
+
         // Transform but no scroll
         if (this.scroll && this.transform.x < this.scroll.right) {
             this.transform.x += pixels;
@@ -66,6 +75,9 @@ class Player extends Sprite {
      */
 
     moveLeft(pixels) {
+
+        // Horizontal action
+        this.transform.h = 'w';
 
         // Transform but no scroll
         if (this.scroll && this.transform.x > this.scroll.left) {
