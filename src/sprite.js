@@ -3,6 +3,7 @@ class Sprite extends TileSet {
     /**
      * Create sprite
      * All TileSet params plus:
+     * @param transform: {x, y} - initial position
      * @param speed: Number - movement speed (pixels on second)
      * @param anim: Object - map of animations { speed: seconds, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] }
      * @param collider: {x, y, width, height}
@@ -25,8 +26,8 @@ class Sprite extends TileSet {
         this.transform = {
             v: '',
             h: '',
-            x: 0,
-            y: 0,
+            x: 'transform' in args && 'x' in args.transform ? args.transform.x : 0,
+            y: 'transform' in args && 'y' in args.transform ? args.transform.y : 0,
         };
 
         // Collider

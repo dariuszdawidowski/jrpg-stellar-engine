@@ -41,6 +41,7 @@
         <!-- Scripts -->
         <script src="tileset.js"></script>
         <script src="sprite.js"></script>
+        <script src="mob.js"></script>
         <script src="player.js"></script>
         <script src="item.js"></script>
         <script src="level.js"></script>
@@ -189,6 +190,11 @@
             const scale = 4;
             const scroll = {x: 0, y: 0, ox: 0, oy: 0};
 
+            // Random number in range
+            function random(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
             // Round number
             function roundToNearestEven(number) {
                 let roundedNumber = Math.round(number);
@@ -253,6 +259,128 @@
             // Keyboard input
             document.addEventListener('keydown', keyDownHandler);
             document.addEventListener('keyup', keyUpHandler);
+
+            // Init
+            window.addEventListener('load', () => {
+
+                // Canvas init
+                fitCanvas();
+
+                // Player
+                player = new Player({
+                    canvas,
+                    context,
+                    resource: '#char1',
+                    width: 48,
+                    height: 80,
+                    cols: 3,
+                    rows: 4,
+                    scale: scale,
+                    speed: 320,
+                    anim: {
+                        speed: 10,
+                        idle: [1],
+                        moveUp: [9, 10, 11],
+                        moveDown: [0, 1, 2],
+                        moveLeft: [3, 4, 5],
+                        moveRight: [6, 7, 8],
+                    },
+                    collider: {
+                        x: 7,
+                        y: 50,
+                        width: 50,
+                        height: 30
+                    },
+                    scroll: {
+                        top: -150,
+                        bottom: 150,
+                        left: -150,
+                        right: 150
+                    }
+                });
+                player.idle();
+
+                // Tileset for ground
+                const loaderTSX = new LoaderTSX({canvas, context, scale});
+                tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1');
+
+                // Map
+                const loaderTMX = new LoaderTMX();
+                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText);
+                scroll.x = scroll.ox = -1 * (((level.env.ground[0].length * tileset.tile.scaled.width) / 2) - (player.tile.scaled.width / 2));
+                scroll.y = scroll.oy = -1 * (((level.env.ground.length * tileset.tile.scaled.height) / 2) - (player.tile.scaled.height / 2));
+
+                // MOB
+                mob = new MOB({
+                    canvas,
+                    context,
+                    resource: '#mob1',
+                    width: 88,
+                    height: 88,
+                    cols: 4,
+                    rows: 4,
+                    scale: scale,
+                    speed: 150,
+                    anim: {
+                        speed: 10,
+                        idle: [1],
+                        moveUp: [8, 9, 10],
+                        moveDown: [0, 1, 2],
+                        moveLeft: [12, 13, 14],
+                        moveRight: [4, 5, 6],
+                    },
+                    collider: {
+                        x: 0,
+                        y: 0,
+                        width: 88,
+                        height: 88
+                    },
+                    transform: {
+                        x: 280,
+                        y: 0
+                    }
+                });
+                mob.wander();
+
+                // Chest
+                level.items['chest'] = new Item({
+                    canvas,
+                    context,
+                    resource: '#chest1',
+                    width: 32,
+                    height: 16,
+                    cols: 2,
+                    rows: 1,
+                    scale: scale,
+                    transform: {
+                        x: -30,
+                        y: -600
+                    },
+                    anim: {
+                        closed: 0,
+                        open: 1
+                    },
+                    collider: {
+                        x: -28,
+                        y: -28,
+                        width: 30,
+                        height: 30
+                    }
+                });
+                level.items.chest.animate('closed');
+
+                // Start
+                requestAnimationFrame(function(currentTime) {
+                    lastTime = currentTime;
+                    mainLoop(currentTime);
+                });
+
+            });
+
+            // Resize
+            window.addEventListener('resize', () => {
+                fitCanvas();
+            });
 
             // Main loop
             let lastTime = 0;
@@ -328,8 +456,17 @@
                 // Items layer
                 level.renderItems({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
 
+                // Render MOBs
+                mob.update({
+                    deltaTime,
+                    left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                    top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                    tiles: level.env.colliders,
+                    edge: 16 * scale
+                });
+                mob.render({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
+
                 // Render characters
-                mob.render({x: scroll.x + 1000, y: scroll.y + 1000});
                 player.render();
 
                 // Cover layer
@@ -338,7 +475,12 @@
                 // Debug
                 // player.debugDrawCollider();
                 // level.items.chest.debugDrawCollider({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
-                // player.debugDrawColliders({left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2), top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2), tiles: level.env.colliders, edge: 16 * scale});
+                player.debugDrawColliders({
+                    left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                    top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                    tiles: level.env.colliders,
+                    edge: 16 * scale
+                });
 
                 // Time udpate
                 lastTime = currentTime;
@@ -346,118 +488,6 @@
                 // Display synchro
                 requestAnimationFrame(mainLoop);
             }
-
-            // Init
-            window.addEventListener('load', () => {
-
-                // Canvas init
-                fitCanvas();
-
-                // Player
-                player = new Player({
-                    canvas,
-                    context,
-                    resource: '#char1',
-                    width: 48,
-                    height: 80,
-                    cols: 3,
-                    rows: 4,
-                    scale: scale,
-                    speed: 320,
-                    anim: {
-                        speed: 10,
-                        idle: [1],
-                        moveUp: [9, 10, 11],
-                        moveDown: [0, 1, 2],
-                        moveLeft: [3, 4, 5],
-                        moveRight: [6, 7, 8],
-                    },
-                    collider: {
-                        x: 7,
-                        y: 50,
-                        width: 50,
-                        height: 30
-                    },
-                    scroll: {
-                        top: -150,
-                        bottom: 150,
-                        left: -150,
-                        right: 150
-                    }
-                });
-                player.idle();
-
-                // Tileset for ground
-                const loaderTSX = new LoaderTSX({canvas, context, scale});
-                tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1');
-
-                // Map
-                const loaderTMX = new LoaderTMX();
-                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText);
-                scroll.x = scroll.ox = -1 * (((level.env.ground[0].length * tileset.tile.scaled.width) / 2) - (player.tile.scaled.width / 2));
-                scroll.y = scroll.oy = -1 * (((level.env.ground.length * tileset.tile.scaled.height) / 2) - (player.tile.scaled.height / 2));
-
-                // MOB
-                mob = new Sprite({
-                    canvas,
-                    context,
-                    resource: '#mob1',
-                    width: 88,
-                    height: 88,
-                    cols: 4,
-                    rows: 4,
-                    scale: scale,
-                    speed: 320,
-                    anim: {
-                        speed: 10,
-                        idle: [1],
-                        moveUp: [8, 9, 10],
-                        moveDown: [0, 1, 2],
-                        moveLeft: [12, 13, 14],
-                        moveRight: [4, 5, 6],
-                    }
-                });
-                mob.idle();
-
-                // Chest
-                level.items['chest'] = new Item({
-                    canvas,
-                    context,
-                    resource: '#chest1',
-                    width: 32,
-                    height: 16,
-                    cols: 2,
-                    rows: 1,
-                    scale: scale,
-                    transform: {
-                        x: -30,
-                        y: -600
-                    },
-                    anim: {
-                        closed: 0,
-                        open: 1
-                    },
-                    collider: {
-                        x: -28,
-                        y: -28,
-                        width: 30,
-                        height: 30
-                    }
-                });
-                level.items.chest.animate('closed');
-
-                // Start
-                requestAnimationFrame(function(currentTime) {
-                    lastTime = currentTime;
-                    mainLoop(currentTime);
-                });
-
-            });
-
-            // Resize
-            window.addEventListener('resize', () => {
-                fitCanvas();
-            });
 
         </script>
 
