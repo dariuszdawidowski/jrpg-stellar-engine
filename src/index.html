@@ -215,42 +215,38 @@
             };
 
             const keyDownHandler = (event) => {
-                switch (event.key) {
-                    case 'ArrowRight':
-                        input.right = true;
-                        break;
-                    case 'ArrowLeft':
-                        input.left = true;
-                        break;
-                    case 'ArrowUp':
-                        input.up = true;
-                        break;
-                    case 'ArrowDown':
-                        input.down = true;
-                        break;
-                    case ' ':
-                        input.action = true;
-                        break;
+                if (event.code == 'ArrowRight' || event.code == 'KeyD') {
+                    input.right = true;
+                }
+                else if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
+                    input.left = true;
+                }
+                if (event.code == 'ArrowUp' || event.code == 'KeyW') {
+                    input.up = true;
+                }
+                else if (event.code == 'ArrowDown' || event.code == 'KeyS') {
+                    input.down = true;
+                }
+                if (event.code == 'Space' || event.code == 'ControlRight' || event.code == 'ControlLeft' || event.key == 'Enter') {
+                    input.action = true;
                 }
             };
 
             const keyUpHandler = (event) => {
-                switch (event.key) {
-                    case 'ArrowRight':
-                        input.right = false;
-                        break;
-                    case 'ArrowLeft':
-                        input.left = false;
-                        break;
-                    case 'ArrowUp':
-                        input.up = false;
-                        break;
-                    case 'ArrowDown':
-                        input.down = false;
-                        break;
-                    case ' ':
-                        input.action = false;
-                        break;
+                if (event.code == 'ArrowRight' || event.code == 'KeyD') {
+                    input.right = false;
+                }
+                if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
+                    input.left = false;
+                }
+                if (event.code == 'ArrowUp' || event.code == 'KeyW') {
+                    input.up = false;
+                }
+                if (event.code == 'ArrowDown' || event.code == 'KeyS') {
+                    input.down = false;
+                }
+                if (event.code == 'Space' || event.code == 'ControlRight' || event.code == 'ControlLeft' || event.key == 'Enter') {
+                    input.action = false;
                 }
             };
 
