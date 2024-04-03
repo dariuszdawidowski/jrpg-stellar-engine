@@ -6,15 +6,16 @@ class Level {
 
     constructor() {
 
-        // Tileset definitions {'tileset id': Number of starting index}
-        this.tileset = {};
+        // Tileset definitions {'tileset id': {ref: TileSet object reference, first: Number of index offset}, ...}
+        this.tilesets = {};
 
         // Environment layers
         this.env = {
             background: null,
             ground: [],
             colliders: [],
-            cover: []
+            cover: [],
+            water: []
         };
 
         // Items
@@ -23,10 +24,27 @@ class Level {
     }
 
     /**
-     * Render ground layer
+     * Render layers
      */
 
-    renderGround(render) {
+    render(context) {
+
+        // Iterate tilesets
+        for (const tileset of Object.values(this.tilesets)) {
+
+            // Ground
+            tileset.ref.render(context, this.env.ground, tileset.first);
+
+            // Colliders
+            tileset.ref.render(context, this.env.colliders, tileset.first);
+
+            // Cover
+            tileset.ref.render(context, this.env.cover, tileset.first);
+
+            // Water
+            tileset.ref.render(context, this.env.water, tileset.first);
+        }
+
     }
 
     /**

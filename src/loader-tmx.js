@@ -5,6 +5,19 @@
 
 class LoaderTMX {
 
+    /**
+     * TMX loader constructor
+     * @param tilesets: {'name': reference, ...}
+     */
+
+    constructor(tilesets) {
+        this.tilesets = tilesets;
+    }
+
+    /**
+     * Parse xml
+     */
+
     parseLevel(xmlStr) {
 
         // Parse XML
@@ -16,7 +29,9 @@ class LoaderTMX {
 
         // Used tilesets
         doc.querySelectorAll('tileset').forEach(tileset => {
-            level.tileset[tileset.getAttribute('source')] = tileset.getAttribute('firstgid');
+            const tilesetName = tileset.getAttribute('source');
+            const tilesetFirst = parseInt(tileset.getAttribute('firstgid'));
+            level.tilesets[tilesetName] = {ref: this.tilesets[tilesetName], first: tilesetFirst};
         });
 
         // Layers
@@ -24,7 +39,7 @@ class LoaderTMX {
             const name = layer.getAttribute('name').toLowerCase();
             const data = layer.querySelector('data');
             if (['ground', 'colliders', 'cover'].includes(name) && data) {
-                const arrayContent = data.textContent.split(',').map(Number); //.map(num => num - 1);
+                const arrayContent = data.textContent.split(',').map(Number);
                 level.env[name] = this.create2DArray(arrayContent, parseInt(layer.getAttribute('width')));
             }
         });

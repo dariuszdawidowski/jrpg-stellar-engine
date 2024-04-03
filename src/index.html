@@ -198,8 +198,6 @@
         <script type="text/javascript">
 
             // Globals
-            // const canvas = document.getElementById('main');
-            // const context = canvas.getContext('2d');
             let player = null;
             let mob = null;
             let tileset = null;
@@ -212,22 +210,6 @@
             function random(min, max) {
                 return Math.random() * (max - min) + min;
             }
-
-            // // Round number
-            // function roundToNearestEven(number) {
-            //     let roundedNumber = Math.round(number);
-            //     if (roundedNumber % 2 !== 0) roundedNumber += 1;
-            //     return roundedNumber;
-            // }
-
-            // // Window
-            // function fitCanvas() {
-            //     canvas.width = roundToNearestEven(window.innerWidth);
-            //     canvas.height = roundToNearestEven(window.innerHeight);
-            //     context.imageSmoothingEnabled = false;
-            //     context.webkitImageSmoothingEnabled = false;
-            //     context.mozImageSmoothingEnabled = false;
-            // }
 
             // Input actions
             const input = {
@@ -299,11 +281,9 @@
                 tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1', scale);
 
                 // Load level
-                const loaderTMX = new LoaderTMX();
+                const loaderTMX = new LoaderTMX({'test.tsx': tileset});
                 level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText);
 
-                // Canvas init
-                // render.fitCanvas();
 /*
                 // Player
                 player = new Player({
@@ -516,9 +496,8 @@
                     edge: 16 * scale
                 });*/
 
-                // Ground layer
-                // level.render(context, tileset);
-                tileset.render(context, level.env.ground, 1);
+                // Render environment
+                level.render(context);
 
                 // Player
                 player.position(0, 0);

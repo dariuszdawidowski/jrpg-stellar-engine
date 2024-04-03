@@ -4,6 +4,10 @@
 
 class LoaderTSX {
 
+    /**
+     * Parse xml
+     */
+
     parseTileSet(xmlStr, resource, scale) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(xmlStr, 'application/xml');
