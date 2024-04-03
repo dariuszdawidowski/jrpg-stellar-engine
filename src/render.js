@@ -62,22 +62,20 @@ class Render {
      * @param args.sprite: Sprite object - sprite to display it's bounds
      */
 
-    debug(args) {
+    debug() {
 
         // Draw world coordinates center
-        if ('center' in args) {
-            this.ctx.fillStyle = 'rgba(0,255,0,0.8)';
-            this.ctx.beginPath();
-            this.ctx.moveTo(0 + this.canvasCenter.x, 0 + this.canvasCenter.y);
-            this.ctx.lineTo(-16 + this.canvasCenter.x, -8 + this.canvasCenter.y);
-            this.ctx.lineTo(-16 + this.canvasCenter.x, 8 + this.canvasCenter.y);
-            this.ctx.fill();
-            this.ctx.beginPath();
-            this.ctx.moveTo(0 + this.canvasCenter.x, 0 + this.canvasCenter.y);
-            this.ctx.lineTo(16 + this.canvasCenter.x, -8 + this.canvasCenter.y);
-            this.ctx.lineTo(16 + this.canvasCenter.x, 8 + this.canvasCenter.y);
-            this.ctx.fill();
-        }
+        this.ctx.fillStyle = 'rgba(0,255,0,0.8)';
+        this.ctx.beginPath();
+        this.ctx.moveTo(0 + this.canvasCenter.x, 0 + this.canvasCenter.y);
+        this.ctx.lineTo(-16 + this.canvasCenter.x, -8 + this.canvasCenter.y);
+        this.ctx.lineTo(-16 + this.canvasCenter.x, 8 + this.canvasCenter.y);
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.moveTo(0 + this.canvasCenter.x, 0 + this.canvasCenter.y);
+        this.ctx.lineTo(16 + this.canvasCenter.x, -8 + this.canvasCenter.y);
+        this.ctx.lineTo(16 + this.canvasCenter.x, 8 + this.canvasCenter.y);
+        this.ctx.fill();
 
     }
 

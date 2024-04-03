@@ -5,7 +5,7 @@ class Actor extends Sprite {
      * All Sprite params plus:
      * @param speed: Number - movement speed (pixels on second)
      * @param anim: Object - map of animations { speed: seconds, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] }
-     * @param collider: {x, y, width, height}
+     * @param collider: {x, y, width, height} (without scale)
      */
 
     constructor(args) {
@@ -405,7 +405,7 @@ class Actor extends Sprite {
      * Debug render own collider shape
      */
 
-    debugDrawCollider() {
+    /*debugDrawCollider() {
         this.context.fillStyle = 'rgba(225,0,0,0.5)';
         this.context.fillRect(
             this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
@@ -413,13 +413,13 @@ class Actor extends Sprite {
             this.collider.width,
             this.collider.height
         );
-    }
+    }*/
 
     /**
      * Render debug colliders against given tiles
      */
 
-    debugDrawColliders(args) {
+    /*debugDrawColliders(args) {
         let x = args.left;
         let y = args.top;
         this.context.fillStyle = 'rgba(225,0,0,0.5)';
@@ -433,15 +433,20 @@ class Actor extends Sprite {
             x = args.left;
             y += args.edge;
         });
-    }
+    }*/
 
     /**
      * Render sprite
-     * @attr origin {x: Number, y: Number} - scroll correction
      */
 
-    render(origin = {x: 0, y: 0}) {
-        super.renderSingle({x: this.transform.x + origin.x, y: this.transform.y + origin.y, nr: this.frame});
+    render(context) {
+        super.position(this.transform.x, this.transform.y);
+        super.cell(this.frame);
+        super.render(context);
     }
+
+    // render(origin = {x: 0, y: 0}) {
+    //     super.renderSingle({x: this.transform.x + origin.x, y: this.transform.y + origin.y, nr: this.frame});
+    // }
 
 }

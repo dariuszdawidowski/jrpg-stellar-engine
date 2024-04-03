@@ -1,3 +1,5 @@
+/*** Level ***/
+
 class Level {
 
     /**
@@ -24,38 +26,61 @@ class Level {
         // Items
         this.items = {};
 
+        // Characters
+        this.chars = {};
+
     }
 
     /**
-     * Render layers
+     * Render all layers
      */
 
     render(context) {
 
-        // Iterate tilesets
+        // Iterate tilesets for ground
         for (const tileset of Object.values(this.tilesets)) {
 
             // Ground
             tileset.ref.render(context, this.env.ground, this.offset.x, this.offset.y, tileset.first);
 
+            // Water
+            tileset.ref.render(context, this.env.water, this.offset.x, this.offset.y, tileset.first);
+
             // Colliders
             tileset.ref.render(context, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
+
+        }
+
+        // Items
+        Object.values(this.items).forEach(item => item.render(context));
+
+        // Characters
+        Object.values(this.chars).forEach(character => character.render(context));
+
+        // Iterate tilesets for top
+        for (const tileset of Object.values(this.tilesets)) {
 
             // Cover
             tileset.ref.render(context, this.env.cover, this.offset.x, this.offset.y, tileset.first);
 
-            // Water
-            tileset.ref.render(context, this.env.water, this.offset.x, this.offset.y, tileset.first);
         }
 
     }
 
     /**
-     * Render all items
+     * Render debug info
      */
 
-    // renderItems(scroll) {
-    //     Object.values(this.items).forEach(item => item.render(scroll));
-    // }
+    debug(context) {
+
+        // Colliders
+        for (const tileset of Object.values(this.tilesets)) {
+            tileset.ref.debug(context, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
+        }
+
+        // Characters
+        Object.values(this.chars).forEach(character => character.debug(context));
+    }
+
 
 }
