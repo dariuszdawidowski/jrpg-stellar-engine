@@ -70,6 +70,20 @@ class Sprite {
     }
 
     /**
+     * Returns world collider
+     * @param context: Render context
+     */
+
+    getCollider(context) {
+        return {
+            left: this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth,
+            top: this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight,
+            right: this.transform.x + context.canvasCenter.x + this.tile.scaled.halfWidth,
+            bottom: this.transform.y + context.canvasCenter.y + this.tile.scaled.halfHeight
+        };
+    }
+
+    /**
      * Draw single tile
      * @param context: Render context
      */
@@ -103,11 +117,12 @@ class Sprite {
 
     debug(context) {
         context.ctx.fillStyle = 'rgba(225,0,0,0.5)';
+        const my = this.getCollider(context);
         context.ctx.fillRect(
-            this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth,
-            this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight,
-            this.tile.scaled.width,
-            this.tile.scaled.height
+            my.left,
+            my.top,
+            my.right - my.left,
+            my.bottom - my.top
         );
     }
 

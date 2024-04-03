@@ -70,6 +70,7 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
+        return pixels;
 
         // My collider
         const my = {
@@ -150,6 +151,7 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
+        return pixels;
 
         // My collider
         const my = {
@@ -226,6 +228,7 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
+        return pixels;
 
         // My collider
         const my = {
@@ -291,11 +294,9 @@ class Actor extends Sprite {
 
     /**
      * Left collision checking
+     * @param args.context Render object - render context
      * @param args.deltaTime Number - time passed since last frame
-     * @param args.left: Number - left corner of collision layer
-     * @param args.top: Number - top corner of collision layer
-     * @param args.tiles: [Array] - collision tiles layer
-     * @param args.edge: Number - single tile edge size (square)
+     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
 
     collideLeft(args) {
@@ -304,12 +305,23 @@ class Actor extends Sprite {
         let pixels = this.stats.speed * args.deltaTime;
 
         // My collider
-        const my = {
-            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
-            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
-            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
-            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
-        };
+        // const my = {
+        //     left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
+        //     top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
+        //     right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
+        //     bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
+        // };
+        // const my = {
+        //     left: this.transform.x - this.tile.scaled.halfWidth,
+        //     top: this.transform.y - this.tile.scaled.halfHeight,
+        //     right: this.transform.x + this.tile.scaled.halfWidth,
+        //     bottom: this.transform.y + this.tile.scaled.halfHeight
+        // };
+
+        // Screen dimensions
+        const my = this.getCollider(args.context);
+
+        return pixels;
 
         // Check intersection with all tiles
         let x = args.left;

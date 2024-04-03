@@ -32,6 +32,16 @@ class Level {
     }
 
     /**
+     * Returns list of all colliders
+     */
+
+    getColliders(context) {
+        const tileset = Object.values(this.tilesets).length ? Object.values(this.tilesets)[0] : null;
+        if (tileset) return tileset.ref.getColliders(context, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
+        return [];
+    }
+
+    /**
      * Render all layers
      */
 

@@ -425,52 +425,46 @@
 
                 // Player movement
                 if (input.up) {
-                    // const pixels = player.collideUp({
-                    //     deltaTime,
-                    //     left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                    //     top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                    //     tiles: level.env.colliders,
-                    //     edge: 16 * scale
-                    // });
+                    const pixels = level.chars.player.collideUp({
+                        deltaTime,
+                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                        tiles: level.env.colliders,
+                        edge: 16 * scale
+                    });
                     level.chars.player.animUp(deltaTime);
-                    // scroll.y += player.moveUp(Math.round(pixels));
-                    level.chars.player.moveUp(4);
+                    scroll.y += level.chars.player.moveUp(Math.round(pixels));
                 }
                 else if (input.down) {
-                    // const pixels = player.collideDown({
-                    //     deltaTime,
-                    //     left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                    //     top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                    //     tiles: level.env.colliders,
-                    //     edge: 16 * scale
-                    // });
+                    const pixels = level.chars.player.collideDown({
+                        deltaTime,
+                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                        tiles: level.env.colliders,
+                        edge: 16 * scale
+                    });
                     level.chars.player.animDown(deltaTime);
-                    // scroll.y -= player.moveDown(Math.round(pixels));
-                    level.chars.player.moveDown(4);
+                    scroll.y -= level.chars.player.moveDown(Math.round(pixels));
                 }
                 if (input.left) {
-                    // const pixels = player.collideLeft({
-                    //     deltaTime,
-                    //     left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                    //     top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                    //     tiles: level.env.colliders,
-                    //     edge: 16 * scale
-                    // });
+                    const pixels = level.chars.player.collideLeft({
+                        context,
+                        deltaTime,
+                        with: level.getColliders(context),
+                    });
                     level.chars.player.animLeft(deltaTime);
-                    // scroll.x += player.moveLeft(Math.round(pixels));
-                    level.chars.player.moveLeft(4);
+                    scroll.x += level.chars.player.moveLeft(Math.round(pixels));
                 }
                 else if (input.right) {
-                    // const pixels = player.collideRight({
-                    //     deltaTime,
-                    //     left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                    //     top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                    //     tiles: level.env.colliders,
-                    //     edge: 16 * scale
-                    // });
+                    const pixels = level.chars.player.collideRight({
+                        deltaTime,
+                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
+                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
+                        tiles: level.env.colliders,
+                        edge: 16 * scale
+                    });
                     level.chars.player.animRight(deltaTime);
-                    // scroll.x -= player.moveRight(Math.round(pixels));
-                    level.chars.player.moveRight(4);
+                    scroll.x -= level.chars.player.moveRight(Math.round(pixels));
                 }
 /*
                 // Player actions
@@ -518,7 +512,7 @@
                 level.debug(context);
 
                 // Render debug info
-                context.debug();
+                // context.debug();
 
                 // Time udpate
                 lastTime = currentTime;
