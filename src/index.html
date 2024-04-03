@@ -426,22 +426,18 @@
                 // Player movement
                 if (input.up) {
                     const pixels = level.chars.player.collideUp({
+                        context,
                         deltaTime,
-                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                        tiles: level.env.colliders,
-                        edge: 16 * scale
+                        with: level.getColliders(context)
                     });
                     level.chars.player.animUp(deltaTime);
                     scroll.y += level.chars.player.moveUp(Math.round(pixels));
                 }
                 else if (input.down) {
                     const pixels = level.chars.player.collideDown({
+                        context,
                         deltaTime,
-                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                        tiles: level.env.colliders,
-                        edge: 16 * scale
+                        with: level.getColliders(context)
                     });
                     level.chars.player.animDown(deltaTime);
                     scroll.y -= level.chars.player.moveDown(Math.round(pixels));
@@ -450,18 +446,16 @@
                     const pixels = level.chars.player.collideLeft({
                         context,
                         deltaTime,
-                        with: level.getColliders(context),
+                        with: level.getColliders(context)
                     });
                     level.chars.player.animLeft(deltaTime);
                     scroll.x += level.chars.player.moveLeft(Math.round(pixels));
                 }
                 else if (input.right) {
                     const pixels = level.chars.player.collideRight({
+                        context,
                         deltaTime,
-                        left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                        top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                        tiles: level.env.colliders,
-                        edge: 16 * scale
+                        with: level.getColliders(context)
                     });
                     level.chars.player.animRight(deltaTime);
                     scroll.x -= level.chars.player.moveRight(Math.round(pixels));
@@ -510,6 +504,17 @@
                 // Render environment
                 level.render(context);
                 level.debug(context);
+
+                // const colliders = level.getColliders(context);
+                // colliders.forEach(collider => {
+                //     context.ctx.fillStyle = 'rgba(225,0,0,0.5)';
+                //     context.ctx.fillRect(
+                //         collider.left,
+                //         collider.top,
+                //         collider.right - collider.left,
+                //         collider.bottom - collider.top
+                //     );
+                // });
 
                 // Render debug info
                 // context.debug();

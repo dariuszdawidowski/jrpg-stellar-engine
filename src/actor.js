@@ -70,35 +70,17 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
-        return pixels;
 
         // My collider
-        const my = {
-            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
-            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
-            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
-            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
-        };
+        const my = this.getCollider(args.context);
 
-        // Check intersection with all tiles
-        let x = args.left;
-        let y = args.top;
-        for (const line of args.tiles) {
-            for (const nr of line) {
-                if (nr != null && nr > 0) {
-                    // Tile collider
-                    const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
-                    // Up side
-                    if (my.top - pixels <= other.bottom && my.top - pixels >= other.top && my.right >= other.left && my.left <= other.right) {
-                        pixels -= other.bottom - (my.top - pixels - 1);
-                        if (pixels < 0) pixels = 0;
-                        return pixels;
-                    }
-                }
-                x += args.edge;
+        // Check intersections
+        for (const other of args.with) {
+            if (my.top - pixels <= other.bottom && my.top - pixels >= other.top && my.right >= other.left && my.left <= other.right) {
+                pixels -= other.bottom - (my.top - pixels - 1);
+                if (pixels < 0) pixels = 0;
+                return pixels;
             }
-            x = args.left;
-            y += args.edge;
         }
 
         return pixels;
@@ -151,35 +133,17 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
-        return pixels;
 
         // My collider
-        const my = {
-            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
-            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
-            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
-            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
-        };
+        const my = this.getCollider(args.context);
 
-        // Check intersection with all tiles
-        let x = args.left;
-        let y = args.top;
-        for (const line of args.tiles) {
-            for (const nr of line) {
-                if (nr != null && nr > 0) {
-                    // Tile collider
-                    const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
-                    // Down side
-                    if (my.bottom + pixels >= other.top && my.bottom + pixels <= other.bottom && my.right >= other.left && my.left <= other.right) {
-                        pixels -= (my.bottom + pixels + 1) - other.top;
-                        if (pixels < 0) pixels = 0;
-                        return pixels;
-                    }
-                }
-                x += args.edge;
+        // Check intersections
+        for (const other of args.with) {
+            if (my.bottom + pixels >= other.top && my.bottom + pixels <= other.bottom && my.right >= other.left && my.left <= other.right) {
+                pixels -= (my.bottom + pixels + 1) - other.top;
+                if (pixels < 0) pixels = 0;
+                return pixels;
             }
-            x = args.left;
-            y += args.edge;
         }
 
         return pixels;
@@ -228,35 +192,17 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
-        return pixels;
 
         // My collider
-        const my = {
-            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
-            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
-            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
-            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
-        };
+        const my = this.getCollider(args.context);
 
-        // Check intersection with all tiles
-        let x = args.left;
-        let y = args.top;
-        for (const line of args.tiles) {
-            for (const nr of line) {
-                if (nr != null && nr > 0) {
-                    // Tile collider
-                    const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
-                    // Right side
-                    if (my.right + pixels >= other.left && my.right + pixels <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
-                        pixels -= (my.right + pixels + 1) - other.left;
-                        if (pixels < 0) pixels = 0;
-                        return pixels;
-                    }
-                }
-                x += args.edge;
+        // Check intersections
+        for (const other of args.with) {
+            if (my.right + pixels >= other.left && my.right + pixels <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
+                pixels -= (my.right + pixels + 1) - other.left;
+                if (pixels < 0) pixels = 0;
+                return pixels;
             }
-            x = args.left;
-            y += args.edge;
         }
 
         return pixels;
@@ -305,46 +251,19 @@ class Actor extends Sprite {
         let pixels = this.stats.speed * args.deltaTime;
 
         // My collider
-        // const my = {
-        //     left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
-        //     top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
-        //     right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
-        //     bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
-        // };
-        // const my = {
-        //     left: this.transform.x - this.tile.scaled.halfWidth,
-        //     top: this.transform.y - this.tile.scaled.halfHeight,
-        //     right: this.transform.x + this.tile.scaled.halfWidth,
-        //     bottom: this.transform.y + this.tile.scaled.halfHeight
-        // };
-
-        // Screen dimensions
         const my = this.getCollider(args.context);
 
-        return pixels;
-
-        // Check intersection with all tiles
-        let x = args.left;
-        let y = args.top;
-        for (const line of args.tiles) {
-            for (const nr of line) {
-                if (nr != null && nr > 0) {
-                    // Tile collider
-                    const other = { left: x, top: y, right: x + args.edge, bottom: y + args.edge };
-                    // Left side
-                    if (my.left - pixels <= other.right && my.left - pixels >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
-                        pixels += other.right - (my.left + pixels + 1);
-                        if (pixels < 0) pixels = 0;
-                        return pixels;
-                    }
-                }
-                x += args.edge;
+        // Check intersections
+        for (const other of args.with) {
+            if (my.left - pixels <= other.right && my.left - pixels >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
+                pixels += other.right - (my.left + pixels + 1);
+                if (pixels < 0) pixels = 0;
+                return pixels;
             }
-            x = args.left;
-            y += args.edge;
         }
 
         return pixels;
+
     }
 
     /**
@@ -414,40 +333,6 @@ class Actor extends Sprite {
     }
 
     /**
-     * Debug render own collider shape
-     */
-
-    /*debugDrawCollider() {
-        this.context.fillStyle = 'rgba(225,0,0,0.5)';
-        this.context.fillRect(
-            this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
-            this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
-            this.collider.width,
-            this.collider.height
-        );
-    }*/
-
-    /**
-     * Render debug colliders against given tiles
-     */
-
-    /*debugDrawColliders(args) {
-        let x = args.left;
-        let y = args.top;
-        this.context.fillStyle = 'rgba(225,0,0,0.5)';
-        args.tiles.forEach(line => {
-            line.forEach(nr => {
-                if (nr != null && nr > 0) {
-                    this.context.fillRect(x, y, args.edge, args.edge);
-                }
-                x += args.edge;
-            });
-            x = args.left;
-            y += args.edge;
-        });
-    }*/
-
-    /**
      * Render sprite
      */
 
@@ -456,9 +341,5 @@ class Actor extends Sprite {
         super.cell(this.frame);
         super.render(context);
     }
-
-    // render(origin = {x: 0, y: 0}) {
-    //     super.renderSingle({x: this.transform.x + origin.x, y: this.transform.y + origin.y, nr: this.frame});
-    // }
 
 }

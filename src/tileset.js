@@ -13,8 +13,8 @@ class TileSet extends Sprite {
 
     getColliders(context, tiles, sx = 0, sy = 0, first = 0) {
         const colliders = [];
-        let x = (-sx * this.tile.scaled.factor) + this.tile.scaled.halfWidth;
-        let y = (-sy * this.tile.scaled.factor) + this.tile.scaled.halfHeight;
+        let x = (-sx * this.tile.scaled.factor) + context.canvasCenter.x;
+        let y = (-sy * this.tile.scaled.factor) + context.canvasCenter.y;
         tiles.forEach(line => {
             line.forEach(nr => {
                 const index = nr - first;
@@ -28,7 +28,7 @@ class TileSet extends Sprite {
                 }
                 x += this.tile.scaled.width;
             });
-            x = (-sx * this.tile.scaled.factor) + this.tile.scaled.halfWidth;
+            x = (-sx * this.tile.scaled.factor) + context.canvasCenter.x;
             y += this.tile.scaled.height;
         });
         return colliders;
