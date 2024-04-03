@@ -11,7 +11,11 @@
                 height: 100%;
                 margin: 0;
                 padding: 0;
+            }
+
+            body {
                 overflow: hidden;
+                background-color: #0ec4e1;
             }
 
             #canvas {
@@ -40,7 +44,7 @@
 
         <!-- Scripts -->
         <script src="tileset.js"></script>
-        <script src="sprite.js"></script>
+        <script src="actor.js"></script>
         <script src="mob.js"></script>
         <script src="player.js"></script>
         <script src="item.js"></script>
@@ -475,12 +479,12 @@
                 // Debug
                 // player.debugDrawCollider();
                 // level.items.chest.debugDrawCollider({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
-                player.debugDrawColliders({
+                /*player.debugDrawColliders({
                     left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
                     top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
                     tiles: level.env.colliders,
                     edge: 16 * scale
-                });
+                });*/
 
                 // Time udpate
                 lastTime = currentTime;

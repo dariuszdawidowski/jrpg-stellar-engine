@@ -1,4 +1,4 @@
-class Player extends Sprite {
+class Player extends Actor {
 
     /**
      * Create sprite

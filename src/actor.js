@@ -1,4 +1,4 @@
-class Sprite extends TileSet {
+class Actor extends TileSet {
 
     /**
      * Create sprite

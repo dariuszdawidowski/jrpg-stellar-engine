@@ -1,4 +1,4 @@
-class MOB extends Sprite {
+class MOB extends Actor {
 
     /**
      * Create sprite
