@@ -1,7 +1,8 @@
-class TileSet {
+class Sprite {
 
     /**
      * Constructor
+     * @param transform: {x, y} - initial position
      * @param canvas: HTMLCanvasElement - canvas context
      * @param context: CanvasRenderingContext2D - canvas context
      * @params resource: string - selector for image preloaded resource
@@ -14,8 +15,21 @@ class TileSet {
      */
 
     constructor(args = {}) {
+
+        // Canvas references
         this.canvas = args.canvas;
         this.context = args.context;
+
+        /**
+         * Position in space
+         * x,y: screen
+         */
+        this.transform = {
+            x: 'transform' in args && 'x' in args.transform ? args.transform.x : 0,
+            y: 'transform' in args && 'y' in args.transform ? args.transform.y : 0,
+        };
+
+        // Sprite atlas
         this.atlas = {
             width: args.width,
             height: args.height,
@@ -24,6 +38,8 @@ class TileSet {
             cell: 'cell' in args ? args.cell : args.width / args.cols,
             image: document.querySelector(args.resource)
         };
+
+        // Dimensions of one tile
         this.tile = {
             width: this.atlas.width / this.atlas.cols,
             height: this.atlas.height / this.atlas.rows,
@@ -33,6 +49,8 @@ class TileSet {
                 height: (this.atlas.height / this.atlas.rows) * (args.scale || 1)
             }
         };
+
+        // Center point
         this.origin = {
             x: (this.canvas.width / 2) - (this.tile.scaled.width / 2),
             y: (this.canvas.height / 2) - (this.tile.scaled.height / 2)

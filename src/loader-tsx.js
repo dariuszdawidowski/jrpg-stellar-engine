@@ -17,7 +17,7 @@ class LoaderTSX {
         if (tileset) {
             const image = tileset.querySelector('image');
             if (image) {
-                return new TileSet({
+                return new Sprite({
                     canvas: this.canvas,
                     context: this.context,
                     resource: resource,

@@ -1,4 +1,4 @@
-class Item extends TileSet {
+class Item extends Sprite {
 
     /**
      * Create sprite

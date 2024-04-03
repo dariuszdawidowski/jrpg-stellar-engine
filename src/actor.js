@@ -1,9 +1,8 @@
-class Actor extends TileSet {
+class Actor extends Sprite {
 
     /**
      * Create sprite
-     * All TileSet params plus:
-     * @param transform: {x, y} - initial position
+     * All Sprite params plus:
      * @param speed: Number - movement speed (pixels on second)
      * @param anim: Object - map of animations { speed: seconds, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] }
      * @param collider: {x, y, width, height}
@@ -18,17 +17,12 @@ class Actor extends TileSet {
         };
 
         /**
-         * Position in space
+         * Movement direction
          * v: vertical action (n=north,s=south)
          * h: horizontal action (w=west,e=east)
-         * x,y: screen
          */
-        this.transform = {
-            v: '',
-            h: '',
-            x: 'transform' in args && 'x' in args.transform ? args.transform.x : 0,
-            y: 'transform' in args && 'y' in args.transform ? args.transform.y : 0,
-        };
+        this.transform['v'] = '';
+        this.transform['h'] = '';
 
         // Collider
         this.collider = 'collider' in args ? args.collider : null;
