@@ -44,6 +44,16 @@ class LoaderTMX {
             }
         });
 
+        // Objects/markers
+        doc.querySelectorAll('objectgroup').forEach(objectgroup => {
+            objectgroup.querySelectorAll('object').forEach(obj => {
+                if (obj.getAttribute('name').toLowerCase() == 'level' && obj.getAttribute('type').toLowerCase() == 'center') {
+                    level.offset.x = parseInt(obj.getAttribute('x'));
+                    level.offset.y = parseInt(obj.getAttribute('y'));
+                }
+            });
+        });
+
         return level;
     }
 

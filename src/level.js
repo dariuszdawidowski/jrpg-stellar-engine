@@ -6,6 +6,9 @@ class Level {
 
     constructor() {
 
+        // Center of the coordinate system correction (this is constant not scroll)
+        this.offset = {x: 0, y: 0};
+
         // Tileset definitions {'tileset id': {ref: TileSet object reference, first: Number of index offset}, ...}
         this.tilesets = {};
 
@@ -33,16 +36,16 @@ class Level {
         for (const tileset of Object.values(this.tilesets)) {
 
             // Ground
-            tileset.ref.render(context, this.env.ground, tileset.first);
+            tileset.ref.render(context, this.env.ground, this.offset.x, this.offset.y, tileset.first);
 
             // Colliders
-            tileset.ref.render(context, this.env.colliders, tileset.first);
+            tileset.ref.render(context, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
 
             // Cover
-            tileset.ref.render(context, this.env.cover, tileset.first);
+            tileset.ref.render(context, this.env.cover, this.offset.x, this.offset.y, tileset.first);
 
             // Water
-            tileset.ref.render(context, this.env.water, tileset.first);
+            tileset.ref.render(context, this.env.water, this.offset.x, this.offset.y, tileset.first);
         }
 
     }
@@ -51,8 +54,8 @@ class Level {
      * Render all items
      */
 
-    renderItems(scroll) {
-        Object.values(this.items).forEach(item => item.render(scroll));
-    }
+    // renderItems(scroll) {
+    //     Object.values(this.items).forEach(item => item.render(scroll));
+    // }
 
 }

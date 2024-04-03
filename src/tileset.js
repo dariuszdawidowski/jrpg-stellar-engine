@@ -2,24 +2,27 @@ class TileSet extends Sprite {
 
     /**
      * Draw array of tiles
+     * @param context: Render context
      * @param tiles: array [[nr, nr, ...], ...]
+     * @param sx: Number - start x
+     * @param sy: Number - start y
      */
 
-    render(render, tiles, first = 0) {
+    render(context, tiles, sx = 0, sy = 0, first = 0) {
 
-        let x = 0;
-        let y = 0;
+        let x = (-sx * this.tile.scaled.factor) + this.tile.scaled.halfWidth;
+        let y = (-sy * this.tile.scaled.factor) + this.tile.scaled.halfHeight;
         tiles.forEach(line => {
             line.forEach(nr => {
                 const index = nr - first;
                 if (index > -1) {
                     this.position(x, y);
                     this.cell(index);
-                    super.render(render);
+                    super.render(context);
                 }
                 x += this.tile.scaled.width;
             });
-            x = 0;
+            x = (-sx * this.tile.scaled.factor) + this.tile.scaled.halfWidth;
             y += this.tile.scaled.height;
         });
 

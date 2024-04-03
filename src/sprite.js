@@ -71,19 +71,19 @@ class Sprite {
 
     /**
      * Draw single tile
-     * @param render: Render context
+     * @param context: Render context
      */
 
-    render(render) {
+    render(context) {
         // const sx = 'col' in args ? this.tile.width * args.col : 'nr' in args ? this.tile.width * (args.nr % this.atlas.cols) : 0;
         // const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.height * Math.floor(args.nr / this.atlas.cols) : 0;
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
         // const dx = 'x' in args ? args.x + args.render.canvasCenter.x - this.tile.scaled.halfWidth : (args.gx * this.tile.scaled.width);
         // const dy = 'y' in args ? args.y + args.render.canvasCenter.y - this.tile.scaled.halfHeight : (args.gy * this.tile.scaled.height);
-        const dx = this.transform.x + render.canvasCenter.x - this.tile.scaled.halfWidth;
-        const dy = this.transform.y + render.canvasCenter.y - this.tile.scaled.halfHeight;
-        render.ctx.drawImage(
+        const dx = this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth;
+        const dy = this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight;
+        context.ctx.drawImage(
             this.atlas.image,
             sx,
             sy,
@@ -98,14 +98,14 @@ class Sprite {
 
     /**
      * Debug render
-     * @param render: Render context
+     * @param context: Render context
      */
 
-    debug(render) {
-        render.ctx.fillStyle = 'rgba(225,0,0,0.5)';
-        render.ctx.fillRect(
-            this.transform.x + render.canvasCenter.x - this.tile.scaled.halfWidth,
-            this.transform.y + render.canvasCenter.y - this.tile.scaled.halfHeight,
+    debug(context) {
+        context.ctx.fillStyle = 'rgba(225,0,0,0.5)';
+        context.ctx.fillRect(
+            this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth,
+            this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight,
             this.tile.scaled.width,
             this.tile.scaled.height
         );
