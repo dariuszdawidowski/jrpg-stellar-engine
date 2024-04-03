@@ -44,6 +44,7 @@
 
         <!-- Scripts -->
         <script src="sprite.js"></script>
+        <script src="tileset.js"></script>
         <script src="actor.js"></script>
         <script src="mob.js"></script>
         <script src="player.js"></script>
@@ -174,6 +175,17 @@
                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
                 </data>
                  </layer>
+                 <objectgroup id="4" name="Objects">
+                  <object id="1" name="Level" type="Center" x="240" y="240">
+                   <point/>
+                  </object>
+                  <object id="2" name="Player" type="Spawn" x="168" y="240">
+                   <point/>
+                  </object>
+                  <object id="3" name="MOB" type="Spawn" x="312" y="240">
+                   <point/>
+                  </object>
+                 </objectgroup>
             </map>
         </script>
 
@@ -186,13 +198,13 @@
         <script type="text/javascript">
 
             // Globals
-            const canvas = document.getElementById('main');
-            const context = canvas.getContext('2d');
+            // const canvas = document.getElementById('main');
+            // const context = canvas.getContext('2d');
             let player = null;
             let mob = null;
             let tileset = null;
             let level = null;
-            let render = null;
+            let context = null;
             const scale = 4;
             const scroll = {x: 0, y: 0, ox: 0, oy: 0};
 
@@ -201,21 +213,21 @@
                 return Math.random() * (max - min) + min;
             }
 
-            // Round number
-            function roundToNearestEven(number) {
-                let roundedNumber = Math.round(number);
-                if (roundedNumber % 2 !== 0) roundedNumber += 1;
-                return roundedNumber;
-            }
+            // // Round number
+            // function roundToNearestEven(number) {
+            //     let roundedNumber = Math.round(number);
+            //     if (roundedNumber % 2 !== 0) roundedNumber += 1;
+            //     return roundedNumber;
+            // }
 
-            // Window
-            function fitCanvas() {
-                canvas.width = roundToNearestEven(window.innerWidth);
-                canvas.height = roundToNearestEven(window.innerHeight);
-                context.imageSmoothingEnabled = false;
-                context.webkitImageSmoothingEnabled = false;
-                context.mozImageSmoothingEnabled = false;
-            }
+            // // Window
+            // function fitCanvas() {
+            //     canvas.width = roundToNearestEven(window.innerWidth);
+            //     canvas.height = roundToNearestEven(window.innerHeight);
+            //     context.imageSmoothingEnabled = false;
+            //     context.webkitImageSmoothingEnabled = false;
+            //     context.mozImageSmoothingEnabled = false;
+            // }
 
             // Input actions
             const input = {
@@ -269,9 +281,30 @@
             // Init
             window.addEventListener('load', () => {
 
-                // Canvas init
-                fitCanvas();
+                // Initialize render context
+                context = new Render({ canvas: document.getElementById('main') });
 
+                // Initialize player
+                player = new Sprite({
+                    resource: '#char1',
+                    width: 48,
+                    height: 80,
+                    cols: 3,
+                    rows: 4,
+                    scale: scale,
+                });
+
+                // Load tileset for environment
+                const loaderTSX = new LoaderTSX();
+                tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1', scale);
+
+                // Load level
+                const loaderTMX = new LoaderTMX();
+                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText);
+
+                // Canvas init
+                // render.fitCanvas();
+/*
                 // Player
                 player = new Player({
                     canvas,
@@ -374,21 +407,13 @@
                     }
                 });
                 level.items.chest.animate('closed');
-
-                // Renderer
-                render = new Render({ canvas: document.getElementById('main') });
-
+*/
                 // Start
                 requestAnimationFrame(function(currentTime) {
                     lastTime = currentTime;
                     mainLoop(currentTime);
                 });
 
-            });
-
-            // Resize
-            window.addEventListener('resize', () => {
-                fitCanvas();
             });
 
             // Main loop
@@ -403,8 +428,8 @@
                 fpsContainer.textContent = `FPS: ${Math.round(1 / deltaTime)}`;
 
                 // Clear screen
-                context.clearRect(0, 0, canvas.width, canvas.height);
-
+                context.cls();
+/*
                 // Player movement
                 if (input.up) {
                     const pixels = player.collideUp({
@@ -480,7 +505,7 @@
 
                 // Cover layer
                 tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.cover, first: 1});
-
+*/
                 // Debug
                 // player.debugDrawCollider();
                 // level.items.chest.debugDrawCollider({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
@@ -491,8 +516,18 @@
                     edge: 16 * scale
                 });*/
 
-                // Render draw
-                render.draw(deltaTime);
+                // Ground layer
+                // level.render(context, tileset);
+                tileset.render(context, level.env.ground, 1);
+
+                // Player
+                player.position(0, 0);
+                player.cell(0);
+                player.render(context);
+                player.debug(context);
+
+                // Render context debug info
+                context.debug({ center: true });
 
                 // Time udpate
                 lastTime = currentTime;

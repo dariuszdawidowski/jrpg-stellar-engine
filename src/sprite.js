@@ -3,8 +3,6 @@ class Sprite {
     /**
      * Constructor
      * @param transform: {x, y} - initial position
-     * @param canvas: HTMLCanvasElement - canvas context
-     * @param context: CanvasRenderingContext2D - canvas context
      * @params resource: string - selector for image preloaded resource
      * @params width: Number - image width in pixels
      * @params height: Number - image height in pixels
@@ -16,12 +14,8 @@ class Sprite {
 
     constructor(args = {}) {
 
-        // Canvas references
-        this.canvas = args.canvas;
-        this.context = args.context;
-
         /**
-         * Position in space
+         * Current position in space
          * x,y: screen
          */
         this.transform = {
@@ -41,40 +35,55 @@ class Sprite {
 
         // Dimensions of one tile
         this.tile = {
+            current: 0, // current frame
             width: this.atlas.width / this.atlas.cols,
             height: this.atlas.height / this.atlas.rows,
             scaled: {
                 factor: args.scale || 1,
                 width: (this.atlas.width / this.atlas.cols) * (args.scale || 1),
-                height: (this.atlas.height / this.atlas.rows) * (args.scale || 1)
+                height: (this.atlas.height / this.atlas.rows) * (args.scale || 1),
+                halfWidth: ((this.atlas.width / this.atlas.cols) * (args.scale || 1)) / 2,
+                halfHeight: ((this.atlas.height / this.atlas.rows) * (args.scale || 1)) / 2
             }
         };
 
-        // Center point
-        this.origin = {
-            x: (this.canvas.width / 2) - (this.tile.scaled.width / 2),
-            y: (this.canvas.height / 2) - (this.tile.scaled.height / 2)
-        };
+    }
+
+    /**
+     * Set coordinates
+     * @param x: Number
+     * @param y: Number
+     */
+
+    position(x, y) {
+        this.transform.x = x;
+        this.transform.y = y;
+    }
+
+    /**
+     * Set current frame cell
+     * @param nr: Number
+     */
+
+    cell(nr) {
+        this.tile.current = nr;
     }
 
     /**
      * Draw single tile
-     * Coordinates 0,0 are recalculated as center of canvas
-     * @param x: Number - x coordinate in pixels
-     * @param y: Number - y coordinate in pixels
-     * @param gx: Number - column number in grid units
-     * @param gy: Number - row number in grid units
-     * @param col: Number 0..n - which atlas column to draw
-     * @param row: Number 0..n - which atlas row to draw
-     * @param nr: Number 0..n - index number instead of row and col
+     * @param render: Render context
      */
 
-    renderSingle(args = {}) {
-        const sx = 'col' in args ? this.tile.width * args.col : 'nr' in args ? this.tile.width * (args.nr % this.atlas.cols) : 0;
-        const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.height * Math.floor(args.nr / this.atlas.cols) : 0;
-        const dx = 'x' in args ? args.x + this.origin.x : (args.gx * this.tile.scaled.width) + this.origin.x;
-        const dy = 'y' in args ? args.y + this.origin.y : (args.gy * this.tile.scaled.height) + this.origin.y;
-        this.context.drawImage(
+    render(render) {
+        // const sx = 'col' in args ? this.tile.width * args.col : 'nr' in args ? this.tile.width * (args.nr % this.atlas.cols) : 0;
+        // const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.height * Math.floor(args.nr / this.atlas.cols) : 0;
+        const sx = this.tile.width * (this.tile.current % this.atlas.cols);
+        const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
+        // const dx = 'x' in args ? args.x + args.render.canvasCenter.x - this.tile.scaled.halfWidth : (args.gx * this.tile.scaled.width);
+        // const dy = 'y' in args ? args.y + args.render.canvasCenter.y - this.tile.scaled.halfHeight : (args.gy * this.tile.scaled.height);
+        const dx = this.transform.x + render.canvasCenter.x - this.tile.scaled.halfWidth;
+        const dy = this.transform.y + render.canvasCenter.y - this.tile.scaled.halfHeight;
+        render.ctx.drawImage(
             this.atlas.image,
             sx,
             sy,
@@ -88,30 +97,18 @@ class Sprite {
     }
 
     /**
-     * Draw array of tiles
-     * @param x: Number - x coordinate of top left corner
-     * @param y: Number - y coordinate of top left corner
-     * @param tiles: array [[nr, nr, ...], ...]
-     * @param first: Number - first index of tile numbering [optional]
+     * Debug render
+     * @param render: Render context
      */
 
-    renderList(args = {}) {
-
-        if (args.tiles) {
-            const firstIndex = 'first' in args ? args.first : 0;
-            let x = args.x;
-            let y = args.y;
-            args.tiles.forEach(line => {
-                line.forEach(nr => {
-                    const index = nr - firstIndex;
-                    if (index > -1) this.renderSingle({x, y, nr: index});
-                    x += this.tile.scaled.width;
-                });
-                x = args.x;
-                y += this.tile.scaled.height;
-            });
-        }
-
+    debug(render) {
+        render.ctx.fillStyle = 'rgba(225,0,0,0.5)';
+        render.ctx.fillRect(
+            this.transform.x + render.canvasCenter.x - this.tile.scaled.halfWidth,
+            this.transform.y + render.canvasCenter.y - this.tile.scaled.halfHeight,
+            this.tile.scaled.width,
+            this.tile.scaled.height
+        );
     }
 
 }

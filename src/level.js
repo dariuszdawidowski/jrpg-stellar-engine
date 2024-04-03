@@ -23,6 +23,13 @@ class Level {
     }
 
     /**
+     * Render ground layer
+     */
+
+    renderGround(render) {
+    }
+
+    /**
      * Render all items
      */
 
