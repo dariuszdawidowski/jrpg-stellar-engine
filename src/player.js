@@ -1,24 +1,37 @@
+/**
+ * Player - actor with scroll handling
+ */
+
 class Player extends Actor {
 
     /**
      * Create sprite
      * All params from TileSet+Sprite plus:
-     * @param scroll: Object - range for scroll { top: Number, bottom: Number, left: Number, right: Number }
+     * @param bounds: Object - range for scroll { top: Number, bottom: Number, left: Number, right: Number }
      */
 
     constructor(args) {
         super(args);
 
         // Scroll range
-        this.scroll = 'scroll' in args ? args.scroll : null;
+        this.bounds = 'bounds' in args ? args.bounds : null;
     }
 
     /**
      * Up movement
      */
 
-    moveUp(pixels) {
+    moveUp(pixels, view) {
 
+        // Vertical action
+        this.transform.v = 's';
+
+        // Advance scroll
+        view.offset.y += pixels;
+
+        // Actor movement        
+        return super.moveUp(pixels);
+/*
         // Vertical action
         this.transform.v = 'n';
 
@@ -30,14 +43,24 @@ class Player extends Actor {
 
         // Scroll only
         return pixels;
+*/
     }
 
     /**
      * Down movement
      */
 
-    moveDown(pixels) {
+    moveDown(pixels, view) {
 
+        // Vertical action
+        this.transform.v = 's';
+
+        // Advance scroll
+        view.offset.y -= pixels;
+
+        // Actor movement        
+        return super.moveDown(pixels);
+/*
         // Vertical action
         this.transform.v = 's';
 
@@ -49,14 +72,24 @@ class Player extends Actor {
 
         // Scroll only
         return pixels;
+*/
     }
 
     /**
      * Right movement
      */
 
-    moveRight(pixels) {
+    moveRight(pixels, view) {
 
+        // Horizontal action
+        this.transform.h = 'w';
+
+        // Advance scroll
+        view.offset.x -= pixels;
+
+        // Actor movement        
+        return super.moveRight(pixels);
+/*
         // Horizontal action
         this.transform.h = 'e';
 
@@ -68,14 +101,24 @@ class Player extends Actor {
 
         // Scroll only
         return pixels;
+*/
     }
 
     /**
      * Left movement
      */
 
-    moveLeft(pixels) {
+    moveLeft(pixels, view) {
 
+        // Horizontal action
+        this.transform.h = 'w';
+
+        // Advance scroll
+        view.offset.x += pixels;
+
+        // Actor movement        
+        return super.moveLeft(pixels);
+/*
         // Horizontal action
         this.transform.h = 'w';
 
@@ -86,7 +129,7 @@ class Player extends Actor {
         }
 
         // Scroll only
-        return pixels;
+        return pixels;*/
     }
 
 }

@@ -269,7 +269,7 @@
                 level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText, scale);
 
                 // Initialize player
-                level.chars['player'] = new Actor({
+                level.chars['player'] = new Player({
                     resource: '#char1',
                     width: 48,
                     height: 80,
@@ -320,6 +320,12 @@
                         y: 0,
                         width: 88,
                         height: 88
+                    },
+                    bounds: {
+                        top: -150,
+                        bottom: 150,
+                        left: -150,
+                        right: 150
                     },
                     transform: level.getSpawnPoint('mob', {x: 280, y: 0})
                 });
@@ -460,7 +466,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animUp(deltaTime);
-                    scroll.y += level.chars.player.moveUp(Math.round(pixels));
+                    scroll.y += level.chars.player.moveUp(Math.round(pixels), view);
                 }
                 else if (input.down) {
                     const pixels = level.chars.player.collideDown({
@@ -469,7 +475,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animDown(deltaTime);
-                    scroll.y -= level.chars.player.moveDown(Math.round(pixels));
+                    scroll.y -= level.chars.player.moveDown(Math.round(pixels), view);
                 }
                 if (input.left) {
                     const pixels = level.chars.player.collideLeft({
@@ -478,7 +484,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animLeft(deltaTime);
-                    scroll.x += level.chars.player.moveLeft(Math.round(pixels));
+                    scroll.x += level.chars.player.moveLeft(Math.round(pixels), view);
                 }
                 else if (input.right) {
                     const pixels = level.chars.player.collideRight({
@@ -487,7 +493,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animRight(deltaTime);
-                    scroll.x -= level.chars.player.moveRight(Math.round(pixels));
+                    scroll.x -= level.chars.player.moveRight(Math.round(pixels), view);
                 }
 /*
                 // Player actions
@@ -504,10 +510,10 @@
 
                 // Render environment
                 level.render(view);
-                level.debug(view);
+                // level.debug(view);
 
                 // Render debug info
-                view.debug();
+                // view.debug();
 
                 // Time udpate
                 lastTime = currentTime;
