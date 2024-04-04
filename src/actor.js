@@ -63,25 +63,23 @@ class Actor extends Sprite {
 
     /**
      * Returns world collider
-     * @param context: Render context
+     * @param view: View context
      */
 
-    getCollider(context) {
+    getCollider(view) {
         return {
-            left: this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth + this.collider.x,
-            top: this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight + this.collider.y,
-            right: this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth + this.collider.x + this.collider.width,
-            bottom: this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight + this.collider.y + this.collider.height
+            left: this.transform.x + view.canvasCenter.x - this.tile.scaled.halfWidth + this.collider.x,
+            top: this.transform.y + view.canvasCenter.y - this.tile.scaled.halfHeight + this.collider.y,
+            right: this.transform.x + view.canvasCenter.x - this.tile.scaled.halfWidth + this.collider.x + this.collider.width,
+            bottom: this.transform.y + view.canvasCenter.y - this.tile.scaled.halfHeight + this.collider.y + this.collider.height
         };
     }
 
     /**
      * Up collision checking
+     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
-     * @param args.left: Number - left corner of collision layer
-     * @param args.top: Number - top corner of collision layer
-     * @param args.tiles: [Array] - collision tiles layer
-     * @param args.edge: Number - single tile edge size (square)
+     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
 
     collideUp(args) {
@@ -90,7 +88,7 @@ class Actor extends Sprite {
         let pixels = this.stats.speed * args.deltaTime;
 
         // My collider
-        const my = this.getCollider(args.context);
+        const my = this.getCollider(args.view);
 
         // Check intersections
         for (const other of args.with) {
@@ -140,11 +138,9 @@ class Actor extends Sprite {
 
     /**
      * Down collision checking
+     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
-     * @param args.left: Number - left corner of collision layer
-     * @param args.top: Number - top corner of collision layer
-     * @param args.tiles: [Array] - collision tiles layer
-     * @param args.edge: Number - single tile edge size (square)
+     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
 
     collideDown(args) {
@@ -153,7 +149,7 @@ class Actor extends Sprite {
         let pixels = this.stats.speed * args.deltaTime;
 
         // My collider
-        const my = this.getCollider(args.context);
+        const my = this.getCollider(args.view);
 
         // Check intersections
         for (const other of args.with) {
@@ -199,11 +195,9 @@ class Actor extends Sprite {
 
     /**
      * Right collision checking
+     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
-     * @param args.left: Number - left corner of collision layer
-     * @param args.top: Number - top corner of collision layer
-     * @param args.tiles: [Array] - collision tiles layer
-     * @param args.edge: Number - single tile edge size (square)
+     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
 
     collideRight(args) {
@@ -212,7 +206,7 @@ class Actor extends Sprite {
         let pixels = this.stats.speed * args.deltaTime;
 
         // My collider
-        const my = this.getCollider(args.context);
+        const my = this.getCollider(args.view);
 
         // Check intersections
         for (const other of args.with) {
@@ -258,7 +252,7 @@ class Actor extends Sprite {
 
     /**
      * Left collision checking
-     * @param args.context Render object - render context
+     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
      * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
@@ -269,7 +263,7 @@ class Actor extends Sprite {
         let pixels = this.stats.speed * args.deltaTime;
 
         // My collider
-        const my = this.getCollider(args.context);
+        const my = this.getCollider(args.view);
 
         // Check intersections
         for (const other of args.with) {
@@ -354,10 +348,10 @@ class Actor extends Sprite {
      * Render sprite
      */
 
-    render(context) {
+    render(view) {
         super.position(this.transform.x, this.transform.y);
         super.cell(this.frame);
-        super.render(context);
+        super.render(view);
     }
 
 }

@@ -71,33 +71,33 @@ class Sprite {
 
     /**
      * Returns screen collider
-     * @param context: Render context
+     * @param view: View context
      */
 
-    getCollider(context) {
+    getCollider(view) {
         return {
-            left: this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth,
-            top: this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight,
-            right: this.transform.x + context.canvasCenter.x + this.tile.scaled.halfWidth,
-            bottom: this.transform.y + context.canvasCenter.y + this.tile.scaled.halfHeight
+            left: this.transform.x + view.canvasCenter.x - this.tile.scaled.halfWidth,
+            top: this.transform.y + view.canvasCenter.y - this.tile.scaled.halfHeight,
+            right: this.transform.x + view.canvasCenter.x + this.tile.scaled.halfWidth,
+            bottom: this.transform.y + view.canvasCenter.y + this.tile.scaled.halfHeight
         };
     }
 
     /**
      * Draw single tile
-     * @param context: Render context
+     * @param view: View context
      */
 
-    render(context) {
+    render(view) {
         // const sx = 'col' in args ? this.tile.width * args.col : 'nr' in args ? this.tile.width * (args.nr % this.atlas.cols) : 0;
         // const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.height * Math.floor(args.nr / this.atlas.cols) : 0;
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
         // const dx = 'x' in args ? args.x + args.render.canvasCenter.x - this.tile.scaled.halfWidth : (args.gx * this.tile.scaled.width);
         // const dy = 'y' in args ? args.y + args.render.canvasCenter.y - this.tile.scaled.halfHeight : (args.gy * this.tile.scaled.height);
-        const dx = this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth;
-        const dy = this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight;
-        context.ctx.drawImage(
+        const dx = this.transform.x + view.canvasCenter.x - this.tile.scaled.halfWidth;
+        const dy = this.transform.y + view.canvasCenter.y - this.tile.scaled.halfHeight;
+        view.ctx.drawImage(
             this.atlas.image,
             sx,
             sy,
@@ -112,13 +112,13 @@ class Sprite {
 
     /**
      * Debug render
-     * @param context: Render context
+     * @param view: View context
      */
 
-    debug(context) {
-        context.ctx.fillStyle = 'rgba(225,0,0,0.5)';
-        const my = this.getCollider(context);
-        context.ctx.fillRect(
+    debug(view) {
+        view.ctx.fillStyle = 'rgba(225,0,0,0.5)';
+        const my = this.getCollider(view);
+        view.ctx.fillRect(
             my.left,
             my.top,
             my.right - my.left,

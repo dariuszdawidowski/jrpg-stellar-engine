@@ -1,6 +1,6 @@
 {
   "name": "stellar-engine",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Retro JRPG browser game engine.",
   "main": "server.js",
   "scripts": {

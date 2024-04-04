@@ -43,9 +43,9 @@ class Level {
      * Returns list of all colliders
      */
 
-    getColliders(context) {
+    getColliders(view) {
         const tileset = Object.values(this.tilesets).length ? Object.values(this.tilesets)[0] : null;
-        if (tileset) return tileset.ref.getColliders(context, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
+        if (tileset) return tileset.ref.getColliders(view, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
         return [];
     }
 
@@ -65,33 +65,33 @@ class Level {
      * Render all layers
      */
 
-    render(context) {
+    render(view) {
 
         // Iterate tilesets for ground
         for (const tileset of Object.values(this.tilesets)) {
 
             // Ground
-            tileset.ref.render(context, this.env.ground, this.offset.x, this.offset.y, tileset.first);
+            tileset.ref.render(view, this.env.ground, this.offset.x, this.offset.y, tileset.first);
 
             // Water
-            tileset.ref.render(context, this.env.water, this.offset.x, this.offset.y, tileset.first);
+            tileset.ref.render(view, this.env.water, this.offset.x, this.offset.y, tileset.first);
 
             // Colliders
-            tileset.ref.render(context, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
+            tileset.ref.render(view, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
 
         }
 
         // Items
-        Object.values(this.items).forEach(item => item.render(context));
+        Object.values(this.items).forEach(item => item.render(view));
 
         // Characters
-        Object.values(this.chars).forEach(character => character.render(context));
+        Object.values(this.chars).forEach(character => character.render(view));
 
         // Iterate tilesets for top
         for (const tileset of Object.values(this.tilesets)) {
 
             // Cover
-            tileset.ref.render(context, this.env.cover, this.offset.x, this.offset.y, tileset.first);
+            tileset.ref.render(view, this.env.cover, this.offset.x, this.offset.y, tileset.first);
 
         }
 
@@ -101,15 +101,15 @@ class Level {
      * Render debug info
      */
 
-    debug(context) {
+    debug(view) {
 
         // Colliders
         for (const tileset of Object.values(this.tilesets)) {
-            tileset.ref.debug(context, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
+            tileset.ref.debug(view, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
         }
 
         // Characters
-        Object.values(this.chars).forEach(character => character.debug(context));
+        Object.values(this.chars).forEach(character => character.debug(view));
     }
 
 

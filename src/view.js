@@ -1,6 +1,6 @@
-/*** Render context ***/
+/*** View context ***/
 
-class Render {
+class View {
 
     /**
      * Constructor

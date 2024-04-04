@@ -45,7 +45,7 @@ class MOB extends Actor {
 
     /**
      * Update every frame
-     * @param args.context: Render context
+     * @param args.view: View context
      * @param args.deltaTime: Number - delta time since last frame
      * @param args.colliders: [array] - list of colliders
      */
@@ -64,7 +64,7 @@ class MOB extends Actor {
                     }
                     else if (this.direction == 1) {
                         const pixels = this.collideUp({
-                            context: args.context,
+                            view: args.view,
                             deltaTime: args.deltaTime,
                             with: args.colliders
                         });
@@ -74,7 +74,7 @@ class MOB extends Actor {
                     }
                     else if (this.direction == 3) {
                         const pixels = this.collideDown({
-                            context: args.context,
+                            view: args.view,
                             deltaTime: args.deltaTime,
                             with: args.colliders
                         });
@@ -84,7 +84,7 @@ class MOB extends Actor {
                     }
                     if (this.direction == 0) {
                         const pixels = this.collideLeft({
-                            context: args.context,
+                            view: args.view,
                             deltaTime: args.deltaTime,
                             with: args.colliders
                         });
@@ -94,7 +94,7 @@ class MOB extends Actor {
                     }
                     else if (this.direction == 2) {
                         const pixels = this.collideRight({
-                            context: args.context,
+                            view: args.view,
                             deltaTime: args.deltaTime,
                             with: args.colliders
                         });

@@ -5,14 +5,14 @@ Stellar Engine
 Retro JRPG browser game engine.
 </p>
 <p align="center">
-v0.3.2
+v0.3.3
 </p>
 
 # Quick start
 Open src/index.html in the browser
 
 # Levels
-Compatible with Tiled map editor format (tsx+tmx) https://www.mapeditor.org/.
+Compatible with "Tiled" map editor format (tsx+tmx) https://www.mapeditor.org/.
 
 # License
 Library CODE is distributed under MIT License (see LICENSE file for details).
