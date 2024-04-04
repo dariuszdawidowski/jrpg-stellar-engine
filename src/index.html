@@ -202,7 +202,6 @@
             let level = null;
             let view = null;
             const scale = 4;
-            const scroll = {x: 0, y: 0, ox: 0, oy: 0};
 
             // Input actions
             const input = {
@@ -381,7 +380,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animUp(deltaTime);
-                    scroll.y += level.chars.player.moveUp(Math.round(pixels), view);
+                    level.chars.player.moveUp(Math.round(pixels), view);
                 }
                 else if (input.down) {
                     const pixels = level.chars.player.collideDown({
@@ -390,7 +389,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animDown(deltaTime);
-                    scroll.y -= level.chars.player.moveDown(Math.round(pixels), view);
+                    level.chars.player.moveDown(Math.round(pixels), view);
                 }
                 if (input.left) {
                     const pixels = level.chars.player.collideLeft({
@@ -399,7 +398,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animLeft(deltaTime);
-                    scroll.x += level.chars.player.moveLeft(Math.round(pixels), view);
+                    level.chars.player.moveLeft(Math.round(pixels), view);
                 }
                 else if (input.right) {
                     const pixels = level.chars.player.collideRight({
@@ -408,7 +407,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animRight(deltaTime);
-                    scroll.x -= level.chars.player.moveRight(Math.round(pixels), view);
+                    level.chars.player.moveRight(Math.round(pixels), view);
                 }
 
                 // Player actions

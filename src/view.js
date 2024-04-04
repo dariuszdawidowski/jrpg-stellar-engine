@@ -1,4 +1,6 @@
-/*** View context ***/
+/**
+ * View context
+ */
 
 class View {
 
@@ -34,6 +36,40 @@ class View {
 
     cls() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    /**
+     * Fill with background image
+     */
+
+    background(resource, width, height) {
+        this.ctx.drawImage(resource, ...this.coverCanvas(width, height));
+    }
+
+    /**
+     * Util: calculate image dimensions similiar to background-size: cover
+     */
+
+    coverCanvas(imgWidth, imgHeight) {
+        const canvasRatio = this.canvas.width / this.canvas.height;
+        const imgRatio = imgWidth / imgHeight;
+        let width = 0;
+        let height = 0;
+        let x = 0;
+        let y = 0;
+
+        if (canvasRatio > imgRatio) {
+            width = this.canvas.width;
+            height = this.canvas.width / imgRatio;
+            x = 0;
+            y = (this.canvas.height - height) / 2;
+        } else {
+            width = this.canvas.height * imgRatio;
+            height = this.canvas.height;
+            x = (this.canvas.width - width) / 2;
+            y = 0;
+        }
+        return [x, y, width, height];
     }
 
     /**
