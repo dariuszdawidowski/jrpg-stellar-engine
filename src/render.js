@@ -14,6 +14,9 @@ class Render {
         this.ctx = this.canvas.getContext('2d');
         this.canvasCenter = {x: 0, y: 0};
 
+        // Offset for scroll
+        this.offset = {x: 0, y: 0};
+
         // Resize window
         window.addEventListener('resize', () => {
             this.fitCanvas();
@@ -54,6 +57,17 @@ class Render {
         this.ctx.imageSmoothingEnabled = false;
         this.ctx.webkitImageSmoothingEnabled = false;
         this.ctx.mozImageSmoothingEnabled = false;
+    }
+
+    /**
+     * Centre screen on given point
+     * @param args.x: Number - x coordinate
+     * @param args.y: Number - y coordinate
+     */
+
+    centre(args) {
+        this.offset.x = -args.x;
+        this.offset.y = -args.y;
     }
 
     /**

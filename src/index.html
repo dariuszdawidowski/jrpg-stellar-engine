@@ -295,6 +295,9 @@
                 });
                 level.chars.player.idle();
 
+                // Centre view context on player
+                context.centre(level.chars.player.transform);
+
                 // MOB
                 level.chars['penguin1'] = new MOB({
                     resource: '#mob1',
