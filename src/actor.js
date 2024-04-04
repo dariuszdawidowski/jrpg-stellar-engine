@@ -68,10 +68,10 @@ class Actor extends Sprite {
 
     getCollider(view) {
         return {
-            left: this.transform.x + view.canvasCenter.x - this.tile.scaled.halfWidth + this.collider.x,
-            top: this.transform.y + view.canvasCenter.y - this.tile.scaled.halfHeight + this.collider.y,
-            right: this.transform.x + view.canvasCenter.x - this.tile.scaled.halfWidth + this.collider.x + this.collider.width,
-            bottom: this.transform.y + view.canvasCenter.y - this.tile.scaled.halfHeight + this.collider.y + this.collider.height
+            left: this.transform.x + view.center.x + view.offset.x - this.tile.scaled.halfWidth + this.collider.x,
+            top: this.transform.y + view.center.y + view.offset.y - this.tile.scaled.halfHeight + this.collider.y,
+            right: this.transform.x + view.center.x + view.offset.x - this.tile.scaled.halfWidth + this.collider.x + this.collider.width,
+            bottom: this.transform.y + view.center.y + view.offset.y - this.tile.scaled.halfHeight + this.collider.y + this.collider.height
         };
     }
 

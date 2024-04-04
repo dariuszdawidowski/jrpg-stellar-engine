@@ -12,7 +12,9 @@ class View {
         // Canvas and context
         this.canvas = args.canvas;
         this.ctx = this.canvas.getContext('2d');
-        this.canvasCenter = {x: 0, y: 0};
+
+        // Center of the canvas
+        this.center = {x: 0, y: 0};
 
         // Offset for scroll
         this.offset = {x: 0, y: 0};
@@ -52,8 +54,8 @@ class View {
     fitCanvas() {
         this.canvas.width = this.roundToNearestEven(window.innerWidth);
         this.canvas.height = this.roundToNearestEven(window.innerHeight);
-        this.canvasCenter.x = this.canvas.width / 2;
-        this.canvasCenter.y = this.canvas.height / 2;
+        this.center.x = this.canvas.width / 2;
+        this.center.y = this.canvas.height / 2;
         this.ctx.imageSmoothingEnabled = false;
         this.ctx.webkitImageSmoothingEnabled = false;
         this.ctx.mozImageSmoothingEnabled = false;
@@ -81,14 +83,14 @@ class View {
         // Draw world coordinates center
         this.ctx.fillStyle = 'rgba(0,255,0,0.8)';
         this.ctx.beginPath();
-        this.ctx.moveTo(0 + this.canvasCenter.x, 0 + this.canvasCenter.y);
-        this.ctx.lineTo(-16 + this.canvasCenter.x, -8 + this.canvasCenter.y);
-        this.ctx.lineTo(-16 + this.canvasCenter.x, 8 + this.canvasCenter.y);
+        this.ctx.moveTo(0 + this.center.x + this.offset.x, 0 + this.center.y + this.offset.y);
+        this.ctx.lineTo(-16 + this.center.x + this.offset.x, -8 + this.center.y + this.offset.y);
+        this.ctx.lineTo(-16 + this.center.x + this.offset.x, 8 + this.center.y + this.offset.y);
         this.ctx.fill();
         this.ctx.beginPath();
-        this.ctx.moveTo(0 + this.canvasCenter.x, 0 + this.canvasCenter.y);
-        this.ctx.lineTo(16 + this.canvasCenter.x, -8 + this.canvasCenter.y);
-        this.ctx.lineTo(16 + this.canvasCenter.x, 8 + this.canvasCenter.y);
+        this.ctx.moveTo(0 + this.center.x + this.offset.x, 0 + this.center.y + this.offset.y);
+        this.ctx.lineTo(16 + this.center.x + this.offset.x, -8 + this.center.y + this.offset.y);
+        this.ctx.lineTo(16 + this.center.x + this.offset.x, 8 + this.center.y + this.offset.y);
         this.ctx.fill();
 
     }

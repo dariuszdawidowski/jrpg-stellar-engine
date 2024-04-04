@@ -76,10 +76,10 @@ class Sprite {
 
     getCollider(view) {
         return {
-            left: this.transform.x + view.canvasCenter.x - this.tile.scaled.halfWidth,
-            top: this.transform.y + view.canvasCenter.y - this.tile.scaled.halfHeight,
-            right: this.transform.x + view.canvasCenter.x + this.tile.scaled.halfWidth,
-            bottom: this.transform.y + view.canvasCenter.y + this.tile.scaled.halfHeight
+            left: this.transform.x + view.center.x + view.offset.x - this.tile.scaled.halfWidth,
+            top: this.transform.y + view.center.y + view.offset.y - this.tile.scaled.halfHeight,
+            right: this.transform.x + view.center.x + view.offset.x + this.tile.scaled.halfWidth,
+            bottom: this.transform.y + view.center.y + view.offset.y + this.tile.scaled.halfHeight
         };
     }
 
@@ -93,10 +93,10 @@ class Sprite {
         // const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.height * Math.floor(args.nr / this.atlas.cols) : 0;
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
-        // const dx = 'x' in args ? args.x + args.render.canvasCenter.x - this.tile.scaled.halfWidth : (args.gx * this.tile.scaled.width);
-        // const dy = 'y' in args ? args.y + args.render.canvasCenter.y - this.tile.scaled.halfHeight : (args.gy * this.tile.scaled.height);
-        const dx = this.transform.x + view.canvasCenter.x - this.tile.scaled.halfWidth;
-        const dy = this.transform.y + view.canvasCenter.y - this.tile.scaled.halfHeight;
+        // const dx = 'x' in args ? args.x + args.render.center.x - this.tile.scaled.halfWidth : (args.gx * this.tile.scaled.width);
+        // const dy = 'y' in args ? args.y + args.render.center.y - this.tile.scaled.halfHeight : (args.gy * this.tile.scaled.height);
+        const dx = this.transform.x + view.center.x + view.offset.x - this.tile.scaled.halfWidth;
+        const dy = this.transform.y + view.center.y + view.offset.y - this.tile.scaled.halfHeight;
         view.ctx.drawImage(
             this.atlas.image,
             sx,
