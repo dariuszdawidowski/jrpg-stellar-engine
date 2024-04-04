@@ -36,16 +36,14 @@ class MOB extends Actor {
     wander() {
         this.action = 'wander';
         this.duration = random(1, 3);
-        this.direction = Math.floor(random(0, 4));
+        this.direction = Math.floor(random(0, 5));
     }
 
     /**
      * Update every frame
+     * @param args.context: Render context
      * @param args.deltaTime: Number - delta time since last frame
-     * @param args.left: Number - current x screen offset
-     * @param args.top: Number - current y screen offset
-     * @param args.tiles: object - colliders layer
-     * @param args.edge: Number - edge size
+     * @param args.colliders: [array] - list of colliders
      */
 
     update(args) {
@@ -55,33 +53,50 @@ class MOB extends Actor {
 
                 // Wandering movement
                 case 'wander':
-                    if (this.direction == 1) {
-                        // const pixels = this.collideUp(args);
-                        const pixels = this.stats.speed * args.deltaTime;
+                    if (this.direction > 3) {
+                        this.frame = this.anim.idle[0];
+                        this.transform.v = '';
+                        this.transform.h = '';
+                    }
+                    else if (this.direction == 1) {
+                        const pixels = this.collideUp({
+                            context: args.context,
+                            deltaTime: args.deltaTime,
+                            with: args.colliders
+                        });
                         if (pixels < 0.001) this.wander();
                         this.animUp(args.deltaTime);
-                        this.moveUp(Math.max(Math.round(pixels), 1));
+                        this.moveUp(Math.round(pixels));
                     }
                     else if (this.direction == 3) {
-                        // const pixels = player.collideDown(args);
-                        const pixels = this.stats.speed * args.deltaTime;
+                        const pixels = this.collideDown({
+                            context: args.context,
+                            deltaTime: args.deltaTime,
+                            with: args.colliders
+                        });
                         if (pixels < 0.001) this.wander();
                         this.animDown(args.deltaTime);
-                        this.moveDown(Math.max(Math.round(pixels), 1));
+                        this.moveDown(Math.round(pixels));
                     }
                     if (this.direction == 0) {
-                        // const pixels = this.collideLeft(args);
-                        const pixels = this.stats.speed * args.deltaTime;
+                        const pixels = this.collideLeft({
+                            context: args.context,
+                            deltaTime: args.deltaTime,
+                            with: args.colliders
+                        });
                         if (pixels < 0.001) this.wander();
                         this.animLeft(args.deltaTime);
-                        this.moveLeft(Math.max(Math.round(pixels), 1));
+                        this.moveLeft(Math.round(pixels));
                     }
                     else if (this.direction == 2) {
-                        // const pixels = this.collideRight(args);
-                        const pixels = this.stats.speed * args.deltaTime;
+                        const pixels = this.collideRight({
+                            context: args.context,
+                            deltaTime: args.deltaTime,
+                            with: args.colliders
+                        });
                         if (pixels < 0.001) this.wander();
                         this.animRight(args.deltaTime);
-                        this.moveRight(Math.max(Math.round(pixels), 1));
+                        this.moveRight(Math.round(pixels));
                     }
                     break;
             }

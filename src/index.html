@@ -296,6 +296,38 @@
                         height: 30
                     }
                 });
+                level.chars.player.idle();
+
+                // MOB
+                level.chars['penguin1'] = new MOB({
+                    resource: '#mob1',
+                    width: 88,
+                    height: 88,
+                    cols: 4,
+                    rows: 4,
+                    scale: scale,
+                    speed: 80,
+                    anim: {
+                        speed: 10,
+                        idle: [1],
+                        moveUp: [8, 9, 10],
+                        moveDown: [0, 1, 2],
+                        moveLeft: [12, 13, 14],
+                        moveRight: [4, 5, 6],
+                    },
+                    collider: {
+                        x: 0,
+                        y: 0,
+                        width: 88,
+                        height: 88
+                    },
+                    transform: {
+                        x: -400,
+                        y: 0
+                    }
+                });
+                level.chars.penguin1.wander();
+
 
 /*
                 // Player
@@ -465,59 +497,20 @@
                 if (input.action) {
                     if (player.collideWith(level.items.chest, {x: scroll.x - scroll.ox, y: scroll.y - scroll.oy})) level.items.chest.animate('open');
                 }
-
-                // Ground layer
-                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.ground, first: 1});
-
-                // Colliders layer
-                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.colliders, first: 1});
-
-                // Items layer
-                level.renderItems({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
-
-                // Render MOBs
-                mob.update({
-                    deltaTime,
-                    left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                    top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                    tiles: level.env.colliders,
-                    edge: 16 * scale
-                });
-                mob.render({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
-
-                // Render characters
-                player.render();
-
-                // Cover layer
-                tileset.renderList({x: scroll.x, y: scroll.y, tiles: level.env.cover, first: 1});
 */
-                // Debug
-                // player.debugDrawCollider();
-                // level.items.chest.debugDrawCollider({x: scroll.x - scroll.ox, y: scroll.y - scroll.oy});
-                /*player.debugDrawColliders({
-                    left: scroll.x + (window.innerWidth / 2) - ((16 * scale) / 2),
-                    top: scroll.y + (window.innerHeight / 2) - ((16 * scale) / 2),
-                    tiles: level.env.colliders,
-                    edge: 16 * scale
-                });*/
+                // Mobs movement
+                level.chars.penguin1.update({
+                    context,
+                    deltaTime,
+                    colliders: level.getColliders(context)
+                });
 
                 // Render environment
                 level.render(context);
                 level.debug(context);
 
-                // const colliders = level.getColliders(context);
-                // colliders.forEach(collider => {
-                //     context.ctx.fillStyle = 'rgba(225,0,0,0.5)';
-                //     context.ctx.fillRect(
-                //         collider.left,
-                //         collider.top,
-                //         collider.right - collider.left,
-                //         collider.bottom - collider.top
-                //     );
-                // });
-
                 // Render debug info
-                // context.debug();
+                context.debug();
 
                 // Time udpate
                 lastTime = currentTime;
