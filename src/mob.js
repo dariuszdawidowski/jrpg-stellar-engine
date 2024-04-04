@@ -1,3 +1,7 @@
+/**
+ * MOB - mobile object, actor with self-movement
+ */
+
 class MOB extends Actor {
 
     /**
@@ -35,8 +39,8 @@ class MOB extends Actor {
 
     wander() {
         this.action = 'wander';
-        this.duration = random(1, 3);
-        this.direction = Math.floor(random(0, 5));
+        this.duration = randomRangeInt(1, 2);
+        this.direction = randomRangeInt(0, 4);
     }
 
     /**

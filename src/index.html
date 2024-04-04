@@ -53,6 +53,7 @@
         <script src="loader-tsx.js"></script>
         <script src="loader-tmx.js"></script>
         <script src="render.js"></script>
+        <script src="utils.js"></script>
 
         <!-- Resources -->
         <div style="display: none;">
@@ -204,11 +205,6 @@
             const scale = 4;
             const scroll = {x: 0, y: 0, ox: 0, oy: 0};
 
-            // Random number in range
-            function random(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-
             // Input actions
             const input = {
                 up: false,
@@ -270,7 +266,7 @@
 
                 // Load level
                 const loaderTMX = new LoaderTMX({'test.tsx': tileset});
-                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText);
+                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText, scale);
 
                 // Initialize player
                 level.chars['player'] = new Actor({
@@ -294,7 +290,8 @@
                         y: 50,
                         width: 50,
                         height: 30
-                    }
+                    },
+                    transform: level.getSpawnPoint('player', {x: 0, y: 0})
                 });
                 level.chars.player.idle();
 
@@ -321,10 +318,7 @@
                         width: 88,
                         height: 88
                     },
-                    transform: {
-                        x: -400,
-                        y: 0
-                    }
+                    transform: level.getSpawnPoint('mob', {x: 280, y: 0})
                 });
                 level.chars.penguin1.wander();
 
@@ -507,10 +501,10 @@
 
                 // Render environment
                 level.render(context);
-                level.debug(context);
+                // level.debug(context);
 
                 // Render debug info
-                context.debug();
+                // context.debug();
 
                 // Time udpate
                 lastTime = currentTime;

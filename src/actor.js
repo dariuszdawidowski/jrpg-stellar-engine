@@ -1,3 +1,7 @@
+/**
+ * Actor - sprite with collision checking, animation and movement
+ */
+
 class Actor extends Sprite {
 
     /**

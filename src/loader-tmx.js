@@ -18,7 +18,7 @@ class LoaderTMX {
      * Parse xml
      */
 
-    parseLevel(xmlStr) {
+    parseLevel(xmlStr, scale = 1) {
 
         // Parse XML
         const parser = new DOMParser();
@@ -26,6 +26,9 @@ class LoaderTMX {
 
         // Create Level instance to return to
         const level = new Level();
+
+        // Scale
+        level.scale = scale;
 
         // Used tilesets
         doc.querySelectorAll('tileset').forEach(tileset => {
@@ -47,9 +50,17 @@ class LoaderTMX {
         // Objects/markers
         doc.querySelectorAll('objectgroup').forEach(objectgroup => {
             objectgroup.querySelectorAll('object').forEach(obj => {
-                if (obj.getAttribute('name').toLowerCase() == 'level' && obj.getAttribute('type').toLowerCase() == 'center') {
-                    level.offset.x = parseInt(obj.getAttribute('x'));
-                    level.offset.y = parseInt(obj.getAttribute('y'));
+                const name = obj.getAttribute('name').toLowerCase();
+                const type = obj.getAttribute('type').toLowerCase();
+                const x = parseInt(obj.getAttribute('x'));
+                const y = parseInt(obj.getAttribute('y'))
+                if (name == 'level' && type == 'center') {
+                    level.offset.x = x;
+                    level.offset.y = y;
+                }
+                else if (type == 'spawn') {
+                    if (!(name in level.spawnpoints)) level.spawnpoints[name] = [];
+                    level.spawnpoints[name].push({x, y});
                 }
             });
         });

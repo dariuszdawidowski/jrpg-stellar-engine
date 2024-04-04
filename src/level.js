@@ -1,4 +1,6 @@
-/*** Level ***/
+/**
+ * Level map with all tiles, items and actors
+ */
 
 class Level {
 
@@ -10,6 +12,9 @@ class Level {
 
         // Center of the coordinate system correction (this is constant not scroll)
         this.offset = {x: 0, y: 0};
+
+        // Scale
+        this.scale = 1;
 
         // Tileset definitions {'tileset id': {ref: TileSet object reference, first: Number of index offset}, ...}
         this.tilesets = {};
@@ -29,6 +34,9 @@ class Level {
         // Characters
         this.chars = {};
 
+        // Spawn points {'player': [{x, y}, ...], 'mob': [{x, y}, ...], ...}
+        this.spawnpoints = {};
+
     }
 
     /**
@@ -39,6 +47,18 @@ class Level {
         const tileset = Object.values(this.tilesets).length ? Object.values(this.tilesets)[0] : null;
         if (tileset) return tileset.ref.getColliders(context, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
         return [];
+    }
+
+    /**
+     * Returns spawn point
+     */
+
+    getSpawnPoint(type, fallback = {x: 0, y: 0}) {
+        if (type in this.spawnpoints && this.spawnpoints[type].length > 0) {
+            const spawnpoint = this.spawnpoints[type][randomRangeInt(0, this.spawnpoints[type].length - 1)];
+            return {x: (spawnpoint.x - this.offset.x) * this.scale, y: (spawnpoint.y - this.offset.y) * this.scale};
+        }
+        return fallback;
     }
 
     /**
