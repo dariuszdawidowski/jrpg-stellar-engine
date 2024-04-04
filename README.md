@@ -5,7 +5,7 @@ Stellar Engine
 Retro JRPG browser game engine.
 </p>
 <p align="center">
-v0.3.3
+v0.4.0
 </p>
 
 # Quick start
