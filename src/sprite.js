@@ -61,7 +61,7 @@ class Sprite {
     }
 
     /**
-     * Set current frame cell
+     * Set/Get current frame cell
      * @param nr: Number
      */
 

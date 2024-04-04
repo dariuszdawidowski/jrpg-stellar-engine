@@ -108,6 +108,9 @@ class Level {
             tileset.ref.debug(view, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
         }
 
+        // Items
+        Object.values(this.items).forEach(item => item.debug(view));
+
         // Characters
         Object.values(this.chars).forEach(character => character.debug(view));
     }

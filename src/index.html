@@ -48,7 +48,6 @@
         <script src="actor.js"></script>
         <script src="mob.js"></script>
         <script src="player.js"></script>
-        <script src="item.js"></script>
         <script src="level.js"></script>
         <script src="loader-tsx.js"></script>
         <script src="loader-tmx.js"></script>
@@ -331,36 +330,27 @@
                 });
                 level.chars.penguin1.wander();
 
-
-/*
-
                 // Chest
-                level.items['chest'] = new Item({
-                    canvas,
-                    context,
+                level.items['chest'] = new Actor({
                     resource: '#chest1',
                     width: 32,
                     height: 16,
                     cols: 2,
                     rows: 1,
                     scale: scale,
+                    collider: {
+                        x: -4 * scale,
+                        y: -4 * scale,
+                        width: 24 * scale,
+                        height: 24 * scale
+                    },
                     transform: {
                         x: -30,
-                        y: -600
-                    },
-                    anim: {
-                        closed: 0,
-                        open: 1
-                    },
-                    collider: {
-                        x: -28,
-                        y: -28,
-                        width: 30,
-                        height: 30
+                        y: -608
                     }
                 });
-                level.items.chest.animate('closed');
-*/
+                //level.items.chest.animate('closed');
+
                 // Start
                 requestAnimationFrame(function(currentTime) {
                     lastTime = currentTime;
@@ -420,12 +410,14 @@
                     level.chars.player.animRight(deltaTime);
                     scroll.x -= level.chars.player.moveRight(Math.round(pixels), view);
                 }
-/*
+
                 // Player actions
                 if (input.action) {
-                    if (player.collideWith(level.items.chest, {x: scroll.x - scroll.ox, y: scroll.y - scroll.oy})) level.items.chest.animate('open');
+                    if (level.chars.player.collideWith({with: level.items.chest, view}) && level.items.chest.frame === 0) {
+                        level.items.chest.frame = 1;
+                    }
                 }
-*/
+
                 // Mobs movement
                 level.chars.penguin1.update({
                     view,

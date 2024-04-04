@@ -310,26 +310,17 @@ class Actor extends Sprite {
 
     /**
      * Generic collision checking
-     * @param other: any abstract object supports transform {x, y} and collider {x, y, width, height}
+     * @param args.view View object - view context
+     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
 
-    collideWith(other, scroll) {
+    collideWith(args) {
 
         // My collider
-        const my = {
-            left: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x,
-            top: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y,
-            right: this.transform.x + (window.innerWidth / 2) - (this.tile.scaled.width / 2) + this.collider.x + this.collider.width,
-            bottom: this.transform.y + (window.innerHeight / 2) - (this.tile.scaled.height / 2) + this.collider.y + this.collider.height
-        };
+        const my = this.getCollider(args.view);
 
         // That collider
-        const that = {
-            left: other.transform.x + (window.innerWidth / 2) - (other.tile.scaled.width / 2) + other.collider.x + scroll.x,
-            top: other.transform.y + (window.innerHeight / 2) - (other.tile.scaled.height / 2) + other.collider.y + scroll.y,
-            right: other.transform.x + (window.innerWidth / 2) - (other.tile.scaled.width / 2) + other.collider.x  + scroll.x + (other.collider.width * other.tile.scaled.factor),
-            bottom: other.transform.y + (window.innerHeight / 2) - (other.tile.scaled.height / 2) + other.collider.y + scroll.y + (other.collider.height * other.tile.scaled.factor)
-        };
+        const that = args.with.getCollider(args.view);
 
         // Check crossections for all corners
         // Left-top
