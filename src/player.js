@@ -14,7 +14,7 @@ class Player extends Actor {
         super(args);
 
         // Scroll range
-        this.bounds = 'bounds' in args ? args.bounds : null;
+        this.bounds = 'bounds' in args ? args.bounds : {top: 0, bottom: 0, left: 0, right: 0};
     }
 
     /**
@@ -27,7 +27,7 @@ class Player extends Actor {
         this.transform.v = 's';
 
         // Advance scroll
-        view.offset.y += pixels;
+        if (this.transform.y + view.offset.y < this.bounds.top) view.offset.y += pixels;
 
         // Actor movement        
         return super.moveUp(pixels);
@@ -56,7 +56,7 @@ class Player extends Actor {
         this.transform.v = 's';
 
         // Advance scroll
-        view.offset.y -= pixels;
+        if (this.transform.y + view.offset.y > this.bounds.bottom) view.offset.y -= pixels;
 
         // Actor movement        
         return super.moveDown(pixels);
@@ -85,7 +85,7 @@ class Player extends Actor {
         this.transform.h = 'w';
 
         // Advance scroll
-        view.offset.x -= pixels;
+        if (this.transform.x + view.offset.x > this.bounds.right) view.offset.x -= pixels;
 
         // Actor movement        
         return super.moveRight(pixels);
@@ -114,7 +114,7 @@ class Player extends Actor {
         this.transform.h = 'w';
 
         // Advance scroll
-        view.offset.x += pixels;
+        if (this.transform.x + view.offset.x < this.bounds.left) view.offset.x += pixels;
 
         // Actor movement        
         return super.moveLeft(pixels);
