@@ -92,7 +92,7 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.top - pixels <= other.bottom && my.top - pixels >= other.top && my.right >= other.left && my.left <= other.right) {
+            if (my.top - pixels - 1 <= other.bottom && my.top - pixels - 1 >= other.top && my.right >= other.left && my.left <= other.right) {
                 pixels -= other.bottom - (my.top - pixels - 1);
                 if (pixels < 0) pixels = 0;
                 return pixels;
@@ -153,7 +153,7 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.bottom + pixels >= other.top && my.bottom + pixels <= other.bottom && my.right >= other.left && my.left <= other.right) {
+            if (my.bottom + pixels + 1 >= other.top && my.bottom + pixels + 1 <= other.bottom && my.right >= other.left && my.left <= other.right) {
                 pixels -= (my.bottom + pixels + 1) - other.top;
                 if (pixels < 0) pixels = 0;
                 return pixels;
@@ -210,7 +210,7 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.right + pixels >= other.left && my.right + pixels <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
+            if (my.right + pixels + 1 >= other.left && my.right + pixels + 1 <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
                 pixels -= (my.right + pixels + 1) - other.left;
                 if (pixels < 0) pixels = 0;
                 return pixels;
@@ -267,7 +267,7 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.left - pixels <= other.right && my.left - pixels >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
+            if (my.left - pixels - 1 <= other.right && my.left - pixels - 1 >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
                 pixels += other.right - (my.left + pixels + 1);
                 if (pixels < 0) pixels = 0;
                 return pixels;
