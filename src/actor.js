@@ -5,7 +5,7 @@ class Actor extends Sprite {
      * All Sprite params plus:
      * @param speed: Number - movement speed (pixels on second)
      * @param anim: Object - map of animations { speed: seconds, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] }
-     * @param collider: {x, y, width, height} (without scale)
+     * @param collider: {x, y, width, height} (in screen pixels already scaled)
      */
 
     constructor(args) {
@@ -25,7 +25,7 @@ class Actor extends Sprite {
         this.transform['h'] = '';
 
         // Collider
-        this.collider = 'collider' in args ? args.collider : null;
+        this.collider = 'collider' in args ? args.collider : {x: 0, y: 0, width: this.tile.scaled.width, height: this.tile.scaled.height};
 
         // Animation map
         this.anim = 'anim' in args ? args.anim : { speed: 0, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] };
@@ -55,6 +55,20 @@ class Actor extends Sprite {
         this.frame = this.anim.idle[0];
         this.transform.v = '';
         this.transform.h = '';
+    }
+
+    /**
+     * Returns world collider
+     * @param context: Render context
+     */
+
+    getCollider(context) {
+        return {
+            left: this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth + this.collider.x,
+            top: this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight + this.collider.y,
+            right: this.transform.x + context.canvasCenter.x - this.tile.scaled.halfWidth + this.collider.x + this.collider.width,
+            bottom: this.transform.y + context.canvasCenter.y - this.tile.scaled.halfHeight + this.collider.y + this.collider.height
+        };
     }
 
     /**

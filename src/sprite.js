@@ -70,7 +70,7 @@ class Sprite {
     }
 
     /**
-     * Returns world collider
+     * Returns screen collider
      * @param context: Render context
      */
 
