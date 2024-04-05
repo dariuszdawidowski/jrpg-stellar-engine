@@ -246,6 +246,7 @@
                 if (event.code == 'Space' || event.code == 'ControlRight' || event.code == 'ControlLeft' || event.key == 'Enter') {
                     input.action = false;
                 }
+                level.chars.player.idle();
             };
 
             // Keyboard input
@@ -277,7 +278,10 @@
                     speed: 320,
                     anim: {
                         speed: 10,
-                        idle: [1],
+                        idleUp: [10],
+                        idleDown: [1],
+                        idleLeft: [4],
+                        idleRight: [7],
                         moveUp: [9, 10, 11],
                         moveDown: [0, 1, 2],
                         moveLeft: [3, 4, 5],

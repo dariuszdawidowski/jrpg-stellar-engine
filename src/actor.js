@@ -56,7 +56,32 @@ class Actor extends Sprite {
      */
 
     idle() {
-        this.frame = this.anim.idle[0];
+
+        // Single idle
+        if ('idle' in this.anim) {
+            this.frame = this.anim.idle[0];
+        }
+
+        // Directional idle left
+        else if (('idleLeft' in this.anim) && this.transform.h == 'w') {
+            this.frame = this.anim.idleLeft[0];
+        }
+
+        // Directional idle right
+        else if (('idleRight' in this.anim) && this.transform.h == 'e') {
+            this.frame = this.anim.idleRight[0];
+        }
+
+        // Directional idle top
+        else if (('idleUp' in this.anim) && this.transform.v == 'n') {
+            this.frame = this.anim.idleUp[0];
+        }
+
+        // Directional idle bottom
+        else if (('idleDown' in this.anim) && (this.transform.v == 's' || this.transform.v == '')) {
+            this.frame = this.anim.idleDown[0];
+        }
+
         this.transform.v = '';
         this.transform.h = '';
     }
@@ -302,7 +327,7 @@ class Actor extends Sprite {
     moveLeft(pixels) {
 
         // Horizontal action
-        this.transform.h = 'e';
+        this.transform.h = 'w';
 
         // Move
         this.transform.x -= pixels;
