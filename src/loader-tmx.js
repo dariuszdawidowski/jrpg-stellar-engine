@@ -41,7 +41,7 @@ class LoaderTMX {
         doc.querySelectorAll('layer').forEach(layer => {
             const name = layer.getAttribute('name').toLowerCase();
             const data = layer.querySelector('data');
-            if (['ground', 'colliders', 'cover'].includes(name) && data) {
+            if (['ground', 'colliders', 'cover', 'water'].includes(name) && data) {
                 const arrayContent = data.textContent.split(',').map(Number);
                 level.env[name] = this.create2DArray(arrayContent, parseInt(layer.getAttribute('width')));
             }
