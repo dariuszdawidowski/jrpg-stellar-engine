@@ -380,7 +380,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animUp(deltaTime);
-                    level.chars.player.moveUp(Math.round(pixels), view);
+                    level.chars.player.moveUp(pixels, view);
                 }
                 else if (input.down) {
                     const pixels = level.chars.player.collideDown({
@@ -389,7 +389,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animDown(deltaTime);
-                    level.chars.player.moveDown(Math.round(pixels), view);
+                    level.chars.player.moveDown(pixels, view);
                 }
                 if (input.left) {
                     const pixels = level.chars.player.collideLeft({
@@ -398,7 +398,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animLeft(deltaTime);
-                    level.chars.player.moveLeft(Math.round(pixels), view);
+                    level.chars.player.moveLeft(pixels, view);
                 }
                 else if (input.right) {
                     const pixels = level.chars.player.collideRight({
@@ -407,7 +407,7 @@
                         with: level.getColliders(view)
                     });
                     level.chars.player.animRight(deltaTime);
-                    level.chars.player.moveRight(Math.round(pixels), view);
+                    level.chars.player.moveRight(pixels, view);
                 }
 
                 // Player actions

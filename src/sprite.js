@@ -103,8 +103,8 @@ class Sprite {
             sy,
             this.tile.width,
             this.tile.height,
-            dx,
-            dy,
+            Math.round(dx),
+            Math.round(dy),
             this.tile.scaled.width,
             this.tile.scaled.height
         );
