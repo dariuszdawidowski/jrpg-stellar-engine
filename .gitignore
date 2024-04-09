@@ -135,5 +135,4 @@ Thumbs.db
 .vsconfig
 
 # Custom
-public/bundle.js
-public/index.html
+dist/*
