@@ -3,7 +3,7 @@
  */
 
 const files = [
-    { src: 'stellar-engine.js.ejs', dst: 'stellar-engine.js' },
+    { src: 'jrpg-stellar-engine.js.ejs', dst: 'jrpg-stellar-engine.js' },
 ];
 
 const fs = require('fs');

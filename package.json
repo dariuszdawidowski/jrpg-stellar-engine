@@ -1,13 +1,13 @@
 {
-  "name": "stellar-engine",
-  "version": "0.4.0",
+  "name": "jrpg-stellar-engine",
+  "version": "0.4.1",
   "description": "Retro JRPG browser game engine.",
   "scripts": {
     "build": "node build.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dariuszdawidowski/stellar-engine.git"
+    "url": "git+https://github.com/dariuszdawidowski/jrpg-stellar-engine.git"
   },
   "keywords": [
     "jrpg",
@@ -26,9 +26,9 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/dariuszdawidowski/stellar-engine/issues"
+    "url": "https://github.com/dariuszdawidowski/jrpg-stellar-engine/issues"
   },
-  "homepage": "https://github.com/dariuszdawidowski/stellar-engine#readme",
+  "homepage": "https://github.com/dariuszdawidowski/jrpg-stellar-engine#readme",
   "devDependencies": {
     "fs": "^0.0.1-security",
     "ejs": "^3.1.9",

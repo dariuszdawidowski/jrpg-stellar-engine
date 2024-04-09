@@ -1,11 +1,11 @@
 <h1 align="center">
-Stellar Engine
+JRPG Stellar Engine
 </h1>
 <p align="center">
 Retro JRPG browser game engine.
 </p>
 <p align="center">
-v0.4.0
+v0.4.1
 </p>
 
 # Quick start
