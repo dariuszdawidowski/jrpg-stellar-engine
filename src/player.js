@@ -24,26 +24,13 @@ class Player extends Actor {
     moveUp(pixels, view) {
 
         // Vertical action
-        this.transform.v = 's';
+        this.transform.v = 'n';
 
         // Advance scroll
         if (this.transform.y + view.offset.y < this.bounds.top) view.offset.y += pixels;
 
         // Actor movement        
         return super.moveUp(pixels);
-/*
-        // Vertical action
-        this.transform.v = 'n';
-
-        // Transform but no scroll
-        if (this.scroll && this.transform.y > this.scroll.top) {
-            this.transform.y -= pixels;
-            return 0;
-        }
-
-        // Scroll only
-        return pixels;
-*/
     }
 
     /**
@@ -60,19 +47,6 @@ class Player extends Actor {
 
         // Actor movement        
         return super.moveDown(pixels);
-/*
-        // Vertical action
-        this.transform.v = 's';
-
-        // Transform but no scroll
-        if (this.scroll && this.transform.y < this.scroll.bottom) {
-            this.transform.y += pixels;
-            return 0;
-        }
-
-        // Scroll only
-        return pixels;
-*/
     }
 
     /**
@@ -82,26 +56,13 @@ class Player extends Actor {
     moveRight(pixels, view) {
 
         // Horizontal action
-        this.transform.h = 'w';
+        this.transform.h = 'e';
 
         // Advance scroll
         if (this.transform.x + view.offset.x > this.bounds.right) view.offset.x -= pixels;
 
         // Actor movement        
         return super.moveRight(pixels);
-/*
-        // Horizontal action
-        this.transform.h = 'e';
-
-        // Transform but no scroll
-        if (this.scroll && this.transform.x < this.scroll.right) {
-            this.transform.x += pixels;
-            return 0;
-        }
-
-        // Scroll only
-        return pixels;
-*/
     }
 
     /**
@@ -118,18 +79,6 @@ class Player extends Actor {
 
         // Actor movement        
         return super.moveLeft(pixels);
-/*
-        // Horizontal action
-        this.transform.h = 'w';
-
-        // Transform but no scroll
-        if (this.scroll && this.transform.x > this.scroll.left) {
-            this.transform.x -= pixels;
-            return 0;
-        }
-
-        // Scroll only
-        return pixels;*/
     }
 
 }
