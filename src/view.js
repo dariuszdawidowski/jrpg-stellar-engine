@@ -109,6 +109,18 @@ class View {
     }
 
     /**
+     * Input world transform -> output screen transform (0,0 in the corner)
+     * @param sprite: Sprite
+     */
+
+    world2Screen(sprite) {
+        return {
+            x: sprite.transform.x + this.center.x + this.offset.x - sprite.tile.scaled.halfWidth,
+            y: sprite.transform.y + this.center.y + this.offset.y - sprite.tile.scaled.halfHeight
+        };
+    }
+
+    /**
      * Debug render
      * @param args.center: bool - display 0,0 of the world coordinates
      * @param args.sprite: Sprite object - sprite to display it's bounds

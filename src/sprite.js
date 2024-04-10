@@ -89,22 +89,17 @@ class Sprite {
      */
 
     render(view) {
-        // const sx = 'col' in args ? this.tile.width * args.col : 'nr' in args ? this.tile.width * (args.nr % this.atlas.cols) : 0;
-        // const sy = 'row' in args ? this.tile.height * args.row : 'nr' in args ? this.tile.height * Math.floor(args.nr / this.atlas.cols) : 0;
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
-        // const dx = 'x' in args ? args.x + args.render.center.x - this.tile.scaled.halfWidth : (args.gx * this.tile.scaled.width);
-        // const dy = 'y' in args ? args.y + args.render.center.y - this.tile.scaled.halfHeight : (args.gy * this.tile.scaled.height);
-        const dx = this.transform.x + view.center.x + view.offset.x - this.tile.scaled.halfWidth;
-        const dy = this.transform.y + view.center.y + view.offset.y - this.tile.scaled.halfHeight;
+        const d = view.world2Screen(this);
         view.ctx.drawImage(
             this.atlas.image,
             sx,
             sy,
             this.tile.width,
             this.tile.height,
-            Math.round(dx),
-            Math.round(dy),
+            Math.round(d.x),
+            Math.round(d.y),
             this.tile.scaled.width,
             this.tile.scaled.height
         );

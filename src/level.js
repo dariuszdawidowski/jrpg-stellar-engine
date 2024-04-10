@@ -84,7 +84,24 @@ class Level {
                 Object.values(this.items).forEach(item => item.render(view));
 
                 // Characters
-                Object.values(this.chars).forEach(character => character.render(view));
+                const characters = [];
+
+                // Cull characters
+                Object.values(this.chars).forEach(character => {
+                    const pos = view.world2Screen(character);
+                    if (pos.x > -100 && pos.x < view.canvas.width + 100 && pos.y > -100 && pos.y < view.canvas.height + 100) characters.push(character);
+                });
+
+                // Sort characters
+                characters.sort(function(a, b) {
+                    return a.transform.y - b.transform.y;
+                });
+
+                // Render characters
+                characters.forEach(character => {
+                    character.render(view);
+                });
+
             }
 
         });
