@@ -30,40 +30,57 @@ class LoaderTMX {
         // Scale
         level.scale = scale;
 
-        // Used tilesets
-        doc.querySelectorAll('tileset').forEach(tileset => {
-            const tilesetName = tileset.getAttribute('source');
-            const tilesetFirst = parseInt(tileset.getAttribute('firstgid'));
-            level.tilesets[tilesetName] = {ref: this.tilesets[tilesetName], first: tilesetFirst};
-        });
+        for (const node of doc.querySelector('map').childNodes) {
+             if (node.nodeType === Node.ELEMENT_NODE) {
+                switch (node.nodeName) {
 
-        // Layers
-        doc.querySelectorAll('layer').forEach(layer => {
-            const name = layer.getAttribute('name').toLowerCase();
-            const data = layer.querySelector('data');
-            if (['ground', 'colliders', 'cover', 'water'].includes(name) && data) {
-                const arrayContent = data.textContent.split(',').map(Number);
-                level.env[name] = this.create2DArray(arrayContent, parseInt(layer.getAttribute('width')));
+                    // Tileset
+                    case 'tileset':
+                        const tilesetName = node.getAttribute('source');
+                        const tilesetFirst = parseInt(node.getAttribute('firstgid'));
+                        level.tilesets[tilesetName] = {ref: this.tilesets[tilesetName], first: tilesetFirst};
+                        break;
+
+                    // Layer
+                    case 'layer':
+                        const name = node.getAttribute('name').toLowerCase();
+                        const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : '';
+                        const data = node.querySelector('data');
+                        if (data) {
+                            const arrayContent = data.textContent.split(',').map(Number);
+                            level.layers.push({
+                                'name': name,
+                                'class': cl,
+                                'map': this.create2DArray(arrayContent, parseInt(node.getAttribute('width')))
+                            });
+                        }
+                        break;
+
+                    // Objects
+                    case 'objectgroup':
+                        level.layers.push({
+                            'name': 'objects',
+                            'class': 'objects'
+                        });
+                        node.querySelectorAll('object').forEach(obj => {
+                            const name = obj.getAttribute('name').toLowerCase();
+                            const type = obj.getAttribute('type').toLowerCase();
+                            const x = parseInt(obj.getAttribute('x'));
+                            const y = parseInt(obj.getAttribute('y'))
+                            if (name == 'level' && type == 'center') {
+                                level.offset.x = x;
+                                level.offset.y = y;
+                            }
+                            else if (type == 'spawn') {
+                                if (!(name in level.spawnpoints)) level.spawnpoints[name] = [];
+                                level.spawnpoints[name].push({x, y});
+                            }
+                        });
+                        break;
+
+                }
             }
-        });
-
-        // Objects/markers
-        doc.querySelectorAll('objectgroup').forEach(objectgroup => {
-            objectgroup.querySelectorAll('object').forEach(obj => {
-                const name = obj.getAttribute('name').toLowerCase();
-                const type = obj.getAttribute('type').toLowerCase();
-                const x = parseInt(obj.getAttribute('x'));
-                const y = parseInt(obj.getAttribute('y'))
-                if (name == 'level' && type == 'center') {
-                    level.offset.x = x;
-                    level.offset.y = y;
-                }
-                else if (type == 'spawn') {
-                    if (!(name in level.spawnpoints)) level.spawnpoints[name] = [];
-                    level.spawnpoints[name].push({x, y});
-                }
-            });
-        });
+        }
 
         return level;
     }

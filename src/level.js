@@ -19,14 +19,8 @@ class Level {
         // Tileset definitions {'tileset id': {ref: TileSet object reference, first: Number of index offset}, ...}
         this.tilesets = {};
 
-        // Environment layers
-        this.env = {
-            background: null,
-            ground: [],
-            colliders: [],
-            cover: [],
-            water: []
-        };
+        // Environment layers [{name: 'string', class: 'colliders|empty', map: [[]]}, ...]
+        this.layers = [];
 
         // Items
         this.items = {};
@@ -44,9 +38,16 @@ class Level {
      */
 
     getColliders(view) {
+        const colliders = [];
         const tileset = Object.values(this.tilesets).length ? Object.values(this.tilesets)[0] : null;
-        if (tileset) return tileset.ref.getColliders(view, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
-        return [];
+        if (tileset) {
+            this.layers.forEach(layer => {
+                if (layer.class == 'colliders') {
+                    colliders.push(...tileset.ref.getColliders(view, layer.map, this.offset.x, this.offset.y, tileset.first));
+                }
+            });
+        }
+        return colliders;
     }
 
     /**
@@ -67,33 +68,26 @@ class Level {
 
     render(view) {
 
-        // Iterate tilesets for ground
-        for (const tileset of Object.values(this.tilesets)) {
+        // Iterate layers
+        this.layers.forEach(layer => {
 
-            // Ground
-            tileset.ref.render(view, this.env.ground, this.offset.x, this.offset.y, tileset.first);
+            // Iterate tilesets for ground
+            if (layer.class != 'objects') {
+                for (const tileset of Object.values(this.tilesets)) {
+                    tileset.ref.render(view, layer.map, this.offset.x, this.offset.y, tileset.first);
+                }
+            }
 
-            // Water
-            tileset.ref.render(view, this.env.water, this.offset.x, this.offset.y, tileset.first);
+            // Render objects
+            else {
+                // Items
+                Object.values(this.items).forEach(item => item.render(view));
 
-            // Colliders
-            tileset.ref.render(view, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
+                // Characters
+                Object.values(this.chars).forEach(character => character.render(view));
+            }
 
-        }
-
-        // Items
-        Object.values(this.items).forEach(item => item.render(view));
-
-        // Characters
-        Object.values(this.chars).forEach(character => character.render(view));
-
-        // Iterate tilesets for top
-        for (const tileset of Object.values(this.tilesets)) {
-
-            // Cover
-            tileset.ref.render(view, this.env.cover, this.offset.x, this.offset.y, tileset.first);
-
-        }
+        });
 
     }
 
