@@ -21,7 +21,9 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build --if-present
+        run: |
+          npm run build
+          cd dist && ls
 
       - name: Publish
         run: npm publish
