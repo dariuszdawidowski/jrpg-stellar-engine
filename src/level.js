@@ -74,7 +74,7 @@ class Level {
             // Iterate tilesets for ground
             if (layer.class != 'objects') {
                 for (const tileset of Object.values(this.tilesets)) {
-                    tileset.ref.render(view, layer.map, this.offset.x, this.offset.y, tileset.first);
+                    tileset.ref.render(view, layer.map, this.offset.x - layer.offset.x, this.offset.y - layer.offset.y, tileset.first);
                 }
             }
 

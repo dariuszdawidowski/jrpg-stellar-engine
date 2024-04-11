@@ -46,13 +46,19 @@ class LoaderTMX {
                         const name = node.getAttribute('name').toLowerCase();
                         const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : '';
                         const data = node.querySelector('data');
+                        const offsetX = node.hasAttribute('offsetx') ? node.getAttribute('offsetx').toLowerCase() : null;
+                        const offsetY = node.hasAttribute('offsety') ? node.getAttribute('offsety').toLowerCase() : null;
                         if (data) {
                             const arrayContent = data.textContent.split(',').map(Number);
-                            level.layers.push({
+                            const layer = {
                                 'name': name,
                                 'class': cl,
+                                'offset': {x: 0, y: 0},
                                 'map': this.create2DArray(arrayContent, parseInt(node.getAttribute('width')))
-                            });
+                            };
+                            if (offsetX !== null) layer.offset.x = offsetX;
+                            if (offsetY !== null) layer.offset.y = offsetY;
+                            level.layers.push(layer);
                         }
                         break;
 
