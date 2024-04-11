@@ -1,3 +1,7 @@
+/**
+ * Sprite - most basic shape to display
+ */
+
 class Sprite {
 
     /**
@@ -92,7 +96,7 @@ class Sprite {
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
         const d = view.world2Screen(this);
-        view.ctx.drawImage(
+        if (d.x > -this.tile.scaled.width && d.x < view.canvas.width && d.y > -this.tile.scaled.height && d.y < view.canvas.height) view.ctx.drawImage(
             this.atlas.image,
             sx,
             sy,

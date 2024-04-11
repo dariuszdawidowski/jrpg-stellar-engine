@@ -1,4 +1,6 @@
-/*** Tile set **/
+/**
+ * Tile set - multiple sprites
+ */
 
 class TileSet extends Sprite {
 
