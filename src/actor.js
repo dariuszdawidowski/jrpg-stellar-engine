@@ -110,7 +110,7 @@ class Actor extends Sprite {
     collideUp(args) {
 
         // Collided
-        let collided = false;
+        let collided = 0;
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
@@ -126,27 +126,27 @@ class Actor extends Sprite {
                 // Debug info
                 if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
-                // Collision detected
-                collided = true;
-
                 // Slide right
                 if (my.right > other.right) {
                     sidePixels = this.stats.speed * 0.7 * args.deltaTime;
+                    collided ++;
                 }
 
                 // Slide left
                 else if (my.left < other.left) {
                     sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
+                    collided ++;
                 }
 
                 // No slide
                 else {
                     sidePixels = 0;
+                    collided ++;
                 }
             }
         }
 
-        return [sidePixels, collided ? 0 : pixels];
+        return [collided > 1 ? 0 : sidePixels, collided > 0 ? 0 : pixels];
     }
 
     /**
@@ -193,7 +193,7 @@ class Actor extends Sprite {
     collideDown(args) {
 
         // Collided
-        let collided = false;
+        let collided = 0;
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
@@ -209,27 +209,28 @@ class Actor extends Sprite {
                 // Debug info
                 if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
-                // Collision detected
-                collided = true;
 
                 // Slide to right
                 if (my.right > other.right) {
                     sidePixels = this.stats.speed * 0.7 * args.deltaTime;
+                    collided ++;
                 }
 
                 // Slide to left
                 else if (my.left < other.left) {
                     sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
+                    collided ++;
                 }
 
                 // No slide
                 else {
                     sidePixels = 0;
+                    collided ++;
                 }
             }
         }
 
-        return [sidePixels, collided ? 0 : pixels];
+        return [collided > 1 ? 0 : sidePixels, collided > 0 ? 0 : pixels];
     }
 
     /**
@@ -272,7 +273,7 @@ class Actor extends Sprite {
     collideRight(args) {
 
         // Collided
-        let collided = false;
+        let collided = 0;
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
@@ -288,27 +289,27 @@ class Actor extends Sprite {
                 // Debug info
                 if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
-                // Collision detected
-                collided = true;
-
                 // Slide to up
                 if (my.top < other.top) {
                     sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
+                    collided ++;
                 }
 
                 // Slide to down
                 else if (my.bottom > other.bottom) {
                     sidePixels = this.stats.speed * 0.7 * args.deltaTime;
+                    collided ++;
                 }
 
                 // No slide
                 else {
                     sidePixels = 0;
+                    collided ++;
                 }
             }
         }
 
-        return [collided ? 0 : pixels, sidePixels];
+        return [collided > 0 ? 0 : pixels, collided > 1 ? 0 : sidePixels];
     }
 
     /**
@@ -351,7 +352,7 @@ class Actor extends Sprite {
     collideLeft(args) {
 
         // Collided
-        let collided = false;
+        let collided = 0;
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
@@ -367,27 +368,27 @@ class Actor extends Sprite {
                 // Debug info
                 if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
-                // Collision detected
-                collided = true;
-
                 // Slide to up
                 if (my.top < other.top) {
                     sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
+                    collided ++;
                 }
 
                 // Slide to down
                 else if (my.bottom > other.bottom) {
                     sidePixels = this.stats.speed * 0.7 * args.deltaTime;
+                    collided ++;
                 }
 
                 // No slide
                 else {
                     sidePixels = 0;
+                    collided ++;
                 }
             }
         }
 
-        return [collided ? 0 : pixels, sidePixels];
+        return [collided > 0 ? 0 : pixels, collided > 1 ? 0 : sidePixels];
     }
 
     /**
