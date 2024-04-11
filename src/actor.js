@@ -109,6 +109,9 @@ class Actor extends Sprite {
 
     collideUp(args) {
 
+        // Collided
+        let collided = false;
+
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
         let sidePixels = 0;
@@ -123,9 +126,8 @@ class Actor extends Sprite {
                 // Debug info
                 if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
-                // Calculate pixels
-                pixels -= other.bottom - (my.top - pixels - 1);
-                if (pixels < 0) pixels = 0;
+                // Collision detected
+                collided = true;
 
                 // Slide right
                 if (my.right > other.right) {
@@ -144,7 +146,7 @@ class Actor extends Sprite {
             }
         }
 
-        return [sidePixels, pixels];
+        return [sidePixels, collided ? 0 : pixels];
     }
 
     /**
@@ -190,6 +192,9 @@ class Actor extends Sprite {
 
     collideDown(args) {
 
+        // Collided
+        let collided = false;
+
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
         let sidePixels = 0;
@@ -204,9 +209,8 @@ class Actor extends Sprite {
                 // Debug info
                 if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
-                // Calculate pixels
-                pixels -= (my.bottom + pixels + 1) - other.top;
-                if (pixels < 0) pixels = 0;
+                // Collision detected
+                collided = true;
 
                 // Slide to right
                 if (my.right > other.right) {
@@ -225,7 +229,7 @@ class Actor extends Sprite {
             }
         }
 
-        return [sidePixels, pixels];
+        return [sidePixels, collided ? 0 : pixels];
     }
 
     /**
@@ -267,6 +271,9 @@ class Actor extends Sprite {
 
     collideRight(args) {
 
+        // Collided
+        let collided = false;
+
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
         let sidePixels = 0;
@@ -281,9 +288,8 @@ class Actor extends Sprite {
                 // Debug info
                 if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
-                // Calculate pixels
-                pixels -= (my.right + pixels + 1) - other.left;
-                if (pixels < 0) pixels = 0;
+                // Collision detected
+                collided = true;
 
                 // Slide to up
                 if (my.top < other.top) {
@@ -302,7 +308,7 @@ class Actor extends Sprite {
             }
         }
 
-        return [pixels, sidePixels];
+        return [collided ? 0 : pixels, sidePixels];
     }
 
     /**
@@ -344,6 +350,9 @@ class Actor extends Sprite {
 
     collideLeft(args) {
 
+        // Collided
+        let collided = false;
+
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
         let sidePixels = 0;
@@ -358,9 +367,8 @@ class Actor extends Sprite {
                 // Debug info
                 if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
-                // Calculate pixels
-                pixels += other.right - (my.left + pixels + 1);
-                if (pixels < 0) pixels = 0;
+                // Collision detected
+                collided = true;
 
                 // Slide to up
                 if (my.top < other.top) {
@@ -379,7 +387,7 @@ class Actor extends Sprite {
             }
         }
 
-        return [pixels, sidePixels];
+        return [collided ? 0 : pixels, sidePixels];
     }
 
     /**
