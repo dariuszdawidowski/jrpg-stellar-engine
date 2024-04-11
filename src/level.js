@@ -114,10 +114,15 @@ class Level {
 
     debug(view) {
 
-        // Colliders
-        for (const tileset of Object.values(this.tilesets)) {
-            tileset.ref.debug(view, this.env.colliders, this.offset.x, this.offset.y, tileset.first);
-        }
+        // Iterate layers
+        this.layers.forEach(layer => {
+
+            // Colliders
+            for (const tileset of Object.values(this.tilesets)) {
+                if (layer.class == 'colliders') tileset.ref.debug(view, layer.map, this.offset.x, this.offset.y, tileset.first);
+            }
+
+        });
 
         // Items
         Object.values(this.items).forEach(item => item.debug(view));
