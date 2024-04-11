@@ -117,14 +117,31 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.top - pixels - 1 <= other.bottom && my.top - pixels - 1 >= other.top && my.right >= other.left && my.left <= other.right) {
+            if (my.top - pixels < other.bottom && my.top - pixels > other.top && my.right >= other.left && my.left <= other.right) {
+
+                // Calculate pixels
+                const sidePixels = pixels / 2;
                 pixels -= other.bottom - (my.top - pixels - 1);
                 if (pixels < 0) pixels = 0;
-                return pixels;
+
+                // Slide to right
+                if (my.right > other.right) {
+                    return [sidePixels, pixels];
+                }
+
+                // Slide to left
+                else if (my.left < other.left) {
+                    return [-sidePixels, pixels];
+                }
+
+                // No slide
+                else {
+                    return [0, pixels];
+                }
             }
         }
 
-        return pixels;
+        return [0, pixels];
     }
 
     /**
@@ -178,14 +195,31 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.bottom + pixels + 1 >= other.top && my.bottom + pixels + 1 <= other.bottom && my.right >= other.left && my.left <= other.right) {
+            if (my.bottom + pixels > other.top && my.bottom + pixels < other.bottom && my.right >= other.left && my.left <= other.right) {
+
+                // Calculate pixels
+                const sidePixels = pixels / 2;
                 pixels -= (my.bottom + pixels + 1) - other.top;
                 if (pixels < 0) pixels = 0;
-                return pixels;
+
+                // Slide to right
+                if (my.right > other.right) {
+                    return [sidePixels, pixels];
+                }
+
+                // Slide to left
+                else if (my.left < other.left) {
+                    return [-sidePixels, pixels];
+                }
+
+                // No slide
+                else {
+                    return [0, pixels];
+                }
             }
         }
 
-        return pixels;
+        return [0, pixels];
     }
 
     /**
@@ -235,14 +269,31 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.right + pixels + 1 >= other.left && my.right + pixels + 1 <= other.right && my.top <= other.bottom && my.bottom >= other.top) {
+            if (my.right + pixels > other.left && my.right + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
+
+                // Calculate pixels
+                const sidePixels = pixels / 2;
                 pixels -= (my.right + pixels + 1) - other.left;
                 if (pixels < 0) pixels = 0;
-                return pixels;
+
+                // Slide to up
+                if (my.top < other.top) {
+                    return [pixels, -sidePixels];
+                }
+
+                // Slide to down
+                else if (my.bottom > other.bottom) {
+                    return [pixels, sidePixels];
+                }
+
+                // No slide
+                else {
+                    return [pixels, 0];
+                }
             }
         }
 
-        return pixels;
+        return [pixels, 0];
     }
 
     /**
@@ -292,14 +343,31 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.left - pixels - 1 <= other.right && my.left - pixels - 1 >= other.left && my.top <= other.bottom && my.bottom >= other.top) {
+            if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
+
+                // Calculate pixels
+                const sidePixels = pixels / 2;
                 pixels += other.right - (my.left + pixels + 1);
                 if (pixels < 0) pixels = 0;
-                return pixels;
+
+                // Slide to up
+                if (my.top < other.top) {
+                    return [pixels, -sidePixels];
+                }
+
+                // Slide to down
+                else if (my.bottom > other.bottom) {
+                    return [pixels, sidePixels];
+                }
+
+                // No slide
+                else {
+                    return [pixels, 0];
+                }
             }
         }
 
-        return pixels;
+        return [pixels, 0];
 
     }
 

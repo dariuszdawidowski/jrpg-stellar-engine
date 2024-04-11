@@ -529,6 +529,79 @@
 
             });
 
+            // Player movement
+            const playerMoveUp = (deltaTime) => {
+
+                // Collide
+                const [x, y] = level.chars.player.collideUp({
+                    view,
+                    deltaTime,
+                    with: level.getColliders(view)
+                });
+
+                // Slide
+                if (x < -0.1) level.chars.player.moveLeft(-x, view);
+                else if (x > 0.1) level.chars.player.moveRight(x, view);
+
+                // Anim & Move
+                level.chars.player.animUp(deltaTime);
+                level.chars.player.moveUp(y, view);
+            };
+
+            const playerMoveDown = (deltaTime) => {
+
+                // Collide
+                const [x, y] = level.chars.player.collideDown({
+                    view,
+                    deltaTime,
+                    with: level.getColliders(view)
+                });
+
+                // Slide
+                if (x < -0.1) level.chars.player.moveLeft(-x, view);
+                else if (x > 0.1) level.chars.player.moveRight(x, view);
+
+                // Anim & Move
+                level.chars.player.animDown(deltaTime);
+                level.chars.player.moveDown(y, view);
+            };
+
+            const playerMoveLeft = (deltaTime) => {
+
+                // Collide
+                const [x, y] = level.chars.player.collideLeft({
+                    view,
+                    deltaTime,
+                    with: level.getColliders(view)
+                });
+
+                // Slide
+                if (y < -0.1) level.chars.player.moveUp(-y, view);
+                else if (y > 0.1) level.chars.player.moveDown(y, view);
+
+                // Anim & Move
+                level.chars.player.animLeft(deltaTime);
+                level.chars.player.moveLeft(x, view);
+            };
+
+            const playerMoveRight = (deltaTime) => {
+
+                // Collide
+                const [x, y] = level.chars.player.collideRight({
+                    view,
+                    deltaTime,
+                    with: level.getColliders(view)
+                });
+
+                // Slide
+                if (y < -0.1) level.chars.player.moveUp(-y, view);
+                else if (y > 0.1) level.chars.player.moveDown(y, view);
+
+                // Anim & Move
+                level.chars.player.animRight(deltaTime);
+                level.chars.player.moveRight(x, view);
+            };
+
             // Main loop
             let lastTime = 0;
             let fpsContainer = document.querySelector('#fps');
@@ -545,40 +618,16 @@
 
                 // Player movement
                 if (input.up) {
-                    const pixels = level.chars.player.collideUp({
-                        view,
-                        deltaTime,
-                        with: level.getColliders(view)
-                    });
-                    level.chars.player.animUp(deltaTime);
-                    level.chars.player.moveUp(pixels, view);
+                    playerMoveUp(deltaTime);
                 }
                 else if (input.down) {
-                    const pixels = level.chars.player.collideDown({
-                        view,
-                        deltaTime,
-                        with: level.getColliders(view)
-                    });
-                    level.chars.player.animDown(deltaTime);
-                    level.chars.player.moveDown(pixels, view);
+                    playerMoveDown(deltaTime);
                 }
                 if (input.left) {
-                    const pixels = level.chars.player.collideLeft({
-                        view,
-                        deltaTime,
-                        with: level.getColliders(view)
-                    });
-                    level.chars.player.animLeft(deltaTime);
-                    level.chars.player.moveLeft(pixels, view);
+                    playerMoveLeft(deltaTime);
                 }
                 else if (input.right) {
-                    const pixels = level.chars.player.collideRight({
-                        view,
-                        deltaTime,
-                        with: level.getColliders(view)
-                    });
-                    level.chars.player.animRight(deltaTime);
-                    level.chars.player.moveRight(pixels, view);
+                    playerMoveRight(deltaTime);
                 }
 
                 // Player actions
@@ -602,10 +651,10 @@
 
                 // Render environment
                 level.render(view);
-                // level.debug(view);
+                level.debug(view);
 
                 // Render debug info
-                // view.debug();
+                view.debug();
 
                 // Time udpate
                 lastTime = currentTime;

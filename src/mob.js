@@ -63,44 +63,44 @@ class MOB extends Actor {
                         this.transform.h = '';
                     }
                     else if (this.direction == 1) {
-                        const pixels = this.collideUp({
+                        const [x, y] = this.collideUp({
                             view: args.view,
                             deltaTime: args.deltaTime,
                             with: args.colliders
                         });
-                        if (pixels < 0.001) this.wander();
+                        if (y < 0.001) this.wander();
                         this.animUp(args.deltaTime);
-                        this.moveUp(Math.round(pixels));
+                        this.moveUp(Math.round(y));
                     }
                     else if (this.direction == 3) {
-                        const pixels = this.collideDown({
+                        const [x, y] = this.collideDown({
                             view: args.view,
                             deltaTime: args.deltaTime,
                             with: args.colliders
                         });
-                        if (pixels < 0.001) this.wander();
+                        if (y < 0.001) this.wander();
                         this.animDown(args.deltaTime);
-                        this.moveDown(Math.round(pixels));
+                        this.moveDown(Math.round(y));
                     }
                     if (this.direction == 0) {
-                        const pixels = this.collideLeft({
+                        const [x, y] = this.collideLeft({
                             view: args.view,
                             deltaTime: args.deltaTime,
                             with: args.colliders
                         });
-                        if (pixels < 0.001) this.wander();
+                        if (x < 0.001) this.wander();
                         this.animLeft(args.deltaTime);
-                        this.moveLeft(Math.round(pixels));
+                        this.moveLeft(Math.round(x));
                     }
                     else if (this.direction == 2) {
-                        const pixels = this.collideRight({
+                        const [x, y] = this.collideRight({
                             view: args.view,
                             deltaTime: args.deltaTime,
                             with: args.colliders
                         });
-                        if (pixels < 0.001) this.wander();
+                        if (x < 0.001) this.wander();
                         this.animRight(args.deltaTime);
-                        this.moveRight(Math.round(pixels));
+                        this.moveRight(Math.round(x));
                     }
                     break;
             }
