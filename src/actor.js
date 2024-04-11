@@ -111,6 +111,7 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
+        let sidePixels = 0;
 
         // My collider
         const my = this.getCollider(args.view);
@@ -119,29 +120,31 @@ class Actor extends Sprite {
         for (const other of args.with) {
             if (my.top - pixels < other.bottom && my.top - pixels > other.top && my.right >= other.left && my.left <= other.right) {
 
+                // Debug info
+                if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+
                 // Calculate pixels
-                const sidePixels = pixels / 2;
                 pixels -= other.bottom - (my.top - pixels - 1);
                 if (pixels < 0) pixels = 0;
 
-                // Slide to right
+                // Slide right
                 if (my.right > other.right) {
-                    return [sidePixels, pixels];
+                    sidePixels = this.stats.speed * 0.7 * args.deltaTime;
                 }
 
-                // Slide to left
+                // Slide left
                 else if (my.left < other.left) {
-                    return [-sidePixels, pixels];
+                    sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
                 }
 
                 // No slide
                 else {
-                    return [0, pixels];
+                    sidePixels = 0;
                 }
             }
         }
 
-        return [0, pixels];
+        return [sidePixels, pixels];
     }
 
     /**
@@ -189,6 +192,7 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
+        let sidePixels = 0;
 
         // My collider
         const my = this.getCollider(args.view);
@@ -197,29 +201,31 @@ class Actor extends Sprite {
         for (const other of args.with) {
             if (my.bottom + pixels > other.top && my.bottom + pixels < other.bottom && my.right >= other.left && my.left <= other.right) {
 
+                // Debug info
+                if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+
                 // Calculate pixels
-                const sidePixels = pixels / 2;
                 pixels -= (my.bottom + pixels + 1) - other.top;
                 if (pixels < 0) pixels = 0;
 
                 // Slide to right
                 if (my.right > other.right) {
-                    return [sidePixels, pixels];
+                    sidePixels = this.stats.speed * 0.7 * args.deltaTime;
                 }
 
                 // Slide to left
                 else if (my.left < other.left) {
-                    return [-sidePixels, pixels];
+                    sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
                 }
 
                 // No slide
                 else {
-                    return [0, pixels];
+                    sidePixels = 0;
                 }
             }
         }
 
-        return [0, pixels];
+        return [sidePixels, pixels];
     }
 
     /**
@@ -263,6 +269,7 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
+        let sidePixels = 0;
 
         // My collider
         const my = this.getCollider(args.view);
@@ -271,29 +278,31 @@ class Actor extends Sprite {
         for (const other of args.with) {
             if (my.right + pixels > other.left && my.right + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
 
+                // Debug info
+                if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+
                 // Calculate pixels
-                const sidePixels = pixels / 2;
                 pixels -= (my.right + pixels + 1) - other.left;
                 if (pixels < 0) pixels = 0;
 
                 // Slide to up
                 if (my.top < other.top) {
-                    return [pixels, -sidePixels];
+                    sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
                 }
 
                 // Slide to down
                 else if (my.bottom > other.bottom) {
-                    return [pixels, sidePixels];
+                    sidePixels = this.stats.speed * 0.7 * args.deltaTime;
                 }
 
                 // No slide
                 else {
-                    return [pixels, 0];
+                    sidePixels = 0;
                 }
             }
         }
 
-        return [pixels, 0];
+        return [pixels, sidePixels];
     }
 
     /**
@@ -337,6 +346,7 @@ class Actor extends Sprite {
 
         // Move by pixels
         let pixels = this.stats.speed * args.deltaTime;
+        let sidePixels = 0;
 
         // My collider
         const my = this.getCollider(args.view);
@@ -345,30 +355,31 @@ class Actor extends Sprite {
         for (const other of args.with) {
             if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
 
+                // Debug info
+                if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+
                 // Calculate pixels
-                const sidePixels = pixels / 2;
                 pixels += other.right - (my.left + pixels + 1);
                 if (pixels < 0) pixels = 0;
 
                 // Slide to up
                 if (my.top < other.top) {
-                    return [pixels, -sidePixels];
+                    sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
                 }
 
                 // Slide to down
                 else if (my.bottom > other.bottom) {
-                    return [pixels, sidePixels];
+                    sidePixels = this.stats.speed * 0.7 * args.deltaTime;
                 }
 
                 // No slide
                 else {
-                    return [pixels, 0];
+                    sidePixels = 0;
                 }
             }
         }
 
-        return [pixels, 0];
-
+        return [pixels, sidePixels];
     }
 
     /**

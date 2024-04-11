@@ -7,6 +7,7 @@ class View {
     /**
      * Constructor
      * @param args.canvas: DOM object - Canvas element
+     * @param args.debug: bool - Debug enabled
      */
 
     constructor(args) {
@@ -20,6 +21,10 @@ class View {
 
         // Offset for scroll
         this.offset = {x: 0, y: 0};
+
+        // Debug info posted by other classes
+        this.debugEnabled = 'debug' in args ? args.debug : false;
+        this.debugBox = [];
 
         // Resize window
         window.addEventListener('resize', () => {
@@ -35,6 +40,7 @@ class View {
      */
 
     cls() {
+        if (this.debugEnabled) this.debugBox = [];
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
@@ -43,6 +49,7 @@ class View {
      */
 
     background(resource, width, height) {
+        if (this.debugEnabled) this.debugBox = [];
         this.ctx.drawImage(resource, ...this.coverCanvas(width, height));
     }
 
@@ -140,6 +147,17 @@ class View {
         this.ctx.lineTo(16 + this.center.x + this.offset.x, -8 + this.center.y + this.offset.y);
         this.ctx.lineTo(16 + this.center.x + this.offset.x, 8 + this.center.y + this.offset.y);
         this.ctx.fill();
+
+        // Draw other classes boxes
+        this.ctx.fillStyle = 'rgba(255,255,0,0.3)';
+        this.debugBox.forEach(box => {
+            this.ctx.fillRect(
+                box.x,
+                box.y,
+                box.w,
+                box.h
+            );            
+        });
 
     }
 

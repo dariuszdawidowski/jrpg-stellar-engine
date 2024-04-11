@@ -398,7 +398,7 @@
             window.addEventListener('load', () => {
 
                 // Initialize view context
-                view = new View({ canvas: document.getElementById('main') });
+                view = new View({ canvas: document.getElementById('main'), debug: true });
 
                 // Load tileset for environment
                 const loaderTSX = new LoaderTSX();
