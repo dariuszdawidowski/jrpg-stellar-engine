@@ -94,7 +94,7 @@ class Level {
 
                 // Sort characters
                 characters.sort(function(a, b) {
-                    return a.transform.y - b.transform.y;
+                    return (a.transform.y + a.tile.scaled.halfHeight) - (b.transform.y + b.tile.scaled.halfHeight);
                 });
 
                 // Render characters

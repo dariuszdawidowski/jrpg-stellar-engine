@@ -57,6 +57,7 @@
         <div style="display: none;">
             <img id="char1" src="../public/sprites/characters/chara_0.png">
             <img id="mob1" src="../public/sprites/characters/pinguin_22x22.png">
+            <img id="blob1" src="../public/sprites/characters/blob_green.png">
             <img id="env1" src="../public/sprites/environment/ground.png">
             <img id="chest1" src="../public/sprites/items/chest.png">
         </div>
@@ -446,7 +447,7 @@
                 // Centre view context on player
                 view.centre(level.chars.player.transform);
 
-                // MOB
+                // MOB wandering
                 level.chars['penguin1'] = new MOB({
                     resource: '#mob1',
                     width: 88,
@@ -466,12 +467,39 @@
                     collider: {
                         x: 0,
                         y: 0,
-                        width: 88,
-                        height: 88
+                        width: 22 * scale,
+                        height: 22 * scale
                     },
                     transform: level.getSpawnPoint('mob', {x: 280, y: 0})
                 });
                 level.chars.penguin1.wander();
+
+                // MOB fleeing
+                level.chars['blob1'] = new MOB({
+                    resource: '#blob1',
+                    width: 57,
+                    height: 57,
+                    cols: 3,
+                    rows: 3,
+                    scale: scale,
+                    speed: 30,
+                    anim: {
+                        speed: 10,
+                        idle: [0, 1, 2],
+                        moveUp: [0, 1, 2],
+                        moveDown: [0, 1, 2],
+                        moveLeft: [3, 4, 5],
+                        moveRight: [6, 7, 8],
+                    },
+                    collider: {
+                        x: 0,
+                        y: 0,
+                        width: 19 * scale,
+                        height: 19 * scale
+                    },
+                    transform: {x: 0, y: 0}
+                });
+                level.chars.blob1.wander();
 
                 // Chest
                 level.items['chest'] = new Actor({
@@ -492,7 +520,6 @@
                         y: -608
                     }
                 });
-                //level.items.chest.animate('closed');
 
                 // Start
                 requestAnimationFrame(function(currentTime) {
@@ -563,6 +590,11 @@
 
                 // Mobs movement
                 level.chars.penguin1.update({
+                    view,
+                    deltaTime,
+                    colliders: level.getColliders(view)
+                });
+                level.chars.blob1.update({
                     view,
                     deltaTime,
                     colliders: level.getColliders(view)
