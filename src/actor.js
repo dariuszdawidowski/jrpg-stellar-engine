@@ -124,7 +124,7 @@ class Actor extends Sprite {
             if (my.top - pixels < other.bottom && my.top - pixels > other.top && my.right >= other.left && my.left <= other.right) {
 
                 // Debug info
-                if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+                if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
                 // Slide right
                 if (my.right > other.right) {
@@ -207,8 +207,7 @@ class Actor extends Sprite {
             if (my.bottom + pixels > other.top && my.bottom + pixels < other.bottom && my.right >= other.left && my.left <= other.right) {
 
                 // Debug info
-                if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
-
+                if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
                 // Slide to right
                 if (my.right > other.right) {
@@ -287,7 +286,7 @@ class Actor extends Sprite {
             if (my.right + pixels > other.left && my.right + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
 
                 // Debug info
-                if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+                if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
                 // Slide to up
                 if (my.top < other.top) {
@@ -366,7 +365,7 @@ class Actor extends Sprite {
             if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
 
                 // Debug info
-                if (view.debugEnabled) view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+                if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
                 // Slide to up
                 if (my.top < other.top) {
