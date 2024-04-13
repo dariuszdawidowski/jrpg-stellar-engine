@@ -417,6 +417,7 @@
             };
 
             const touchMoveHandler = (event) => {
+                event.preventDefault();
                 const firstTouch = event.touches[0];
                 const posX = firstTouch.pageX;
                 const posY = firstTouch.pageY;
