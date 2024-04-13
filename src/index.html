@@ -16,6 +16,7 @@
             body {
                 overflow: hidden;
                 background-color: #0ec4e1;
+                user-select: none;
             }
 
             #canvas {
@@ -409,18 +410,18 @@
             const touchStartHandler = (event) => {
                 const firstTouch = event.touches[0];
                 touchPad.style.display = 'block';
-                touchCenter.x = firstTouch.pageX - 44;
-                touchCenter.y = firstTouch.pageY - 44;
-                touchPad.style.left = `${touchCenter.x}px`;
-                touchPad.style.top = `${touchCenter.y}px`;
+                touchCenter.x = firstTouch.pageX;
+                touchCenter.y = firstTouch.pageY;
+                touchPad.style.left = `${touchCenter.x - 44}px`;
+                touchPad.style.top = `${touchCenter.y - 44}px`;
             };
 
             const touchMoveHandler = (event) => {
                 const firstTouch = event.touches[0];
-                const posX = firstTouch.pageX - 44;
-                const posY = firstTouch.pageY - 44;
-                touchPad.style.left = `${posX}px`;
-                touchPad.style.top = `${posY}px`;
+                const posX = firstTouch.pageX;
+                const posY = firstTouch.pageY;
+                touchPad.style.left = `${posX - 44}px`;
+                touchPad.style.top = `${posY - 44}px`;
 
                 input.right = false;
                 input.left = false;
@@ -428,10 +429,22 @@
                 input.down = false;
 
                 const threshold = 10;
-                if (posX + threshold < touchCenter.x) input.left = true;
-                else if (posX - threshold > touchCenter.x) input.right = true;
-                if (posY + threshold < touchCenter.y) input.up = true;
-                else if (posY - threshold > touchCenter.y) input.down = true;
+                if (posX + threshold < touchCenter.x) {
+                    input.left = true;
+                    // touchCenter.y = posY;
+                }
+                else if (posX - threshold > touchCenter.x) {
+                    input.right = true;
+                    // touchCenter.y = posY;
+                }
+                if (posY + threshold < touchCenter.y) {
+                    input.up = true;
+                    // touchCenter.x = posX;
+                }
+                else if (posY - threshold > touchCenter.y) {
+                    input.down = true;
+                    // touchCenter.x = posX;
+                }
             };
 
             const touchEndHandler = (event) => {
