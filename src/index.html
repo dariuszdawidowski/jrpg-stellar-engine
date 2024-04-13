@@ -28,6 +28,18 @@
                 -ms-interpolation-mode: nearest-neighbor;
              }
 
+             #touchpad {
+                display: none;
+                position: absolute;
+                width: 80px;
+                height: 80px;
+                left: calc(50% - 40px);
+                top: calc(50% - 40px);
+                border-radius: 50%;
+                background-color: rgba(255,255,255,0.5);
+                border: 4px solid rgba(255,255,255,0.5);
+             }
+
              #fps {
                 position: absolute;
                 bottom: 10px;
@@ -328,12 +340,16 @@
         <!-- Main canvas window -->
         <canvas id="main"></canvas>
 
+        <!-- Mobile joystick -->
+        <div id="touchpad"></div>
+
+        <!-- Frames per second counter -->
         <div id="fps">FPS:</div>
 
         <!-- Init -->
         <script type="text/javascript">
 
-            // Globals
+            // Rendering
             let tileset = null;
             let level = null;
             let view = null;
@@ -347,6 +363,11 @@
                 right: false,
                 action: false
             };
+
+            // Mobile input
+            const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const touchCenter = {x: 0, y: 0};
+            const touchPad = document.getElementById('touchpad');
 
             const keyDownHandler = (event) => {
                 if (event.code == 'ArrowRight' || event.code == 'KeyD') {
@@ -385,9 +406,54 @@
                 level.chars.player.idle();
             };
 
+            const touchStartHandler = (event) => {
+                const firstTouch = event.touches[0];
+                touchPad.style.display = 'block';
+                touchCenter.x = firstTouch.pageX - 44;
+                touchCenter.y = firstTouch.pageY - 44;
+                touchPad.style.left = `${touchCenter.x}px`;
+                touchPad.style.top = `${touchCenter.y}px`;
+            };
+
+            const touchMoveHandler = (event) => {
+                const firstTouch = event.touches[0];
+                const posX = firstTouch.pageX - 44;
+                const posY = firstTouch.pageY - 44;
+                touchPad.style.left = `${posX}px`;
+                touchPad.style.top = `${posY}px`;
+
+                input.right = false;
+                input.left = false;
+                input.up = false;
+                input.down = false;
+
+                const threshold = 10;
+                if (posX + threshold < touchCenter.x) input.left = true;
+                else if (posX - threshold > touchCenter.x) input.right = true;
+                if (posY + threshold < touchCenter.y) input.up = true;
+                else if (posY - threshold > touchCenter.y) input.down = true;
+            };
+
+            const touchEndHandler = (event) => {
+                touchPad.style.display = 'none';
+                input.right = false;
+                input.left = false;
+                input.up = false;
+                input.down = false;
+            };
+
             // Keyboard input
-            document.addEventListener('keydown', keyDownHandler);
-            document.addEventListener('keyup', keyUpHandler);
+            if (!mobile) {
+                document.addEventListener('keydown', keyDownHandler);
+                document.addEventListener('keyup', keyUpHandler);
+            }
+
+            // Mobile touch
+            else {
+                document.addEventListener('touchstart', touchStartHandler);
+                document.addEventListener('touchmove', touchMoveHandler);
+                document.addEventListener('touchend', touchEndHandler);
+            }
 
             // Disable native context menu
             window.addEventListener('contextmenu', function(event) {
@@ -651,10 +717,10 @@
 
                 // Render environment
                 level.render(view);
-                level.debug(view);
+                // level.debug(view);
 
                 // Render debug info
-                view.debug();
+                // view.debug();
 
                 // Time udpate
                 lastTime = currentTime;
