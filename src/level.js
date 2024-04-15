@@ -97,7 +97,7 @@ class Level {
                 });
             }
 
-            // Render objects
+            // Render backgrounds/foregrounds
             else if (layer.class == 'image') {
                 view.background(layer.src, {w: layer.w, h: layer.h}, layer.repeat);
             }
