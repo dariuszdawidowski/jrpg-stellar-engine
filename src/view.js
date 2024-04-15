@@ -62,22 +62,17 @@ class View {
 
         // Repeat X
         else if (repeat.x == 1 && repeat.y == 0) {
-            for (let x = 0; x < this.canvas.width; x += size.w) {
+            const parallaxX = (this.offset.x * 0.5) % size.w;
+            for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
                 this.ctx.drawImage(resource, x, 0);
-            }
-        }
-
-        // Repeat Y
-        else if (repeat.x == 0 && repeat.y == 1) {
-            for (let y = 0; y < this.canvas.height; y += size.h) {
-                this.ctx.drawImage(resource, 0, y);
             }
         }
 
         // Repeat X,Y
         else if (repeat.x == 1 && repeat.y == 1) {
             for (let y = 0; y < this.canvas.height; y += size.h) {
-                for (let x = 0; x < this.canvas.width; x += size.w) {
+                const parallaxX = (this.offset.x * 0.5) % size.w;
+                for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
                     this.ctx.drawImage(resource, x, y);
                 }
             }
