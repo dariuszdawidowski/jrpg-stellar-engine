@@ -46,11 +46,43 @@ class View {
 
     /**
      * Fill with background image
+     * @param resource: DOMElement - image ref to display
+     * @param size: {w, h} - image width and height
+     * @param repeat: {x, y} - repeat tiles
      */
 
-    background(resource, width, height) {
+    background(resource, size, repeat) {
+
         if (this.debugEnabled) this.debugBox = [];
-        this.ctx.drawImage(resource, ...this.coverCanvas(width, height));
+
+        // Fit to screen
+        if (repeat.x == 0 && repeat.y == 0) {
+            this.ctx.drawImage(resource, ...this.coverCanvas(width, height));
+        }
+
+        // Repeat X
+        else if (repeat.x == 1 && repeat.y == 0) {
+            for (let x = 0; x < this.canvas.width; x += size.w) {
+                this.ctx.drawImage(resource, x, 0);
+            }
+        }
+
+        // Repeat Y
+        else if (repeat.x == 0 && repeat.y == 1) {
+            for (let y = 0; y < this.canvas.height; y += size.h) {
+                this.ctx.drawImage(resource, 0, y);
+            }
+        }
+
+        // Repeat X,Y
+        else if (repeat.x == 1 && repeat.y == 1) {
+            for (let y = 0; y < this.canvas.height; y += size.h) {
+                for (let x = 0; x < this.canvas.width; x += size.w) {
+                    this.ctx.drawImage(resource, x, y);
+                }
+            }
+        }
+
     }
 
     /**

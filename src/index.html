@@ -72,19 +72,21 @@
             <img id="mob1" src="../public/sprites/characters/pinguin_22x22.png">
             <img id="blob1" src="../public/sprites/characters/blob_green.png">
             <img id="env1" src="../public/sprites/environment/ground.png">
+            <img id="env2" src="../public/sprites/environment/water.png">
+            <img id="sky" src="../public/sprites/environment/sky.png">
             <img id="chest1" src="../public/sprites/items/chest.png">
         </div>
 
         <!-- TSX -->
         <script id="test-tsx" type="text/xml">
             <tileset version="1.10" tiledversion="1.10.2" name="test" tilewidth="16" tileheight="16" tilecount="69" columns="20">
-             <image source="../jrpg-stellar-engine/public/sprites/environment/ground.png" width="320" height="48"/>
+             <image source="../public/sprites/environment/ground.png" width="320" height="48"/>
             </tileset>
         </script>
 
         <script id="water-tsx" type="text/xml">
             <tileset version="1.10" tiledversion="1.10.2" name="water" tilewidth="32" tileheight="32" tilecount="1" columns="1">
-             <image source="../jrpg-stellar-engine/public/sprites/environment/water.png" width="48" height="48"/>
+             <image source="../public/sprites/environment/water.png" width="48" height="48"/>
             </tileset>
         </script>
 
@@ -94,7 +96,7 @@
              <tileset firstgid="1" source="test.tsx"/>
              <tileset firstgid="70" source="water.tsx"/>
              <imagelayer id="9" name="Background" locked="1" repeatx="1" repeaty="1">
-              <image source="../jrpg-stellar-engine/public/sprites/environment/sky.png" width="256" height="256"/>
+              <image source="#sky" width="256" height="256"/>
              </imagelayer>
              <layer id="8" name="WaterSW" width="30" height="30" offsetx="-240" offsety="256">
               <data encoding="csv">
@@ -361,7 +363,6 @@
         <script type="text/javascript">
 
             // Rendering
-            let tileset = null;
             let level = null;
             let view = null;
             const scale = 4;
@@ -490,12 +491,12 @@
                 // Initialize view context
                 view = new View({ canvas: document.getElementById('main'), debug: true });
 
-                // Load tileset for environment
-                const loaderTSX = new LoaderTSX();
-                tileset = loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1', scale);
-
                 // Load level
-                const loaderTMX = new LoaderTMX({'test.tsx': tileset});
+                const loaderTSX = new LoaderTSX();
+                const loaderTMX = new LoaderTMX({
+                    'test.tsx': loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1', scale),
+                    'water.tsx': loaderTSX.parseTileSet(document.getElementById('water-tsx').innerText, '#env2', scale)
+                });
                 level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText, scale);
 
                 // Initialize player

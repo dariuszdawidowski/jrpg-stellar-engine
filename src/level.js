@@ -71,15 +71,9 @@ class Level {
         // Iterate layers
         this.layers.forEach(layer => {
 
-            // Iterate tilesets for ground
-            if (layer.class != 'objects') {
-                for (const tileset of Object.values(this.tilesets)) {
-                    tileset.ref.render(view, layer.map, this.offset.x - layer.offset.x, this.offset.y - layer.offset.y, tileset.first);
-                }
-            }
-
             // Render objects
-            else {
+            if (layer.class == 'objects') {
+
                 // Items
                 Object.values(this.items).forEach(item => item.render(view));
 
@@ -101,6 +95,18 @@ class Level {
                 characters.forEach(character => {
                     character.render(view);
                 });
+            }
+
+            // Render objects
+            else if (layer.class == 'image') {
+                view.background(layer.src, {w: layer.w, h: layer.h}, layer.repeat);
+            }
+
+            // Render tiles
+            else {
+                for (const tileset of Object.values(this.tilesets)) {
+                    tileset.ref.render(view, layer.map, this.offset.x - layer.offset.x, this.offset.y - layer.offset.y, tileset.first);
+                }
 
             }
 

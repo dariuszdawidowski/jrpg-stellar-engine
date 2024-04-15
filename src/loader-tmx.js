@@ -38,7 +38,33 @@ class LoaderTMX {
                     case 'tileset':
                         const tilesetName = node.getAttribute('source');
                         const tilesetFirst = parseInt(node.getAttribute('firstgid'));
-                        level.tilesets[tilesetName] = {ref: this.tilesets[tilesetName], first: tilesetFirst};
+                        if (tilesetName && tilesetFirst) {
+                            level.tilesets[tilesetName] = {ref: this.tilesets[tilesetName], first: tilesetFirst};
+                        }
+                        break;
+
+                    // Image
+                    case 'imagelayer':
+                        const imageName = node.getAttribute('name');
+                        const imageRepeatX = node.hasAttribute('repeatx') ? parseInt(node.getAttribute('repeatx')) : 0;
+                        const imageRepeatY = node.hasAttribute('repeaty') ? parseInt(node.getAttribute('repeaty')) : 0;
+                        const nodeImage = node.querySelector('image');
+                        const imageSource = nodeImage.getAttribute('source');
+                        const imageWidth = parseInt(nodeImage.getAttribute('width'));
+                        const imageHeight = parseInt(nodeImage.getAttribute('height'));
+                        if (imageName && imageSource) {
+                            level.layers.push({
+                                'name': imageName,
+                                'class': 'image',
+                                'src': document.querySelector(imageSource),
+                                'w': imageWidth,
+                                'h': imageHeight,
+                                'repeat': {
+                                    'x': imageRepeatX,
+                                    'y': imageRepeatY
+                                }
+                            });
+                        }
                         break;
 
                     // Layer
