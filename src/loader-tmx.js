@@ -48,6 +48,8 @@ class LoaderTMX {
                         const imageName = node.getAttribute('name');
                         const imageRepeatX = node.hasAttribute('repeatx') ? parseInt(node.getAttribute('repeatx')) : 0;
                         const imageRepeatY = node.hasAttribute('repeaty') ? parseInt(node.getAttribute('repeaty')) : 0;
+                        const imageParallaxX = node.hasAttribute('parallaxx') ? parseFloat(node.getAttribute('parallaxx')) : 0;
+                        const imageParallaxY = node.hasAttribute('parallaxy') ? parseFloat(node.getAttribute('parallaxy')) : 0;
                         const nodeImage = node.querySelector('image');
                         const imageSource = nodeImage.getAttribute('source');
                         const imageWidth = parseInt(nodeImage.getAttribute('width'));
@@ -62,6 +64,10 @@ class LoaderTMX {
                                 'repeat': {
                                     'x': imageRepeatX,
                                     'y': imageRepeatY
+                                },
+                                'parallax': {
+                                    'x': imageParallaxX,
+                                    'y': imageParallaxY
                                 }
                             };
                             // Load from html resource

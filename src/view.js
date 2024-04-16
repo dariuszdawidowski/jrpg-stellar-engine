@@ -49,9 +49,10 @@ class View {
      * @param resource: DOMElement - image ref to display
      * @param size: {w, h} - image width and height
      * @param repeat: {x, y} - repeat tiles
+     * @param parallax: {x, y} - parallax speed
      */
 
-    background(resource, size, repeat) {
+    background(resource, size, repeat, parallax) {
 
         // Clear debug info
         if (this.debugEnabled) this.debugBox = [];
@@ -63,7 +64,7 @@ class View {
 
         // Repeat X
         else if (repeat.x == 1 && repeat.y == 0) {
-            const parallaxX = (this.offset.x * 0.5) % size.w;
+            const parallaxX = (this.offset.x * parallax.x) % size.w;
             for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
                 this.ctx.drawImage(resource, x, 0, size.w, size.h);
             }
@@ -72,7 +73,7 @@ class View {
         // Repeat X,Y
         else if (repeat.x == 1 && repeat.y == 1) {
             for (let y = 0; y < this.canvas.height; y += size.h) {
-                const parallaxX = (this.offset.x * 0.5) % size.w;
+                const parallaxX = (this.offset.x * parallax.x) % size.w;
                 for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
                     this.ctx.drawImage(resource, x, y, size.w, size.h);
                 }
