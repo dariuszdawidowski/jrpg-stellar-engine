@@ -99,7 +99,7 @@ class Level {
 
             // Render backgrounds/foregrounds
             else if (layer.class == 'image') {
-                view.background(layer.src, {w: layer.w, h: layer.h}, layer.repeat);
+                view.background(layer.src, {w: layer.w * this.scale, h: layer.h * this.scale}, layer.repeat);
             }
 
             // Render tiles

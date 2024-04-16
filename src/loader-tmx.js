@@ -18,7 +18,7 @@ class LoaderTMX {
      * Parse xml
      */
 
-    parseLevel(xmlStr, scale = 1) {
+    parseLevel(xmlStr, prefix, scale = 1) {
 
         // Parse XML
         const parser = new DOMParser();
@@ -53,17 +53,28 @@ class LoaderTMX {
                         const imageWidth = parseInt(nodeImage.getAttribute('width'));
                         const imageHeight = parseInt(nodeImage.getAttribute('height'));
                         if (imageName && imageSource) {
-                            level.layers.push({
+                            const layer = {
                                 'name': imageName,
                                 'class': 'image',
-                                'src': document.querySelector(imageSource),
+                                'src': null,
                                 'w': imageWidth,
                                 'h': imageHeight,
                                 'repeat': {
                                     'x': imageRepeatX,
                                     'y': imageRepeatY
                                 }
-                            });
+                            };
+                            // Load from html resource
+                            if (imageSource.startsWith('#')) {
+                                layer.src = document.querySelector(imageSource);
+                            }
+                            // Load from file
+                            else {
+                                const img = new Image();
+                                img.src = prefix + imageSource;
+                                layer.src = img;
+                            }
+                            if (layer.src) level.layers.push(layer);
                         }
                         break;
 

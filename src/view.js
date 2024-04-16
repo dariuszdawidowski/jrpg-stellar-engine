@@ -53,6 +53,7 @@ class View {
 
     background(resource, size, repeat) {
 
+        // Clear debug info
         if (this.debugEnabled) this.debugBox = [];
 
         // Fit to screen
@@ -64,7 +65,7 @@ class View {
         else if (repeat.x == 1 && repeat.y == 0) {
             const parallaxX = (this.offset.x * 0.5) % size.w;
             for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
-                this.ctx.drawImage(resource, x, 0);
+                this.ctx.drawImage(resource, x, 0, size.w, size.h);
             }
         }
 
@@ -73,7 +74,7 @@ class View {
             for (let y = 0; y < this.canvas.height; y += size.h) {
                 const parallaxX = (this.offset.x * 0.5) % size.w;
                 for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
-                    this.ctx.drawImage(resource, x, y);
+                    this.ctx.drawImage(resource, x, y, size.w, size.h);
                 }
             }
         }
