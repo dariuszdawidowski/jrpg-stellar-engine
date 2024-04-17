@@ -87,6 +87,21 @@ class Actor extends Sprite {
     }
 
     /**
+     * Idle animation
+     */
+
+    animIdle(deltaTime) {
+        // Anim
+        this.frameTimeV -= deltaTime;
+        if (this.frameTimeV <= 0) {
+            this.frameTimeV = this.anim.speed - this.frameTimeV;
+            this.frameCounterV ++;
+            if (this.frameCounterV == this.anim.idle.length) this.frameCounterV = 0;
+        }
+        this.frame = this.anim.idle[this.frameCounterV];
+    }
+
+    /**
      * Returns world collider
      * @param view: View context
      */
