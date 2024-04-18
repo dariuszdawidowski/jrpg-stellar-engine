@@ -59,7 +59,7 @@ class View {
 
         // Fit to screen
         if (repeat.x == 0 && repeat.y == 0) {
-            this.ctx.drawImage(resource, ...this.coverCanvas(width, height));
+            this.ctx.drawImage(resource, ...this.coverCanvas(size.w, size.h));
         }
 
         // Repeat X
