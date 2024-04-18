@@ -147,7 +147,8 @@ class Level {
                 view.ctx.fill();
                 // Name
                 view.ctx.font = "14px sans-serif";
-                view.ctx.fillText(name, ax, 16 + ay);
+                const txtc = view.ctx.measureText(name).width / 2;
+                view.ctx.fillText(name, ax - txtc, ay + 16);
             });
         });
 
