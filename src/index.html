@@ -500,10 +500,10 @@
                 // Load level
                 const loaderTSX = new LoaderTSX();
                 const loaderTMX = new LoaderTMX({
-                    'test.tsx': loaderTSX.parseTileSet(document.getElementById('test-tsx').innerText, '#env1', scale),
-                    'water.tsx': loaderTSX.parseTileSet(document.getElementById('water-tsx').innerText, '#env2', scale)
+                    'test.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('test-tsx').innerText, resource: '#env1', scale }),
+                    'water.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale })
                 });
-                level = loaderTMX.parseLevel(document.getElementById('test-tmx').innerText, scale);
+                level = loaderTMX.parseLevel({ xml: document.getElementById('test-tmx').innerText, scale });
 
                 // Initialize player
                 level.chars['player'] = new Player({

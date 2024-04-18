@@ -16,13 +16,18 @@ class LoaderTMX {
 
     /**
      * Parse xml
+     * @param xml: string - xml to parse
+     * @param prefix: string - prefix path for load resources (optional)
+     * @param scale: int - scale for this level (default 1)
      */
 
-    parseLevel(xmlStr, prefix, scale = 1) {
+    parseLevel(args) {
+
+        const { xml = null, prefix = '', scale = 1 } = args;
 
         // Parse XML
         const parser = new DOMParser();
-        const doc = parser.parseFromString(xmlStr, 'application/xml');
+        const doc = parser.parseFromString(xml, 'application/xml');
 
         // Create Level instance to return to
         const level = new Level();

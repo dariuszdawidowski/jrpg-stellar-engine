@@ -22,14 +22,17 @@ class Level {
         // Environment layers [{name: 'string', class: 'colliders|empty', map: [[]]}, ...]
         this.layers = [];
 
-        // Items
+        // Items {'name/id': object, ...}
         this.items = {};
 
-        // Characters
+        // Characters {'name/id': Actor-like object, ...}
         this.chars = {};
 
         // Spawn points {'player': [{x, y}, ...], 'mob': [{x, y}, ...], ...}
         this.spawnpoints = {};
+
+        // Stairs [{x1, y1, x2, y2, x3, y3, x4, y4}, ...] from left-top clockwise in world coordinates
+        this.stairs = [];
 
     }
 
@@ -127,6 +130,24 @@ class Level {
             for (const tileset of Object.values(this.tilesets)) {
                 if (layer.class == 'colliders') tileset.ref.debug(view, layer.map, this.offset.x, this.offset.y, tileset.first);
             }
+
+            // Spawn points
+            Object.entries(this.spawnpoints).forEach(([name, points]) => {
+                points.forEach(point => {
+                    // Arrow
+                    view.ctx.fillStyle = 'rgba(0,255,0,0.8)';
+                    view.ctx.beginPath();
+                    const ax = ((point.x - this.offset.x) * this.scale) + view.center.x + view.offset.x;
+                    const ay = ((point.y - this.offset.y) * this.scale) + view.center.y + view.offset.y;
+                    view.ctx.moveTo(0 + ax, 0 + ay);
+                    view.ctx.lineTo(-8 + ax, -16 + ay);
+                    view.ctx.lineTo(8 + ax, -16 + ay);
+                    view.ctx.fill();
+                    // Name
+                    view.ctx.font = "14px sans-serif";
+                    view.ctx.fillText(name, ax, 16 + ay);
+                });
+            });
 
         });
 

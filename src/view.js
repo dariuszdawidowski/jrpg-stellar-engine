@@ -173,7 +173,7 @@ class View {
         this.ctx.fill();
         // Name
         this.ctx.font = "14px sans-serif";
-        this.ctx.fillText('CENTER', -24 + this.center.x + this.offset.x, 16 + this.center.y + this.offset.y);
+        this.ctx.fillText('CENTER', this.center.x + this.offset.x, 16 + this.center.y + this.offset.y);
 
         // Draw other classes boxes
         this.ctx.fillStyle = 'rgba(255,255,0,0.3)';
@@ -183,7 +183,7 @@ class View {
                 box.y,
                 box.w,
                 box.h
-            );            
+            );
         });
 
     }
