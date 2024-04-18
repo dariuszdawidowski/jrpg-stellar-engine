@@ -168,14 +168,12 @@ class View {
         this.ctx.fillStyle = 'rgba(0,255,0,0.8)';
         this.ctx.beginPath();
         this.ctx.moveTo(0 + this.center.x + this.offset.x, 0 + this.center.y + this.offset.y);
-        this.ctx.lineTo(-16 + this.center.x + this.offset.x, -8 + this.center.y + this.offset.y);
-        this.ctx.lineTo(-16 + this.center.x + this.offset.x, 8 + this.center.y + this.offset.y);
+        this.ctx.lineTo(-8 + this.center.x + this.offset.x, -16 + this.center.y + this.offset.y);
+        this.ctx.lineTo(8 + this.center.x + this.offset.x, -16 + this.center.y + this.offset.y);
         this.ctx.fill();
-        this.ctx.beginPath();
-        this.ctx.moveTo(0 + this.center.x + this.offset.x, 0 + this.center.y + this.offset.y);
-        this.ctx.lineTo(16 + this.center.x + this.offset.x, -8 + this.center.y + this.offset.y);
-        this.ctx.lineTo(16 + this.center.x + this.offset.x, 8 + this.center.y + this.offset.y);
-        this.ctx.fill();
+        // Name
+        this.ctx.font = "14px sans-serif";
+        this.ctx.fillText('CENTER', -24 + this.center.x + this.offset.x, 16 + this.center.y + this.offset.y);
 
         // Draw other classes boxes
         this.ctx.fillStyle = 'rgba(255,255,0,0.3)';

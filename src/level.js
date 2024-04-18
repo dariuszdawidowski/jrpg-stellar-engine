@@ -135,6 +135,9 @@ class Level {
 
         // Characters
         Object.values(this.chars).forEach(character => character.debug(view));
+
+        // View
+        view.debug();
     }
 
 
