@@ -666,11 +666,22 @@
             const playerMoveLeft = (deltaTime) => {
 
                 // Collide
-                const [x, y] = level.chars.player.collideLeft({
+                let [x, y] = level.chars.player.collideLeft({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
+
+                // Stairs
+                const [stx, sty] = level.chars.player.stairsLeft({
+                    view,
+                    deltaTime,
+                    with: level.getStairs(view)
+                });
+
+                // Update
+                x += stx;
+                y += sty;
 
                 // Slide
                 if (y < -0.1) level.chars.player.moveUp(-y, view);
@@ -684,11 +695,22 @@
             const playerMoveRight = (deltaTime) => {
 
                 // Collide
-                const [x, y] = level.chars.player.collideRight({
+                let [x, y] = level.chars.player.collideRight({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
+
+                // Stairs
+                const [stx, sty] = level.chars.player.stairsRight({
+                    view,
+                    deltaTime,
+                    with: level.getStairs(view)
+                });
+
+                // Update
+                x += stx;
+                y += sty;
 
                 // Slide
                 if (y < -0.1) level.chars.player.moveUp(-y, view);

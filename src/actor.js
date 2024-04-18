@@ -327,6 +327,30 @@ class Actor extends Sprite {
     }
 
     /**
+     * Right stairs/slope checking
+     * @param args.view View object - view context
+     * @param args.deltaTime Number - time passed since last frame
+     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
+     */
+
+    stairsRight(args) {
+
+        // Move by pixels
+        let pixels = this.stats.speed * args.deltaTime;
+
+        // My collider
+        const my = this.getCollider(args.view);
+
+        // Check intersections
+        for (const other of args.with) {
+            if (my.right + pixels > other.left && my.right + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
+                console.log('STAIRS');
+            }
+        }
+        return [0, 0];
+    }
+
+    /**
      * Animate to the right side
      * @param deltaTime Number - time passed since last frame
      */
@@ -403,6 +427,17 @@ class Actor extends Sprite {
         }
 
         return [collided > 0 ? 0 : pixels, collided > 1 ? 0 : sidePixels];
+    }
+
+    /**
+     * Left stairs/slope checking
+     * @param args.view View object - view context
+     * @param args.deltaTime Number - time passed since last frame
+     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
+     */
+
+    stairsLeft(args) {
+        return [0, 0];
     }
 
     /**

@@ -54,6 +54,23 @@ class Level {
     }
 
     /**
+     * Returns list of all stairs/slopes
+     */
+
+    getStairs(view) {
+        const colliders = [];
+        this.stairs.forEach(shape => {
+            colliders.push({
+                left: Math.min(shape.x1, shape.x2, shape.x3, shape.x4),
+                top: Math.min(shape.y1, shape.y2, shape.y3, shape.y4),
+                right: Math.max(shape.x1, shape.x2, shape.x3, shape.x4),
+                bottom: Math.max(shape.y1, shape.y2, shape.y3, shape.y4)
+            });
+        });
+        return colliders;
+    }
+
+    /**
      * Returns spawn point
      */
 
