@@ -121,13 +121,36 @@ class LoaderTMX {
                             const type = obj.getAttribute('type').toLowerCase();
                             const x = parseInt(obj.getAttribute('x'));
                             const y = parseInt(obj.getAttribute('y'))
+
+                            // World center point
                             if (name == 'level' && type == 'center') {
                                 level.offset.x = x;
                                 level.offset.y = y;
                             }
+
+                            // Spawn point
                             else if (type == 'spawn') {
                                 if (!(name in level.spawnpoints)) level.spawnpoints[name] = [];
                                 level.spawnpoints[name].push({x, y});
+                            }
+
+                            // Stairs
+                            else if (type == 'stairs') {
+                                const points = obj.querySelector('polygon')?.getAttribute('points')?.split(' ');
+                                const [x1, y1] = points[0].split(',');
+                                const [x2, y2] = points[1].split(',');
+                                const [x3, y3] = points[2].split(',');
+                                const [x4, y4] = points[3].split(',');
+                                level.stairs.push({
+                                    x1: x + parseFloat(x1),
+                                    y1: y + parseFloat(y1),
+                                    x2: x + parseFloat(x2),
+                                    y2: y + parseFloat(y2),
+                                    x3: x + parseFloat(x3),
+                                    y3: y + parseFloat(y3),
+                                    x4: x + parseFloat(x4),
+                                    y4: y + parseFloat(y4)
+                                });
                             }
                         });
                         break;

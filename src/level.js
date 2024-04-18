@@ -131,24 +131,38 @@ class Level {
                 if (layer.class == 'colliders') tileset.ref.debug(view, layer.map, this.offset.x, this.offset.y, tileset.first);
             }
 
-            // Spawn points
-            Object.entries(this.spawnpoints).forEach(([name, points]) => {
-                points.forEach(point => {
-                    // Arrow
-                    view.ctx.fillStyle = 'rgba(0,255,0,0.8)';
-                    view.ctx.beginPath();
-                    const ax = ((point.x - this.offset.x) * this.scale) + view.center.x + view.offset.x;
-                    const ay = ((point.y - this.offset.y) * this.scale) + view.center.y + view.offset.y;
-                    view.ctx.moveTo(0 + ax, 0 + ay);
-                    view.ctx.lineTo(-8 + ax, -16 + ay);
-                    view.ctx.lineTo(8 + ax, -16 + ay);
-                    view.ctx.fill();
-                    // Name
-                    view.ctx.font = "14px sans-serif";
-                    view.ctx.fillText(name, ax, 16 + ay);
-                });
-            });
+        });
 
+        // Spawn points
+        Object.entries(this.spawnpoints).forEach(([name, points]) => {
+            points.forEach(point => {
+                // Arrow
+                view.ctx.fillStyle = 'rgba(0,255,0,0.8)';
+                view.ctx.beginPath();
+                const ax = ((point.x - this.offset.x) * this.scale) + view.center.x + view.offset.x;
+                const ay = ((point.y - this.offset.y) * this.scale) + view.center.y + view.offset.y;
+                view.ctx.moveTo(0 + ax, 0 + ay);
+                view.ctx.lineTo(-8 + ax, -16 + ay);
+                view.ctx.lineTo(8 + ax, -16 + ay);
+                view.ctx.fill();
+                // Name
+                view.ctx.font = "14px sans-serif";
+                view.ctx.fillText(name, ax, 16 + ay);
+            });
+        });
+
+        // Stairs
+        this.stairs.forEach(shape => {
+            // Draw path
+            view.ctx.fillStyle = 'rgba(0,255,255,0.5)';
+            view.ctx.beginPath();
+            const ox = view.center.x + view.offset.x;
+            const oy = view.center.y + view.offset.y;
+            view.ctx.moveTo(((shape.x1 - this.offset.x) * this.scale) + ox, ((shape.y1 - this.offset.y) * this.scale) + oy);
+            view.ctx.lineTo(((shape.x2 - this.offset.x) * this.scale) + ox, ((shape.y2 - this.offset.y) * this.scale) + oy);
+            view.ctx.lineTo(((shape.x3 - this.offset.x) * this.scale) + ox, ((shape.y3 - this.offset.y) * this.scale) + oy);
+            view.ctx.lineTo(((shape.x4 - this.offset.x) * this.scale) + ox, ((shape.y4 - this.offset.y) * this.scale) + oy);
+            view.ctx.fill();
         });
 
         // Items
