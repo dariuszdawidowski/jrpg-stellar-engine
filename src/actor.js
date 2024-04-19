@@ -507,4 +507,20 @@ class Actor extends Sprite {
         super.render(view);
     }
 
+    /**
+     * Debug render
+     * @param view: View context
+     */
+
+    debug(view) {
+        view.ctx.fillStyle = 'rgba(225,225,0,0.5)';
+        const my = this.getCollider(view);
+        view.ctx.fillRect(
+            my.left,
+            my.top,
+            my.right - my.left,
+            my.bottom - my.top
+        );
+    }
+
 }

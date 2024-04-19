@@ -95,7 +95,7 @@
             <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="6">
              <tileset firstgid="1" source="test.tsx"/>
              <tileset firstgid="61" source="water.tsx"/>
-             <imagelayer id="9" name="Background" locked="1" repeatx="1" repeaty="1">
+             <imagelayer id="9" name="Background" locked="1" parallaxx="0.5" parallaxy="0" repeatx="1" repeaty="1">
               <image source="#sky" width="256" height="256"/>
              </imagelayer>
              <layer id="8" name="WaterSW" width="30" height="30" locked="1" offsetx="-240" offsety="240">
@@ -731,9 +731,6 @@
 
                 // Calculate FPS
                 fpsContainer.textContent = `FPS: ${Math.round(1 / deltaTime)}`;
-
-                // Clear screen
-                view.cls();
 
                 // Player movement
                 if (input.up) {
