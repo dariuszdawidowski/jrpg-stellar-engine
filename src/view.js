@@ -40,7 +40,6 @@ class View {
      */
 
     cls() {
-        if (this.debugEnabled) this.debugBox = [];
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
@@ -53,9 +52,6 @@ class View {
      */
 
     background(resource, size, repeat, parallax) {
-
-        // Clear debug info
-        if (this.debugEnabled) this.debugBox = [];
 
         // Fit to screen
         if (repeat.x == 0 && repeat.y == 0) {
@@ -187,6 +183,8 @@ class View {
             );
         });
 
+        // Clear debug info
+        if (this.debugBox.length) this.debugBox = [];
     }
 
 }
