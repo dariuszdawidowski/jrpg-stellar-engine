@@ -145,10 +145,10 @@ class View {
      * @param sprite: Sprite
      */
 
-    world2Screen(sprite) {
+    world2Screen(transform) {
         return {
-            x: sprite.transform.x + this.center.x + this.offset.x - sprite.tile.scaled.halfWidth,
-            y: sprite.transform.y + this.center.y + this.offset.y - sprite.tile.scaled.halfHeight
+            x: transform.x + this.center.x + this.offset.x,
+            y: transform.y + this.center.y + this.offset.y
         };
     }
 
@@ -163,10 +163,11 @@ class View {
         // Draw world coordinates center
         this.ctx.fillStyle = 'rgba(0,255,0,0.8)';
         this.ctx.beginPath();
-        this.ctx.moveTo(0 + this.center.x + this.offset.x, 0 + this.center.y + this.offset.y);
-        this.ctx.lineTo(-8 + this.center.x + this.offset.x, -16 + this.center.y + this.offset.y);
-        this.ctx.lineTo(8 + this.center.x + this.offset.x, -16 + this.center.y + this.offset.y);
+        this.ctx.moveTo(...Object.values(this.world2Screen({x: 0, y: 0})));
+        this.ctx.lineTo(...Object.values(this.world2Screen({x: -8, y: -16})));
+        this.ctx.lineTo(...Object.values(this.world2Screen({x: 8, y: -16})));
         this.ctx.fill();
+
         // Name
         this.ctx.font = "14px sans-serif";
         const txtc = this.ctx.measureText('center').width / 2;
@@ -185,6 +186,15 @@ class View {
 
         // Clear debug info
         if (this.debugBox.length) this.debugBox = [];
+
+        // Helper dot
+        /*
+        this.ctx.beginPath();
+        this.ctx.arc(...Object.values(this.world2Screen({x: -195, y: -600})), 4, 0, 2 * Math.PI);
+        this.ctx.fillStyle = 'rgba(255,0,255,0.9)';
+        this.ctx.fill();
+        */
+
     }
 
 }

@@ -102,7 +102,10 @@ class Level {
 
                 // Cull characters
                 Object.values(this.chars).forEach(character => {
-                    const pos = view.world2Screen(character);
+                    const pos = view.world2Screen({
+                        x: character.transform.x - character.tile.scaled.halfWidth,
+                        y: character.transform.y - character.tile.scaled.halfHeight
+                    });
                     if (pos.x > -100 && pos.x < view.canvas.width + 100 && pos.y > -100 && pos.y < view.canvas.height + 100) characters.push(character);
                 });
 
