@@ -187,14 +187,14 @@ class View {
         // Clear debug info
         if (this.debugBox.length) this.debugBox = [];
 
-        // Helper dots
+        // Helper dot
         /*this.ctx.beginPath();
-        this.ctx.arc(...Object.values(this.world2Screen({x: -191.5, y: -449.5})), 4, 0, 2 * Math.PI);
-        this.ctx.fillStyle = 'rgba(0,255,255,0.9)';
+        this.ctx.arc(...Object.values(this.world2Screen({x: 961.09, y: 865.10})), 4, 0, 2 * Math.PI);
+        this.ctx.fillStyle = 'rgba(0,255,0,0.9)';
         this.ctx.fill();
 
         this.ctx.beginPath();
-        this.ctx.arc(...Object.values(this.world2Screen({x: -128, y: -512})), 4, 0, 2 * Math.PI);
+        this.ctx.arc(...Object.values(this.world2Screen({x: 1090.37, y: 920.1})), 4, 0, 2 * Math.PI);
         this.ctx.fillStyle = 'rgba(255,0,255,0.9)';
         this.ctx.fill();*/
 
