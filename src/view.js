@@ -177,8 +177,8 @@ class View {
         this.ctx.fillStyle = 'rgba(255,255,0,0.3)';
         this.debugBox.forEach(box => {
             this.ctx.fillRect(
-                box.x,
-                box.y,
+                box.x + view.center.x + view.offset.x,
+                box.y + view.center.y + view.offset.y,
                 box.w,
                 box.h
             );
@@ -188,10 +188,10 @@ class View {
         if (this.debugBox.length) this.debugBox = [];
 
         // Helper dot
-        this.ctx.beginPath();
+        /*this.ctx.beginPath();
         this.ctx.arc(...Object.values(this.world2Screen({x: -191.5, y: -768.5})), 4, 0, 2 * Math.PI);
         this.ctx.fillStyle = 'rgba(255,0,255,0.9)';
-        this.ctx.fill();
+        this.ctx.fill();*/
 
     }
 

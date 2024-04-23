@@ -108,10 +108,10 @@ class Actor extends Sprite {
 
     getCollider(view) {
         return {
-            left: this.transform.x + view.center.x + view.offset.x - this.tile.scaled.halfWidth + this.collider.x,
-            top: this.transform.y + view.center.y + view.offset.y - this.tile.scaled.halfHeight + this.collider.y,
-            right: this.transform.x + view.center.x + view.offset.x - this.tile.scaled.halfWidth + this.collider.x + this.collider.width,
-            bottom: this.transform.y + view.center.y + view.offset.y - this.tile.scaled.halfHeight + this.collider.y + this.collider.height
+            left: this.transform.x - this.tile.scaled.halfWidth + this.collider.x,
+            top: this.transform.y - this.tile.scaled.halfHeight + this.collider.y,
+            right: this.transform.x - this.tile.scaled.halfWidth + this.collider.x + this.collider.width,
+            bottom: this.transform.y - this.tile.scaled.halfHeight + this.collider.y + this.collider.height
         };
     }
 
@@ -336,7 +336,7 @@ class Actor extends Sprite {
     stairsRight(args) {
 
         // Move by pixels
-        let pixels = this.stats.speed * args.deltaTime;
+        const pixels = this.stats.speed * args.deltaTime;
 
         // My collider
         const my = this.getCollider(args.view);
@@ -516,10 +516,10 @@ class Actor extends Sprite {
         view.ctx.fillStyle = 'rgba(225,225,0,0.5)';
         const my = this.getCollider(view);
         view.ctx.fillRect(
-            my.left,
-            my.top,
-            my.right - my.left,
-            my.bottom - my.top
+            my.left + view.center.x + view.offset.x,
+            my.top + view.center.y + view.offset.y,
+            (my.right + view.center.x + view.offset.x) - (my.left + view.center.x + view.offset.x),
+            (my.bottom + view.center.y + view.offset.y) - (my.top + view.center.y + view.offset.y)
         );
     }
 
