@@ -344,7 +344,8 @@ class Actor extends Sprite {
         // Check intersections
         for (const other of args.with) {
             if (my.right + pixels > other.left && my.right + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
-                console.log('STAIRS');
+                console.log('STAIRS', other.left, other.top);
+                return [0, -1.5];
             }
         }
         return [0, 0];

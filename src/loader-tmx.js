@@ -167,6 +167,9 @@ class LoaderTMX {
             }
         }
 
+        // Bake precalculations
+        level.precalcStairs();
+
         return level;
     }
 

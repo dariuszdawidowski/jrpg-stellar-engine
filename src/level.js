@@ -54,20 +54,24 @@ class Level {
     }
 
     /**
+     * Pre-calucations for stairs
+     */
+
+    precalcStairs(view) {
+        for (let i = 0; i < this.stairs.length; i ++) {
+            this.stairs[i]['left'] = Math.min(this.stairs[i].x1, this.stairs[i].x2, this.stairs[i].x3, this.stairs[i].x4);
+            this.stairs[i]['top'] = Math.min(this.stairs[i].y1, this.stairs[i].y2, this.stairs[i].y3, this.stairs[i].y4);
+            this.stairs[i]['right'] = Math.max(this.stairs[i].x1, this.stairs[i].x2, this.stairs[i].x3, this.stairs[i].x4);
+            this.stairs[i]['bottom'] = Math.max(this.stairs[i].y1, this.stairs[i].y2, this.stairs[i].y3, this.stairs[i].y4);
+        }
+    }
+
+    /**
      * Returns list of all stairs/slopes
      */
 
     getStairs(view) {
-        const colliders = [];
-        this.stairs.forEach(shape => {
-            colliders.push({
-                left: Math.min(shape.x1, shape.x2, shape.x3, shape.x4),
-                top: Math.min(shape.y1, shape.y2, shape.y3, shape.y4),
-                right: Math.max(shape.x1, shape.x2, shape.x3, shape.x4),
-                bottom: Math.max(shape.y1, shape.y2, shape.y3, shape.y4)
-            });
-        });
-        return colliders;
+        return this.stairs;
     }
 
     /**
