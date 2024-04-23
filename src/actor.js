@@ -344,10 +344,11 @@ class Actor extends Sprite {
         // Check intersections
         for (const other of args.with) {
             if (my.right + pixels > other.left && my.right + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
-                console.log('STAIRS', other.left, other.top);
-                return [0, -1.5];
+                return [0, -1.0 * other.angle * 0.01 * pixels];
             }
         }
+
+        // None
         return [0, 0];
     }
 
@@ -438,6 +439,20 @@ class Actor extends Sprite {
      */
 
     stairsLeft(args) {
+        // Move by pixels
+        const pixels = this.stats.speed * args.deltaTime;
+
+        // My collider
+        const my = this.getCollider(args.view);
+
+        // Check intersections
+        for (const other of args.with) {
+            if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
+                return [0, other.angle * 0.01 * pixels];
+            }
+        }
+
+        // None
         return [0, 0];
     }
 

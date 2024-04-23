@@ -63,7 +63,47 @@ class Level {
             this.stairs[i]['top'] = Math.min(this.stairs[i].y1, this.stairs[i].y2, this.stairs[i].y3, this.stairs[i].y4);
             this.stairs[i]['right'] = Math.max(this.stairs[i].x1, this.stairs[i].x2, this.stairs[i].x3, this.stairs[i].x4);
             this.stairs[i]['bottom'] = Math.max(this.stairs[i].y1, this.stairs[i].y2, this.stairs[i].y3, this.stairs[i].y4);
+            this.stairs[i]['angle'] = this.calculateTopEdgeAngle(this.stairs[i]);
         }
+    }
+
+    /**
+     * Util: finding angle of top edge
+     */
+
+    calculateTopEdgeAngle(coordinates) {
+        const points = [
+            { x: coordinates.x1, y: -coordinates.y1 },
+            { x: coordinates.x2, y: -coordinates.y2 },
+            { x: coordinates.x3, y: -coordinates.y3 },
+            { x: coordinates.x4, y: -coordinates.y4 }
+        ];
+
+        points.sort((a, b) => {
+            if (a.y !== b.y) {
+                return a.y - b.y;
+            } else {
+                return a.x - b.x;
+            }
+        });
+
+        const [topPoint1, topPoint2] = points.slice(0, 2);
+
+        let leftPoint, rightPoint;
+        if (topPoint1.x < topPoint2.x) {
+            leftPoint = topPoint1;
+            rightPoint = topPoint2;
+        } else {
+            leftPoint = topPoint2;
+            rightPoint = topPoint1;
+        }
+
+        const deltaX = rightPoint.x - leftPoint.x;
+        const deltaY = rightPoint.y - leftPoint.y;
+        const angleInRadians = Math.atan2(deltaY, deltaX);
+        const angleInDegrees = angleInRadians * (180 / Math.PI);
+
+        return angleInDegrees;
     }
 
     /**
