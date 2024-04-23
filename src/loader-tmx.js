@@ -11,11 +11,16 @@ class LoaderTMX {
      */
 
     constructor(tilesets) {
+
+        // Tilesets
         this.tilesets = tilesets;
+
+        // Center of the coordinate system correction
+        this.offset = {x: 0, y: 0};
     }
 
     /**
-     * Parse xml
+     * Parse .tmx xml
      * @param xml: string - xml to parse
      * @param prefix: string - prefix path for load resources (optional)
      * @param scale: int - scale for this level (default 1)
@@ -31,6 +36,15 @@ class LoaderTMX {
 
         // Create Level instance to return to
         const level = new Level();
+
+        // Find level center
+        const center = doc.querySelector('object[type="Center"]');
+        if (center) {
+            this.offset.x = parseFloat(center.getAttribute('x'));
+            this.offset.y = parseFloat(center.getAttribute('y'));
+            level.offset.x = this.offset.x;
+            level.offset.y = this.offset.y;
+        }
 
         // Scale
         level.scale = scale;
@@ -119,17 +133,11 @@ class LoaderTMX {
                         node.querySelectorAll('object').forEach(obj => {
                             const name = obj.getAttribute('name').toLowerCase();
                             const type = obj.getAttribute('type').toLowerCase();
-                            const x = parseInt(obj.getAttribute('x'));
-                            const y = parseInt(obj.getAttribute('y'))
-
-                            // World center point
-                            if (name == 'level' && type == 'center') {
-                                level.offset.x = x;
-                                level.offset.y = y;
-                            }
+                            const x = parseFloat(obj.getAttribute('x')) - this.offset.x;
+                            const y = parseFloat(obj.getAttribute('y')) - this.offset.y;
 
                             // Spawn point
-                            else if (type == 'spawn') {
+                            if (type == 'spawn') {
                                 if (!(name in level.spawnpoints)) level.spawnpoints[name] = [];
                                 level.spawnpoints[name].push({x, y});
                             }
@@ -161,6 +169,12 @@ class LoaderTMX {
 
         return level;
     }
+
+    /**
+     * Util to generate 2d array
+     * @param arr: Array
+     * @param width: Number
+     */
 
     create2DArray(arr, width) {
         let result = [];

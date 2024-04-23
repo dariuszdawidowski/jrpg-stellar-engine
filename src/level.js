@@ -77,7 +77,7 @@ class Level {
     getSpawnPoint(type, fallback = {x: 0, y: 0}) {
         if (type in this.spawnpoints && this.spawnpoints[type].length > 0) {
             const spawnpoint = this.spawnpoints[type][randomRangeInt(0, this.spawnpoints[type].length - 1)];
-            return {x: (spawnpoint.x - this.offset.x) * this.scale, y: (spawnpoint.y - this.offset.y) * this.scale};
+            return {x: (spawnpoint.x) * this.scale, y: (spawnpoint.y) * this.scale};
         }
         return fallback;
     }
@@ -159,8 +159,8 @@ class Level {
                 // Arrow
                 view.ctx.fillStyle = 'rgba(0,255,0,0.8)';
                 view.ctx.beginPath();
-                const ax = ((point.x - this.offset.x) * this.scale) + view.center.x + view.offset.x;
-                const ay = ((point.y - this.offset.y) * this.scale) + view.center.y + view.offset.y;
+                const ax = (point.x * this.scale) + view.center.x + view.offset.x;
+                const ay = (point.y * this.scale) + view.center.y + view.offset.y;
                 view.ctx.moveTo(0 + ax, 0 + ay);
                 view.ctx.lineTo(-8 + ax, -16 + ay);
                 view.ctx.lineTo(8 + ax, -16 + ay);
@@ -179,10 +179,10 @@ class Level {
             view.ctx.beginPath();
             const ox = view.center.x + view.offset.x;
             const oy = view.center.y + view.offset.y;
-            view.ctx.moveTo(((shape.x1 - this.offset.x) * this.scale) + ox, ((shape.y1 - this.offset.y) * this.scale) + oy);
-            view.ctx.lineTo(((shape.x2 - this.offset.x) * this.scale) + ox, ((shape.y2 - this.offset.y) * this.scale) + oy);
-            view.ctx.lineTo(((shape.x3 - this.offset.x) * this.scale) + ox, ((shape.y3 - this.offset.y) * this.scale) + oy);
-            view.ctx.lineTo(((shape.x4 - this.offset.x) * this.scale) + ox, ((shape.y4 - this.offset.y) * this.scale) + oy);
+            view.ctx.moveTo((shape.x1 * this.scale) + ox, (shape.y1 * this.scale) + oy);
+            view.ctx.lineTo((shape.x2 * this.scale) + ox, (shape.y2 * this.scale) + oy);
+            view.ctx.lineTo((shape.x3 * this.scale) + ox, (shape.y3 * this.scale) + oy);
+            view.ctx.lineTo((shape.x4 * this.scale) + ox, (shape.y4 * this.scale) + oy);
             view.ctx.fill();
         });
 

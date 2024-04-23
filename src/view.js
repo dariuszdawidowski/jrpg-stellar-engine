@@ -141,8 +141,8 @@ class View {
     }
 
     /**
-     * Input world transform -> output screen transform (0,0 in the corner)
-     * @param sprite: Sprite
+     * World transform -> output screen transform (0,0 in the corner)
+     * @param transform: {x, y}
      */
 
     world2Screen(transform) {
@@ -188,12 +188,10 @@ class View {
         if (this.debugBox.length) this.debugBox = [];
 
         // Helper dot
-        /*
-        this.ctx.beginPath();
-        this.ctx.arc(...Object.values(this.world2Screen({x: -195, y: -600})), 4, 0, 2 * Math.PI);
+        /*this.ctx.beginPath();
+        this.ctx.arc(...Object.values(this.world2Screen({x: 207.875, y: 47.875})), 4, 0, 2 * Math.PI);
         this.ctx.fillStyle = 'rgba(255,0,255,0.9)';
-        this.ctx.fill();
-        */
+        this.ctx.fill();*/
 
     }
 
