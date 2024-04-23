@@ -133,8 +133,8 @@ class LoaderTMX {
                         node.querySelectorAll('object').forEach(obj => {
                             const name = obj.getAttribute('name').toLowerCase();
                             const type = obj.getAttribute('type').toLowerCase();
-                            const x = parseFloat(obj.getAttribute('x')) - this.offset.x;
-                            const y = parseFloat(obj.getAttribute('y')) - this.offset.y;
+                            const x = (parseFloat(obj.getAttribute('x')) - this.offset.x) * scale;
+                            const y = (parseFloat(obj.getAttribute('y')) - this.offset.y) * scale;
 
                             // Spawn point
                             if (type == 'spawn') {
@@ -150,14 +150,14 @@ class LoaderTMX {
                                 const [x3, y3] = points[2].split(',');
                                 const [x4, y4] = points[3].split(',');
                                 level.stairs.push({
-                                    x1: x + parseFloat(x1),
-                                    y1: y + parseFloat(y1),
-                                    x2: x + parseFloat(x2),
-                                    y2: y + parseFloat(y2),
-                                    x3: x + parseFloat(x3),
-                                    y3: y + parseFloat(y3),
-                                    x4: x + parseFloat(x4),
-                                    y4: y + parseFloat(y4)
+                                    x1: x + (parseFloat(x1) * scale),
+                                    y1: y + (parseFloat(y1) * scale),
+                                    x2: x + (parseFloat(x2) * scale),
+                                    y2: y + (parseFloat(y2) * scale),
+                                    x3: x + (parseFloat(x3) * scale),
+                                    y3: y + (parseFloat(y3) * scale),
+                                    x4: x + (parseFloat(x4) * scale),
+                                    y4: y + (parseFloat(y4) * scale)
                                 });
                             }
                         });
