@@ -17,9 +17,13 @@ class LoaderACX {
     /**
      * Parse xml
      * @param args.xml: string - xml to parse
+     * @param args.scale: float - scale to multiply (default 1)
+     * @param args.transform: {x, y} - where to spawn (default 0,0)
      */
 
     parseActor(args) {
+
+        const { scale = 1, transform = {x: 0, y: 0} } = args;
 
         if ('xml' in args) {
             const parser = new DOMParser();
@@ -42,7 +46,8 @@ class LoaderACX {
                             height: parseInt(height),
                             cols: parseInt(cols),
                             rows: parseInt(rows),
-                            scale: args.scale,
+                            scale,
+                            transform
                         };
                         const collider = actor.querySelector('collider');
                         if (collider) {
@@ -52,14 +57,13 @@ class LoaderACX {
                             const colliderHeight = collider.getAttribute('height');
                             if (colliderX && colliderY && colliderWidth && colliderHeight) {
                                 params['collider'] = {
-                                    x: parseInt(colliderX) * args.scale,
-                                    y: parseInt(colliderY) * args.scale,
-                                    width: parseInt(colliderWidth) * args.scale,
-                                    height: parseInt(colliderHeight) * args.scale
+                                    x: parseInt(colliderX) * scale,
+                                    y: parseInt(colliderY) * scale,
+                                    width: parseInt(colliderWidth) * scale,
+                                    height: parseInt(colliderHeight) * scale
                                 };
                             }
                         }
-                        if ('transform' in args) params['transform'] = args.transform;
                         if (type == 'actor') return new Actor(params);
                     }
                 }
