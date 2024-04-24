@@ -150,7 +150,7 @@ class Level {
                         x: character.transform.x - character.tile.scaled.halfWidth,
                         y: character.transform.y - character.tile.scaled.halfHeight
                     });
-                    if (pos.x > -100 && pos.x < view.canvas.width + 100 && pos.y > -100 && pos.y < view.canvas.height + 100) characters.push(character);
+                    if (pos.x > -character.tile.scaled.width && pos.x < view.canvas.width + character.tile.scaled.width && pos.y > -character.tile.scaled.height && pos.y < view.canvas.height + character.tile.scaled.height) characters.push(character);
                 });
 
                 // Sort characters
