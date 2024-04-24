@@ -344,7 +344,7 @@ class Actor extends Sprite {
         // Check intersections
         for (const other of args.with) {
             if (my.right - (this.collider.width / 2) + pixels > other.left && my.right - (this.collider.width / 2) + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
-                return [0, -1.0 * other.angle * 0.018 * pixels];
+                return [0, other.angle > 0 ? -(pixels * 0.7) : (pixels * 0.7)];
             }
         }
 
@@ -448,7 +448,7 @@ class Actor extends Sprite {
         // Check intersections
         for (const other of args.with) {
             if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
-                return [0, other.angle * 0.018 * pixels];
+                return [0, other.angle < 0 ? -(pixels * 0.7) : (pixels * 0.7)];
             }
         }
 
