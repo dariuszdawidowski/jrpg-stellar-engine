@@ -61,6 +61,7 @@
         <script src="mob.js"></script>
         <script src="player.js"></script>
         <script src="level.js"></script>
+        <script src="loader-acx.js"></script>
         <script src="loader-tsx.js"></script>
         <script src="loader-tmx.js"></script>
         <script src="utils.js"></script>
@@ -356,6 +357,13 @@
             </map>
         </script>
 
+        <!-- CHX -->
+        <script id="test-acx" type="text/xml">
+            <actor version="1.0" name="chest" type="actor" resource="#chest1" width="32" height="16" cols="2" rows="1">
+                <collider x="-4" y="-4" width="24" height="24" />
+            </actor>
+        </script>
+
         <!-- Main canvas window -->
         <canvas id="main"></canvas>
 
@@ -599,24 +607,8 @@
                 level.chars.blob1.wander();
 
                 // Chest
-                level.items['chest'] = new Actor({
-                    resource: '#chest1',
-                    width: 32,
-                    height: 16,
-                    cols: 2,
-                    rows: 1,
-                    scale: scale,
-                    collider: {
-                        x: -4 * scale,
-                        y: -4 * scale,
-                        width: 24 * scale,
-                        height: 24 * scale
-                    },
-                    transform: {
-                        x: -30,
-                        y: -608
-                    }
-                });
+                const loaderACX = new LoaderACX();
+                level.items['chest'] = loaderACX.parseActor({ xml: document.getElementById('test-acx').innerText, transform: { x: -30, y: -608 }, scale });
 
                 // Start
                 requestAnimationFrame(function(currentTime) {
