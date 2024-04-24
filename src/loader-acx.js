@@ -40,6 +40,8 @@ class LoaderACX {
                     const cols = actor.getAttribute('cols');
                     const rows = actor.getAttribute('rows');
                     if (name && type && resource && width && height && cols && rows) {
+
+                        // Base params
                         const params = {
                             resource,
                             width: parseInt(width),
@@ -49,6 +51,15 @@ class LoaderACX {
                             scale,
                             transform
                         };
+
+                        // Movement
+                        const movement = actor.querySelector('movement');
+                        if (movement) {
+                            const speed = movement.getAttribute('speed');
+                            params['speed'] = parseInt(speed);
+                        }
+
+                        // Collider
                         const collider = actor.querySelector('collider');
                         if (collider) {
                             const colliderX = collider.getAttribute('x');
@@ -64,7 +75,25 @@ class LoaderACX {
                                 };
                             }
                         }
-                        if (type == 'actor') return new Actor(params);
+
+                        // Animations
+                        const animations = actor.querySelectorAll('anim');
+                        if (animations) {
+                            const anim = {};
+                            animations.forEach(animation => {
+                                const animName = animation.getAttribute('name');
+                                const animSpeed = parseInt(animation.getAttribute('speed'));
+                                const frames = animation.textContent.split(',').map(Number);
+                                anim[animName] = frames;
+                                anim['speed'] = animSpeed;
+                            });
+                            params['anim'] = anim;
+                        }
+
+                        // Create and return object
+                        const classReference = new Function(`return ${type}`)();
+                        if (classReference) return new classReference(params);
+                        return new window[type];
                     }
                 }
             }

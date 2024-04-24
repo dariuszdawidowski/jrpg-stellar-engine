@@ -357,9 +357,33 @@
             </map>
         </script>
 
-        <!-- CHX -->
-        <script id="test-acx" type="text/xml">
-            <actor version="1.0" name="chest" type="actor" resource="#chest1" width="32" height="16" cols="2" rows="1">
+        <!-- ACX -->
+        <script id="penguin-acx" type="text/xml">
+            <actor version="1.0" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
+                <movement speed="80" />
+                <collider x="0" y="0" width="22" height="22" />
+                <anim name="idle" speed="10">1</anim>
+                <anim name="moveUp" speed="10">8, 9, 10</anim>
+                <anim name="moveDown" speed="10">0, 1, 2</anim>
+                <anim name="moveLeft" speed="10">12, 13, 14</anim>
+                <anim name="moveRight" speed="10">4, 5, 6</anim>
+            </actor>
+        </script>
+
+        <script id="blob-acx" type="text/xml">
+            <actor version="1.0" name="blob1" type="MOB" resource="#blob1" width="57" height="57" cols="3" rows="3">
+                <movement speed="80" />
+                <collider x="0" y="0" width="19" height="19" />
+                <anim name="idle" speed="10">0, 1, 2</anim>
+                <anim name="moveUp" speed="10">0, 1, 2</anim>
+                <anim name="moveDown" speed="10">0, 1, 2</anim>
+                <anim name="moveLeft" speed="10">3, 4, 5</anim>
+                <anim name="moveRight" speed="10">6, 7, 8</anim>
+            </actor>
+        </script>
+
+        <script id="chest-acx" type="text/xml">
+            <actor version="1.0" name="chest" type="Actor" resource="#chest1" width="32" height="16" cols="2" rows="1">
                 <collider x="-4" y="-4" width="24" height="24" />
             </actor>
         </script>
@@ -552,63 +576,13 @@
                 // Centre view context on player
                 view.centre(level.chars.player.transform);
 
-                // MOB wandering
-                level.chars['penguin1'] = new MOB({
-                    resource: '#mob1',
-                    width: 88,
-                    height: 88,
-                    cols: 4,
-                    rows: 4,
-                    scale: scale,
-                    speed: 80,
-                    anim: {
-                        speed: 10,
-                        idle: [1],
-                        moveUp: [8, 9, 10],
-                        moveDown: [0, 1, 2],
-                        moveLeft: [12, 13, 14],
-                        moveRight: [4, 5, 6],
-                    },
-                    collider: {
-                        x: 0,
-                        y: 0,
-                        width: 22 * scale,
-                        height: 22 * scale
-                    },
-                    transform: level.getSpawnPoint('mob', {x: 280, y: 0})
-                });
-                level.chars.penguin1.wander();
-
-                // MOB fleeing
-                level.chars['blob1'] = new MOB({ //TODO level.mobs i dac wszystkim na starcie wander i updatować automatycznie w loopie
-                    resource: '#blob1',
-                    width: 57,
-                    height: 57,
-                    cols: 3,
-                    rows: 3,
-                    scale: scale,
-                    speed: 80,
-                    anim: {
-                        speed: 10,
-                        idle: [0, 1, 2],
-                        moveUp: [0, 1, 2],
-                        moveDown: [0, 1, 2],
-                        moveLeft: [3, 4, 5],
-                        moveRight: [6, 7, 8],
-                    },
-                    collider: {
-                        x: 0,
-                        y: 0,
-                        width: 19 * scale,
-                        height: 19 * scale
-                    },
-                    transform: {x: 0, y: 0}
-                });
-                level.chars.blob1.wander();
-
-                // Chest
+                // Actors
                 const loaderACX = new LoaderACX();
-                level.items['chest'] = loaderACX.parseActor({ xml: document.getElementById('test-acx').innerText, transform: { x: -30, y: -608 }, scale });
+                level.mobs['penguin1'] = loaderACX.parseActor({ xml: document.getElementById('penguin-acx').innerText, transform: level.getSpawnPoint('mob', {x: 280, y: 0}), scale });
+                level.mobs['penguin1'].wander();
+                level.mobs['blob1'] = loaderACX.parseActor({ xml: document.getElementById('blob-acx').innerText, transform: { x: 0, y: 0 }, scale });
+                level.mobs['blob1'].wander();
+                level.items['chest'] = loaderACX.parseActor({ xml: document.getElementById('chest-acx').innerText, transform: { x: -30, y: -608 }, scale });
 
                 // Start
                 requestAnimationFrame(function(currentTime) {
@@ -745,19 +719,8 @@
                     }
                 }
 
-                // Mobs movement
-                level.chars.penguin1.update({
-                    view,
-                    deltaTime,
-                    colliders: level.getColliders(view)
-                });
-                level.chars.blob1.update({
-                    view,
-                    deltaTime,
-                    colliders: level.getColliders(view)
-                });
-
-                // Render environment
+                // Update and render environment
+                level.update(view, deltaTime);
                 level.render(view);
                 level.debug(view);
 
