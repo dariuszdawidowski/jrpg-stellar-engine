@@ -34,8 +34,19 @@ class Sprite {
             cols: 'cell' in args ? args.width / args.cell : args.cols || 1,
             rows: 'cell' in args ? args.height / args.cell : args.rows || 1,
             cell: 'cell' in args ? args.cell : args.width / args.cols,
-            image: document.querySelector(args.resource)
+            image: null
         };
+
+        // Load image from HTML
+        if (args.resource.startsWith('#')) {
+            this.atlas.image = document.querySelector(args.resource);
+        }
+        // Load image from file
+        else {
+            const img = new Image();
+            img.src = args.resource;
+            this.atlas.image = img;
+        }
 
         // Dimensions of one tile
         this.tile = {
