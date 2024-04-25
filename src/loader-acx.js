@@ -43,6 +43,7 @@ class LoaderACX {
 
                         // Base params
                         const params = {
+                            name,
                             resource,
                             width: parseInt(width),
                             height: parseInt(height),

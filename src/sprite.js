@@ -18,10 +18,10 @@ class Sprite {
 
     constructor(args = {}) {
 
-        /**
-         * Current position in space
-         * x,y: screen
-         */
+        // Sprite name
+        this.name = 'name' in args ? args.name : null;
+
+        // Current position in space - x,y: screen
         this.transform = {
             x: 'transform' in args && 'x' in args.transform ? args.transform.x : 0,
             y: 'transform' in args && 'y' in args.transform ? args.transform.y : 0,
