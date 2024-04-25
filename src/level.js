@@ -28,6 +28,9 @@ class Level {
         // Characters {'name/id': Actor-like object, ...}
         this.chars = {};
 
+        // NPCs {'name/id': Actor-like object, ...}
+        this.npcs = {};
+
         // MOBS {'name/id': MOB object, ...}
         this.mobs = {};
 
@@ -137,6 +140,11 @@ class Level {
 
         const colliders = this.getColliders(view);
 
+        // Idle all NPCs
+        Object.values(this.npcs).forEach(character => {
+            character.animIdle(deltaTime);
+        });
+
         // Move all MOBs
         Object.values(this.mobs).forEach(character => {
             character.update({
@@ -168,6 +176,15 @@ class Level {
 
                 // Collect culled characters
                 Object.values(this.chars).forEach(character => {
+                    const pos = view.world2Screen({
+                        x: character.transform.x - character.tile.scaled.halfWidth,
+                        y: character.transform.y - character.tile.scaled.halfHeight
+                    });
+                    if (pos.x > -character.tile.scaled.width && pos.x < view.canvas.width + character.tile.scaled.width && pos.y > -character.tile.scaled.height && pos.y < view.canvas.height + character.tile.scaled.height) characters.push(character);
+                });
+
+                // Collect culled NPCs
+                Object.values(this.npcs).forEach(character => {
                     const pos = view.world2Screen({
                         x: character.transform.x - character.tile.scaled.halfWidth,
                         y: character.transform.y - character.tile.scaled.halfHeight
