@@ -33,7 +33,7 @@ class Actor extends Sprite {
 
         // Animation map
         this.anim = 'anim' in args ? args.anim : { speed: 0, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] };
-        this.anim.speed = this.anim.speed / 100.0;
+        this.anim.speed = this.anim.speed / 1000.0;
 
         // Current frame
         this.frame = 0;
