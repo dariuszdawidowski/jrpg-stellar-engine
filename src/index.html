@@ -74,6 +74,7 @@
             <img id="blob1" src="../public/sprites/characters/blob_green.png">
             <img id="env1" src="../public/sprites/environment/ground.png">
             <img id="env2" src="../public/sprites/environment/water.png">
+            <img id="props" src="../public/sprites/environment/props.png">
             <img id="sky" src="../public/sprites/environment/sky.png">
             <img id="chest1" src="../public/sprites/items/chest.png">
         </div>
@@ -91,11 +92,26 @@
             </tileset>
         </script>
 
+        <script id="props-tsx" type="text/xml">
+            <tileset version="1.10" tiledversion="1.10.2" name="props" tilewidth="16" tileheight="16" tilecount="4" columns="4">
+             <image source="../public/sprites/environment/props.png" width="64" height="16"/>
+             <tile id="0">
+              <animation>
+               <frame tileid="0" duration="100"/>
+               <frame tileid="1" duration="100"/>
+               <frame tileid="2" duration="100"/>
+               <frame tileid="3" duration="100"/>
+              </animation>
+             </tile>
+            </tileset>
+        </script>
+
         <!-- TMX -->
         <script id="test-tmx" type="text/xml">
             <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="6">
              <tileset firstgid="1" source="test.tsx"/>
              <tileset firstgid="61" source="water.tsx"/>
+             <tileset firstgid="70" source="props.tsx"/>
              <imagelayer id="9" name="Background" locked="1" parallaxx="0.5" parallaxy="0" repeatx="1" repeaty="1">
               <image source="#sky" width="256" height="256"/>
              </imagelayer>
@@ -269,7 +285,7 @@
             25,25,37,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25
             </data>
              </layer>
-             <layer id="2" name="Colliders" class="Colliders" width="30" height="30" locked="1">
+             <layer id="2" name="Colliders" class="Colliders" width="30" height="30">
               <data encoding="csv">
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
             0,19,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,20,0,
@@ -278,7 +294,7 @@
             0,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,0,
             0,38,0,0,0,0,0,0,0,0,0,0,0,0,25,0,0,0,0,0,0,0,0,0,0,0,0,0,36,0,
             0,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,0,
-            0,38,0,50,51,52,0,0,0,0,0,0,56,57,57,57,0,58,0,0,0,0,0,0,50,51,52,0,36,0,
+            0,38,0,50,51,52,0,0,0,0,70,0,56,57,57,57,0,58,0,0,0,0,0,0,50,51,52,0,36,0,
             0,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,0,
             0,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,0,
             0,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,0,
@@ -533,7 +549,8 @@
                 const loaderTSX = new LoaderTSX();
                 const loaderTMX = new LoaderTMX({
                     'test.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('test-tsx').innerText, resource: '#env1', scale }),
-                    'water.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale })
+                    'water.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale }),
+                    'props.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('props-tsx').innerText, resource: '#props', scale })
                 });
                 level = loaderTMX.parseLevel({ xml: document.getElementById('test-tmx').innerText, scale });
 
