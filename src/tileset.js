@@ -5,6 +5,20 @@
 class TileSet extends Sprite {
 
     /**
+     * Create sprite
+     * All Sprite params plus:
+     * @param anim: Object - map of animations { frame: [[frame, ms], [frame, ms], ...], ... }
+     */
+
+    constructor(args) {
+        super(args);
+
+        // Animations
+        this.anim = ('anim' in args) ? args.anim : {};
+        console.log(this.anim)
+    }
+
+    /**
      * Returns array of screen colliders
      * @param view: View context
      * @param tiles: array [[nr, nr, ...], ...]

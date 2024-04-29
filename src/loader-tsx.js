@@ -21,13 +21,29 @@ class LoaderTSX {
         if (tileset) {
             const image = tileset.querySelector('image');
             if (image) {
-                return new TileSet({
+                const params = {
                     resource: resource,
                     width: image.getAttribute('width'),
                     height: image.getAttribute('height'),
                     cell: tileset.getAttribute('tilewidth'),
                     scale
+                };
+                // Animations
+                const anim = {};
+                tileset.querySelectorAll('tile').forEach(tile => {
+                    const animation = tile.querySelector('animation');
+                    if (animation) {
+                        const id = tile.getAttribute('id');
+                        anim[id] = [];
+                        animation.querySelectorAll('frame').forEach(f => {
+                            const tileId = f.getAttribute('tileid');
+                            const duration = f.getAttribute('duration');
+                             anim[id].push([tileId, duration]);
+                        });
+                    }
                 });
+                if (Object.keys(anim).length > 0) params['anim'] = anim;
+                return new TileSet(params);
             }
         }
         return null;
