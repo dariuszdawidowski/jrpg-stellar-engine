@@ -138,6 +138,12 @@ class Level {
 
     update(view, deltaTime) {
 
+        // Update tilesets
+        for (const tileset of Object.values(this.tilesets)) {
+            tileset.ref.update(deltaTime);
+        }
+
+        // Gather level colliders
         const colliders = this.getColliders(view);
 
         // Idle all NPCs

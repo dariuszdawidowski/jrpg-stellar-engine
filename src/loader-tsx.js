@@ -23,9 +23,9 @@ class LoaderTSX {
             if (image) {
                 const params = {
                     resource: resource,
-                    width: image.getAttribute('width'),
-                    height: image.getAttribute('height'),
-                    cell: tileset.getAttribute('tilewidth'),
+                    width: parseInt(image.getAttribute('width')),
+                    height: parseInt(image.getAttribute('height')),
+                    cell: parseInt(tileset.getAttribute('tilewidth')),
                     scale
                 };
                 // Animations
@@ -36,8 +36,8 @@ class LoaderTSX {
                         const id = tile.getAttribute('id');
                         anim[id] = [];
                         animation.querySelectorAll('frame').forEach(f => {
-                            const tileId = f.getAttribute('tileid');
-                            const duration = f.getAttribute('duration');
+                            const tileId = parseInt(f.getAttribute('tileid'));
+                            const duration = parseInt(f.getAttribute('duration'));
                              anim[id].push([tileId, duration]);
                         });
                     }
