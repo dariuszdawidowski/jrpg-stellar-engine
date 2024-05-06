@@ -57,21 +57,25 @@ class View {
         if (repeat.x == 0 && repeat.y == 0) {
             const transform = this.coverCanvas(size.w, size.h);
             const parallaxX = (this.offset.x * parallax.x) % size.w;
+            const parallaxY = (this.offset.y * parallax.y) % size.h;
             transform[0] = transform[0] + parallaxX;
+            transform[1] = transform[1] + parallaxY;
             this.ctx.drawImage(resource, ...transform);
         }
 
         // Repeat X
         else if (repeat.x == 1 && repeat.y == 0) {
             const parallaxX = (this.offset.x * parallax.x) % size.w;
+            const parallaxY = (this.offset.y * parallax.y) % size.h;
             for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
-                this.ctx.drawImage(resource, x, 0, size.w, size.h);
+                this.ctx.drawImage(resource, x, parallaxY, size.w, size.h);
             }
         }
 
         // Repeat X,Y
         else if (repeat.x == 1 && repeat.y == 1) {
-            for (let y = 0; y < this.canvas.height; y += size.h) {
+            const parallaxY = (this.offset.y * parallax.y) % size.h;
+            for (let y = parallaxY - size.h; y < this.canvas.height; y += size.h) {
                 const parallaxX = (this.offset.x * parallax.x) % size.w;
                 for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
                     this.ctx.drawImage(resource, x, y, size.w, size.h);
