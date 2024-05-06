@@ -55,7 +55,10 @@ class View {
 
         // Fit to screen
         if (repeat.x == 0 && repeat.y == 0) {
-            this.ctx.drawImage(resource, ...this.coverCanvas(size.w, size.h));
+            const transform = this.coverCanvas(size.w, size.h);
+            const parallaxX = (this.offset.x * parallax.x) % size.w;
+            transform[0] = transform[0] + parallaxX;
+            this.ctx.drawImage(resource, ...transform);
         }
 
         // Repeat X

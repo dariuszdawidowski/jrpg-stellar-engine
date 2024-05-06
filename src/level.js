@@ -171,8 +171,13 @@ class Level {
         // Iterate layers
         this.layers.forEach(layer => {
 
+            // Render backgrounds/foregrounds
+            if (layer.class == 'image') {
+                view.background(layer.src, {w: layer.w * this.scale, h: layer.h * this.scale}, layer.repeat, layer.parallax);
+            }
+
             // Render objects
-            if (layer.class == 'objects') {
+            else if (layer.class == 'objects') {
 
                 // Items
                 Object.values(this.items).forEach(item => item.render(view));
@@ -216,11 +221,6 @@ class Level {
                 characters.forEach(character => {
                     character.render(view);
                 });
-            }
-
-            // Render backgrounds/foregrounds
-            else if (layer.class == 'image') {
-                view.background(layer.src, {w: layer.w * this.scale, h: layer.h * this.scale}, layer.repeat, layer.parallax);
             }
 
             // Render tiles

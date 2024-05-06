@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="6">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="6">
  <tileset firstgid="1" source="test.tsx"/>
  <tileset firstgid="61" source="water.tsx"/>
  <tileset firstgid="70" source="props.tsx"/>
- <imagelayer id="9" name="Background" locked="1" parallaxx="0.5" parallaxy="0" repeatx="1" repeaty="1">
+ <imagelayer id="9" name="Sky" locked="1" parallaxx="0" parallaxy="0">
   <image source="../public/sprites/environment/sky.png" width="256" height="256"/>
+ </imagelayer>
+ <imagelayer id="11" name="Sun" locked="1" parallaxx="0.1" parallaxy="0.2">
+  <image source="../public/sprites/environment/sun.png" width="256" height="256"/>
+ </imagelayer>
+ <imagelayer id="10" name="Clouds" locked="1" parallaxx="0.5" parallaxy="0.2" repeatx="1" repeaty="1">
+  <image source="../public/sprites/environment/clouds.png" width="256" height="256"/>
  </imagelayer>
  <layer id="8" name="WaterSW" width="30" height="30" locked="1" offsetx="-240" offsety="240">
   <data encoding="csv">
@@ -176,7 +182,7 @@
 25,25,37,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25
 </data>
  </layer>
- <layer id="2" name="Colliders" class="Colliders" width="30" height="30">
+ <layer id="2" name="Colliders" class="Colliders" width="30" height="30" locked="1">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,19,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,20,0,
