@@ -160,6 +160,30 @@ class LoaderTMX {
                                     y4: y + (parseFloat(y4) * scale)
                                 });
                             }
+
+                            // Portals
+                            else if (type == 'portal') {
+                                const name = obj.getAttribute('name');
+                                if (name.search('.') != -1) {
+                                    const [map, spawn] = name.split('.');
+                                    const x = (parseFloat(obj.getAttribute('x')) - this.offset.x) * scale;
+                                    const y = (parseFloat(obj.getAttribute('y')) - this.offset.y) * scale;
+                                    const w = parseFloat(obj.getAttribute('width')) * scale;
+                                    const h = parseFloat(obj.getAttribute('height')) * scale;
+                                    level.portals.push({
+                                        map: map.trim(),
+                                        spawn: spawn.trim(),
+                                        left: x,
+                                        top: y,
+                                        right: x + w,
+                                        bottom: y + h
+                                    });
+                                }
+                                else {
+                                    console.error('Bad name formatting for portal! Use: map.spawn');
+                                }
+                            }
+
                         });
                         break;
 

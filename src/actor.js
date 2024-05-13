@@ -403,7 +403,7 @@ class Actor extends Sprite {
 
         // Check intersections
         for (const other of args.with) {
-            if (my.left + (this.collider.width / 2) - pixels < other.right && my.left + (this.collider.width / 2) - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
+            if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
 
                 // Debug info
                 if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
@@ -487,12 +487,12 @@ class Actor extends Sprite {
     }
 
     /**
-     * Generic collision checking
+     * Collision checking with other sprite
      * @param args.view View object - view context
-     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
+     * @param args.with: Sprite object - other
      */
 
-    collideWith(args) {
+    collideWithSprite(args) {
 
         // My collider
         const my = this.getCollider(args.view);
@@ -509,6 +509,30 @@ class Actor extends Sprite {
         else if (my.left > that.left && my.left < that.right && my.bottom > that.top && my.bottom < that.bottom) return true;
         // Right-bottom
         else if (my.right > that.left && my.right < that.right && my.bottom > that.top && my.bottom < that.bottom) return true;
+
+        return false;
+    }
+
+    /**
+     * Generic collision checking
+     * @param args.view View object - view context
+     * @param args.with: object - collision {left: Number, top: Number, right: Number, bottom: Number}
+     */
+
+    collideWithBox(args) {
+
+        // My collider
+        const my = this.getCollider(args.view);
+
+        // Check crossections for all corners
+        // Left-top
+        if (my.left > args.with.left && my.left < args.with.right && my.top > args.with.top && my.top < args.with.bottom) return true;
+        // Right-top
+        else if (my.right > args.with.left && my.right < args.with.right && my.top > args.with.top && my.top < args.with.bottom) return true;
+        // Left-bottom
+        else if (my.left > args.with.left && my.left < args.with.right && my.bottom > args.with.top && my.bottom < args.with.bottom) return true;
+        // Right-bottom
+        else if (my.right > args.with.left && my.right < args.with.right && my.bottom > args.with.top && my.bottom < args.with.bottom) return true;
 
         return false;
     }

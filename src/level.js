@@ -40,6 +40,9 @@ class Level {
         // Stairs [{x1, y1, x2, y2, x3, y3, x4, y4}, ...] from left-top clockwise in world coordinates
         this.stairs = [];
 
+        // Portals to other maps [{map, spawn, left, top, right, bottom}, ...]
+        this.portals = [];
+
     }
 
     /**
@@ -130,6 +133,14 @@ class Level {
             return {x: spawnpoint.x, y: spawnpoint.y};
         }
         return fallback;
+    }
+
+    /**
+     * Returns list of all objects with class 'portal'
+     */
+
+    getPortals(view) {
+        return this.portals;
     }
 
     /**
@@ -246,10 +257,15 @@ class Level {
 
             // Colliders
             for (const tileset of Object.values(this.tilesets)) {
-                if (layer.class == 'colliders') tileset.ref.debug(view, layer.map, this.offset.x, this.offset.y, tileset.first);
+                if (layer.class == 'colliders')
+                    tileset.ref.debug(view, layer.map, this.offset.x, this.offset.y, tileset.first);
             }
 
         });
+
+        // Center view correction
+        const ox = view.center.x + view.offset.x;
+        const oy = view.center.y + view.offset.y;
 
         // Spawn points
         Object.entries(this.spawnpoints).forEach(([name, points]) => {
@@ -257,8 +273,8 @@ class Level {
                 // Arrow
                 view.ctx.fillStyle = 'rgba(0,255,0,0.8)';
                 view.ctx.beginPath();
-                const ax = point.x + view.center.x + view.offset.x;
-                const ay = point.y + view.center.y + view.offset.y;
+                const ax = point.x + ox;
+                const ay = point.y + oy;
                 view.ctx.moveTo(0 + ax, 0 + ay);
                 view.ctx.lineTo(-8 + ax, -16 + ay);
                 view.ctx.lineTo(8 + ax, -16 + ay);
@@ -271,17 +287,26 @@ class Level {
         });
 
         // Stairs
+        view.ctx.fillStyle = 'rgba(0,255,255,0.5)';
         this.stairs.forEach(shape => {
             // Draw path
-            view.ctx.fillStyle = 'rgba(0,255,255,0.5)';
             view.ctx.beginPath();
-            const ox = view.center.x + view.offset.x;
-            const oy = view.center.y + view.offset.y;
             view.ctx.moveTo(shape.x1 + ox, shape.y1 + oy);
             view.ctx.lineTo(shape.x2 + ox, shape.y2 + oy);
             view.ctx.lineTo(shape.x3 + ox, shape.y3 + oy);
             view.ctx.lineTo(shape.x4 + ox, shape.y4 + oy);
             view.ctx.fill();
+        });
+
+        // Portals
+        view.ctx.fillStyle = 'rgba(50,0,50,0.5)';
+        this.portals.forEach(shape => {
+            view.ctx.fillRect(
+                shape.left + ox,
+                shape.top + oy,
+                shape.right - shape.left,
+                shape.bottom - shape.top
+            );
         });
 
         // Items
