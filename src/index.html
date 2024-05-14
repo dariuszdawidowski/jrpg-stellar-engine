@@ -341,8 +341,8 @@
               <object id="5" name="Slope-W" type="Stairs" x="207.875" y="47.875">
                <polygon points="0,0 -15.75,16 -15.75,79.75 0.125,64.125"/>
               </object>
-              <object id="6" name="cave.East" type="Portal" x="400" y="294" width="16" height="16"/>
-              <object id="7" name="cave.West" type="Portal" x="64" y="294" width="16" height="16"/>
+              <object id="6" name="cave-tmx.East" type="Portal" x="400" y="294" width="16" height="16"/>
+              <object id="7" name="cave-tmx.West" type="Portal" x="64" y="294" width="16" height="16"/>
               <object id="8" name="Out-W" type="Spawn" x="72" y="330">
                <point/>
               </object>
@@ -507,6 +507,10 @@
             let view = null;
             const scale = 4;
 
+            // Loaders
+            let loaderTSX = null;
+            let loaderTMX = null;
+
             // Input actions
             const input = {
                 up: false,
@@ -625,20 +629,11 @@
                 event.preventDefault();
             });
 
-            // Init
-            window.addEventListener('load', () => {
+            // Load Level
+            const loadLevel = (map, spawn) => {
 
-                // Initialize view context
-                view = new View({ canvas: document.getElementById('main'), debug: true });
-
-                // Load level
-                const loaderTSX = new LoaderTSX();
-                const loaderTMX = new LoaderTMX({
-                    'test.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('test-tsx').innerText, resource: '#env1', scale }),
-                    'water.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale }),
-                    'props.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('props-tsx').innerText, resource: '#props', scale })
-                });
-                level = loaderTMX.parseLevel({ xml: document.getElementById('test-tmx').innerText, scale });
+                // Load Map
+                level = loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale });
 
                 // Initialize player
                 level.chars['player'] = new Player({
@@ -672,12 +667,28 @@
                         left: -150,
                         right: 150
                     },
-                    transform: level.getSpawnPoint('player', {x: 0, y: 0})
+                    transform: level.getSpawnPoint(spawn.toLowerCase(), {x: 0, y: 0})
                 });
                 level.chars.player.idle();
 
                 // Centre view context on player
                 view.centre(level.chars.player.transform);
+            };
+
+            // Init
+            window.addEventListener('load', () => {
+
+                // Initialize view context
+                view = new View({ canvas: document.getElementById('main'), debug: true });
+
+                // Load level
+                loaderTSX = new LoaderTSX();
+                loaderTMX = new LoaderTMX({
+                    'test.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('test-tsx').innerText, resource: '#env1', scale }),
+                    'water.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale }),
+                    'props.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('props-tsx').innerText, resource: '#props', scale })
+                });
+                loadLevel('test-tmx', 'player');
 
                 // Actors
                 const loaderACX = new LoaderACX();
@@ -701,7 +712,7 @@
                 // Enter into portal
                 level.getPortals(view).forEach(portal => {
                     if (level.chars.player.collideWithBox({with: portal, view})) {
-                        console.log('PORTAL')
+                        loadLevel(portal.map, portal.spawn);
                     }
                 });
 
@@ -832,7 +843,7 @@
                 // Update and render environment
                 level.update(view, deltaTime);
                 level.render(view);
-                level.debug(view);
+                // level.debug(view);
 
                 // Time udpate
                 lastTime = currentTime;
