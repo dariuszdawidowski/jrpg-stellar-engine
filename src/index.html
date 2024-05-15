@@ -343,10 +343,10 @@
               </object>
               <object id="6" name="cave-tmx.East" type="Portal" x="400" y="294" width="16" height="16"/>
               <object id="7" name="cave-tmx.West" type="Portal" x="64" y="294" width="16" height="16"/>
-              <object id="8" name="Out-W" type="Spawn" x="72" y="330">
+              <object id="8" name="Out-W" type="Spawn" x="72" y="320">
                <point/>
               </object>
-              <object id="9" name="Out-E" type="Spawn" x="408" y="330">
+              <object id="9" name="Out-E" type="Spawn" x="408" y="320">
                <point/>
               </object>
              </objectgroup>
@@ -389,13 +389,13 @@
 
         <!-- TMX -->
         <script id="cave-tmx" type="text/xml">
-            <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="17" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="5">
+            <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="17" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="7">
              <tileset firstgid="1" source="props.tsx"/>
              <tileset firstgid="5" source="test.tsx"/>
-             <imagelayer id="5" name="Background">
+             <imagelayer id="5" name="Background" locked="1">
               <image source="../public/sprites/environment/soil.png" width="16" height="16"/>
              </imagelayer>
-             <layer id="1" name="Ground" width="17" height="14">
+             <layer id="1" name="Ground" width="17" height="14" locked="1">
               <data encoding="csv">
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -413,7 +413,7 @@
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
             </data>
              </layer>
-             <layer id="2" name="Colliders" class="Colliders" width="17" height="14">
+             <layer id="2" name="Colliders" class="Colliders" width="17" height="14" locked="1">
               <data encoding="csv">
             61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,
             31,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,30,
@@ -431,7 +431,7 @@
             88,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,89
             </data>
              </layer>
-             <objectgroup id="4" name="Objects">
+             <objectgroup id="4" name="Objects" locked="1">
               <object id="1" name="East" type="Spawn" x="240" y="112">
                <point/>
               </object>
@@ -440,8 +440,11 @@
               </object>
               <object id="3" name="test-tmx.Out-E" type="Portal" x="256" y="92" width="16" height="32"/>
               <object id="4" name="test-tmx.Out-W" type="Portal" x="0" y="93" width="16" height="32"/>
+              <object id="5" name="Level" type="Center" x="136" y="112">
+               <point/>
+              </object>
              </objectgroup>
-             <layer id="3" name="Cover" width="17" height="14">
+             <layer id="3" name="Cover" width="17" height="14" locked="1">
               <data encoding="csv">
             33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -712,13 +715,6 @@
             // Player movement
             const playerMoveUp = (deltaTime) => {
 
-                // Enter into portal
-                level.getPortals(view).forEach(portal => {
-                    if (level.chars.player.collideWithBox({with: portal, view})) {
-                        loadLevel(portal.map, portal.spawn);
-                    }
-                });
-
                 // Collide
                 const [x, y] = level.chars.player.collideUp({
                     view,
@@ -835,6 +831,13 @@
                 else if (input.right) {
                     playerMoveRight(deltaTime);
                 }
+
+                // Enter into portal
+                level.getPortals(view).forEach(portal => {
+                    if (level.chars.player.collideWithBox({with: portal, view})) {
+                        loadLevel(portal.map, portal.spawn);
+                    }
+                });
 
                 // Player actions
                 if (input.action) {

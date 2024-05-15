@@ -216,7 +216,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="4" name="Objects">
+ <objectgroup id="4" name="Objects" locked="1">
   <object id="1" name="Level" type="Center" x="240" y="240">
    <point/>
   </object>
@@ -234,10 +234,10 @@
   </object>
   <object id="6" name="cave-tmx.East" type="Portal" x="400" y="294" width="16" height="16"/>
   <object id="7" name="cave-tmx.West" type="Portal" x="64" y="294" width="16" height="16"/>
-  <object id="8" name="Out-W" type="Spawn" x="72" y="330">
+  <object id="8" name="Out-W" type="Spawn" x="72" y="320">
    <point/>
   </object>
-  <object id="9" name="Out-E" type="Spawn" x="408" y="330">
+  <object id="9" name="Out-E" type="Spawn" x="408" y="320">
    <point/>
   </object>
  </objectgroup>
