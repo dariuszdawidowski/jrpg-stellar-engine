@@ -124,7 +124,7 @@ class Level {
     }
 
     /**
-     * Returns spawn point
+     * Returns a random spawn point
      */
 
     getSpawnPoint(type, fallback = {x: 0, y: 0}) {
@@ -134,6 +134,34 @@ class Level {
         }
         return fallback;
     }
+
+    /**
+     * Returns all spawn point for given type
+     */
+
+    getSpawnPoints(type, fallback = [{x: 0, y: 0}]) {
+        if (type in this.spawnpoints && this.spawnpoints[type].length > 0) {
+            return this.spawnpoints[type];
+        }
+        return fallback;
+    }
+
+    /**
+     * Returns spawn points with given match name e.g. 'mob.*'
+     */
+
+    // getSpawnPoints(pattern) {
+    //     const spawnpoints = [];
+    //     Object.entries(this.spawnpoints).forEach(([name, point]) => {
+    //         console.log(point)
+    //         if (matchWithAsterisk(pattern, name)) {
+    //             point.forEach(p => {
+    //                 spawnpoints.push({name, ...p});
+    //             });
+    //         }
+    //     });
+    //     return spawnpoints;
+    // }
 
     /**
      * Returns list of all objects with class 'portal'

@@ -108,7 +108,7 @@
 
         <!-- TMX -->
         <script id="test-tmx" type="text/xml">
-            <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="10">
+            <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="12">
              <tileset firstgid="1" source="test.tsx"/>
              <tileset firstgid="88" source="water.tsx"/>
              <tileset firstgid="97" source="props.tsx"/>
@@ -332,7 +332,7 @@
               <object id="2" name="Player" type="Spawn" x="168" y="240">
                <point/>
               </object>
-              <object id="3" name="MOB" type="Spawn" x="312" y="240">
+              <object id="3" name="mob.penguin" type="Spawn" x="312" y="240">
                <point/>
               </object>
               <object id="4" name="Slope-E" type="Stairs" x="272.25" y="48.375">
@@ -347,6 +347,9 @@
                <point/>
               </object>
               <object id="9" name="Out-E" type="Spawn" x="408" y="320">
+               <point/>
+              </object>
+              <object id="10" name="item.chest" type="Spawn" x="232" y="90">
                <point/>
               </object>
              </objectgroup>
@@ -389,7 +392,7 @@
 
         <!-- TMX -->
         <script id="cave-tmx" type="text/xml">
-            <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="17" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="7">
+            <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="17" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="8">
              <tileset firstgid="1" source="props.tsx"/>
              <tileset firstgid="5" source="test.tsx"/>
              <imagelayer id="5" name="Background" locked="1">
@@ -441,6 +444,9 @@
               <object id="3" name="test-tmx.Out-E" type="Portal" x="256" y="92" width="16" height="32"/>
               <object id="4" name="test-tmx.Out-W" type="Portal" x="0" y="93" width="16" height="32"/>
               <object id="5" name="Level" type="Center" x="136" y="112">
+               <point/>
+              </object>
+              <object id="7" name="mob.blob" type="Spawn" x="112" y="80">
                <point/>
               </object>
              </objectgroup>
@@ -516,6 +522,7 @@
             // Loaders
             let loaderTSX = null;
             let loaderTMX = null;
+            let loaderACX = null;
 
             // Input actions
             const input = {
@@ -636,7 +643,7 @@
             });
 
             // Load Level
-            const loadLevel = (map, spawn) => {
+             const loadLevel = (map, spawn) => {
 
                 // Load Map
                 level = loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale });
@@ -679,6 +686,33 @@
 
                 // Centre view context on player
                 view.centre(level.chars.player.transform);
+
+                // Spawn MOBs
+                level.getSpawnPoints('mob.penguin', []).forEach((spawnpoint, index) => {
+                    level.mobs[`mob.penguin.${index}`] = loaderACX.parseActor({
+                        xml: document.getElementById('penguin-acx').innerText,
+                        transform: spawnpoint,
+                        scale
+                    });
+                    level.mobs[`mob.penguin.${index}`].wander();
+                });
+                level.getSpawnPoints('mob.blob', []).forEach((spawnpoint, index) => {
+                    level.mobs[`mob.blob.${index}`] = loaderACX.parseActor({
+                        xml: document.getElementById('blob-acx').innerText,
+                        transform: spawnpoint,
+                        scale
+                    });
+                    level.mobs[`mob.blob.${index}`].wander();
+                });
+
+                // Spawn Items
+                level.getSpawnPoints('item.chest', []).forEach((spawnpoint, index) => {
+                    level.items['chest'] = loaderACX.parseActor({
+                        xml: document.getElementById('chest-acx').innerText,
+                        transform: { x: -30, y: -608 },
+                        scale
+                    });
+                });
             };
 
             // Init
@@ -687,7 +721,8 @@
                 // Initialize view context
                 view = new View({ canvas: document.getElementById('main'), debug: true });
 
-                // Load level
+                // Load level data
+                loaderACX = new LoaderACX();
                 loaderTSX = new LoaderTSX();
                 loaderTMX = new LoaderTMX({
                     'test.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('test-tsx').innerText, resource: '#env1', scale }),
@@ -695,14 +730,6 @@
                     'props.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('props-tsx').innerText, resource: '#props', scale })
                 });
                 loadLevel('test-tmx', 'player');
-
-                // Actors
-                const loaderACX = new LoaderACX();
-                level.mobs['penguin1'] = loaderACX.parseActor({ xml: document.getElementById('penguin-acx').innerText, transform: level.getSpawnPoint('mob', {x: 280, y: 0}), scale });
-                level.mobs['penguin1'].wander();
-                level.mobs['blob1'] = loaderACX.parseActor({ xml: document.getElementById('blob-acx').innerText, transform: { x: 0, y: 0 }, scale });
-                level.mobs['blob1'].wander();
-                level.items['chest'] = loaderACX.parseActor({ xml: document.getElementById('chest-acx').innerText, transform: { x: -30, y: -608 }, scale });
 
                 // Start
                 requestAnimationFrame(function(currentTime) {
