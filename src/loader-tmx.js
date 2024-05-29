@@ -20,6 +20,19 @@ class LoaderTMX {
     }
 
     /**
+     * Load and parse level
+     * @param url: string - fetch url
+     * @param prefix: string - prefix path for load resources (optional)
+     * @param scale: int - scale for this level (default 1)
+     */
+
+    async loadLevel(args) {
+        const file = await fetch(args.url);
+        const text = await file.text();
+        return this.parseLevel({ xml: text, prefix: args.prefix, scale: args.scale });
+    }
+
+    /**
      * Parse .tmx xml
      * @param xml: string - xml to parse
      * @param prefix: string - prefix path for load resources (optional)

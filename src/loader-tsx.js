@@ -5,6 +5,19 @@
 class LoaderTSX {
 
     /**
+     * Load and parse xml
+     * @param url: string - file to fetch
+     * @param resource: object - image with tiles
+     * @param scale: int - scale for this tileset (default 1)
+     */
+
+    async loadTileSet(args) {
+        const file = await fetch(args.url);
+        const text = await file.text();
+        return this.parseTileSet({ xml: text, resource: args.resource, scale: args.scale });
+    }
+
+    /**
      * Parse xml
      * @param xml: string - xml to parse
      * @param resource: object - image with tiles
