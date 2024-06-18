@@ -217,9 +217,6 @@
 </data>
  </layer>
  <objectgroup id="4" name="Objects">
-  <object id="1" name="Level" type="Center" x="240" y="240">
-   <point/>
-  </object>
   <object id="2" name="Player" type="Spawn" x="168" y="240">
    <point/>
   </object>

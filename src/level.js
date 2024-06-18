@@ -212,7 +212,14 @@ class Level {
 
             // Render backgrounds/foregrounds
             if (layer.class == 'image') {
-                view.background(layer.src, {w: layer.w * this.scale, h: layer.h * this.scale}, layer.repeat, layer.parallax);
+                view.background(
+                    layer.src,
+                    {x: layer.x * this.scale, y: layer.y * this.scale},
+                    {w: layer.w * this.scale, h: layer.h * this.scale},
+                    layer.repeat,
+                    layer.parallax,
+                    layer.coordinates
+                );
             }
 
             // Render objects

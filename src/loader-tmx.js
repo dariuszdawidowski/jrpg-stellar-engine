@@ -14,9 +14,6 @@ class LoaderTMX {
 
         // Tilesets
         this.tilesets = tilesets;
-
-        // Center of the coordinate system correction
-        this.offset = {x: 0, y: 0};
     }
 
     /**
@@ -50,15 +47,6 @@ class LoaderTMX {
         // Create Level instance to return to
         const level = new Level();
 
-        // Find level center
-        const center = doc.querySelector('object[type="Center"]');
-        if (center) {
-            this.offset.x = parseFloat(center.getAttribute('x'));
-            this.offset.y = parseFloat(center.getAttribute('y'));
-            level.offset.x = this.offset.x;
-            level.offset.y = this.offset.y;
-        }
-
         // Scale
         level.scale = scale;
 
@@ -78,6 +66,8 @@ class LoaderTMX {
                     // Image
                     case 'imagelayer':
                         const imageName = node.getAttribute('name');
+                        const imageOffsetX = node.hasAttribute('offsetx') ? parseInt(node.getAttribute('offsetx')) : 0;
+                        const imageOffsetY = node.hasAttribute('offsety') ? parseInt(node.getAttribute('offsety')) : 0;
                         const imageRepeatX = node.hasAttribute('repeatx') ? parseInt(node.getAttribute('repeatx')) : 0;
                         const imageRepeatY = node.hasAttribute('repeaty') ? parseInt(node.getAttribute('repeaty')) : 0;
                         const imageParallaxX = node.hasAttribute('parallaxx') ? parseFloat(node.getAttribute('parallaxx')) : 0;
@@ -91,6 +81,8 @@ class LoaderTMX {
                                 'name': imageName,
                                 'class': 'image',
                                 'src': null,
+                                'x':  imageOffsetX,
+                                'y':  imageOffsetY,
                                 'w': imageWidth,
                                 'h': imageHeight,
                                 'repeat': {
@@ -100,7 +92,8 @@ class LoaderTMX {
                                 'parallax': {
                                     'x': imageParallaxX,
                                     'y': imageParallaxY
-                                }
+                                },
+                                'coordinates': 'world'
                             };
                             // Load from html resource
                             if (imageSource.startsWith('#')) {
@@ -146,8 +139,8 @@ class LoaderTMX {
                         node.querySelectorAll('object').forEach(obj => {
                             const name = obj.getAttribute('name').toLowerCase();
                             const type = obj.getAttribute('type').toLowerCase();
-                            const x = (parseFloat(obj.getAttribute('x')) - this.offset.x) * scale;
-                            const y = (parseFloat(obj.getAttribute('y')) - this.offset.y) * scale;
+                            const x = parseFloat(obj.getAttribute('x')) * scale;
+                            const y = parseFloat(obj.getAttribute('y')) * scale;
 
                             // Spawn point
                             if (type == 'spawn') {
@@ -179,8 +172,8 @@ class LoaderTMX {
                                 const name = obj.getAttribute('name');
                                 if (name.search('.') != -1) {
                                     const [map, spawn] = name.split(':');
-                                    const x = (parseFloat(obj.getAttribute('x')) - this.offset.x) * scale;
-                                    const y = (parseFloat(obj.getAttribute('y')) - this.offset.y) * scale;
+                                    const x = parseFloat(obj.getAttribute('x')) * scale;
+                                    const y = parseFloat(obj.getAttribute('y')) * scale;
                                     const w = parseFloat(obj.getAttribute('width')) * scale;
                                     const h = parseFloat(obj.getAttribute('height')) * scale;
                                     level.portals.push({

@@ -45,39 +45,58 @@ class View {
 
     /**
      * Fill with background image
-     * @param resource: DOMElement - image ref to display
+     * @param resource: object - image to display
+     * @param position: {x, y} - image offset
      * @param size: {w, h} - image width and height
      * @param repeat: {x, y} - repeat tiles
      * @param parallax: {x, y} - parallax speed
+     * @param coordinates: string - 'world' | 'screen' | 'cover'
      */
+ 
+    background(resource, position, size, repeat, parallax, coordinates = 'world') {
 
-    background(resource, size, repeat, parallax) {
+        // Compute base x,y with parallax
+        let base = {x: 0, y: 0};
+
+        if (coordinates == 'world') {
+            base = this.world2Screen(position);
+        }
+        else if (coordinates == 'screen' || coordinates == 'cover') {
+            base.x = ((position.x + this.offset.x) * parallax.x) % size.w;
+            base.y = ((position.y + this.offset.y) * parallax.y) % size.h;
+        }
+
+        // Standard draw
+        if (repeat.x == 0 && repeat.y == 0 && (coordinates == 'world' || coordinates == 'screen')) {
+            this.ctx.drawImage(resource, base.x, base.y, size.w, size.h);
+        }
 
         // Fit to screen
-        if (repeat.x == 0 && repeat.y == 0) {
+        if (repeat.x == 0 && repeat.y == 0 && coordinates == 'cover') {
             const transform = this.coverCanvas(size.w, size.h);
-            const parallaxX = (this.offset.x * parallax.x) % size.w;
-            const parallaxY = (this.offset.y * parallax.y) % size.h;
-            transform[0] = transform[0] + parallaxX;
-            transform[1] = transform[1] + parallaxY;
+            transform[0] = transform[0] + base.x;
+            transform[1] = transform[1] + base.y;
             this.ctx.drawImage(resource, ...transform);
         }
 
         // Repeat X
         else if (repeat.x == 1 && repeat.y == 0) {
-            const parallaxX = (this.offset.x * parallax.x) % size.w;
-            const parallaxY = (this.offset.y * parallax.y) % size.h;
-            for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
-                this.ctx.drawImage(resource, x, parallaxY, size.w, size.h);
+            for (let x = base.x - size.w; x < this.canvas.width; x += size.w) {
+                this.ctx.drawImage(resource, x, base.y, size.w, size.h);
+            }
+        }
+
+        // Repeat Y
+        else if (repeat.x == 0 && repeat.y == 1) {
+            for (let y = base.y - size.h; y < this.canvas.height; y += size.h) {
+                this.ctx.drawImage(resource, base.x, y, size.w, size.h);
             }
         }
 
         // Repeat X,Y
         else if (repeat.x == 1 && repeat.y == 1) {
-            const parallaxY = (this.offset.y * parallax.y) % size.h;
-            for (let y = parallaxY - size.h; y < this.canvas.height; y += size.h) {
-                const parallaxX = (this.offset.x * parallax.x) % size.w;
-                for (let x = parallaxX - size.w; x < this.canvas.width; x += size.w) {
+            for (let y = base.y - size.h; y < this.canvas.height; y += size.h) {
+                for (let x = base.x - size.w; x < this.canvas.width; x += size.w) {
                     this.ctx.drawImage(resource, x, y, size.w, size.h);
                 }
             }
@@ -177,8 +196,8 @@ class View {
 
         // Name
         this.ctx.font = "14px sans-serif";
-        const txtc = this.ctx.measureText('center').width / 2;
-        this.ctx.fillText('center', this.center.x + this.offset.x - txtc, this.center.y + this.offset.y + 16);
+        const txtc = this.ctx.measureText('0,0').width / 2;
+        this.ctx.fillText('0,0', this.center.x + this.offset.x - txtc, this.center.y + this.offset.y + 16);
 
         // Draw other classes boxes
         this.ctx.fillStyle = 'rgba(255,255,0,0.3)';
