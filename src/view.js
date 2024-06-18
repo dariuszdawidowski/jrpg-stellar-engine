@@ -59,7 +59,8 @@ class View {
         let base = {x: 0, y: 0};
 
         if (coordinates == 'world') {
-            base = this.world2Screen(position);
+            base.x = ((position.x + this.center.x + this.offset.x) * parallax.x) % size.w;
+            base.y = (position.y + this.center.y + this.offset.y);
         }
         else if (coordinates == 'screen' || coordinates == 'cover') {
             base.x = ((position.x + this.offset.x) * parallax.x) % size.w;
