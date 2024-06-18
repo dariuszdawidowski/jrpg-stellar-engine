@@ -48,8 +48,8 @@
   <object id="2" name="West" type="Spawn" x="32" y="112">
    <point/>
   </object>
-  <object id="3" name="test-tmx.Out-E" type="Portal" x="256" y="92" width="16" height="32"/>
-  <object id="4" name="test-tmx.Out-W" type="Portal" x="0" y="93" width="16" height="32"/>
+  <object id="3" name="test-tmx:Out-E" type="Portal" x="256" y="92" width="16" height="32"/>
+  <object id="4" name="test-tmx:Out-W" type="Portal" x="0" y="93" width="16" height="32"/>
   <object id="5" name="Level" type="Center" x="136" y="112">
    <point/>
   </object>

@@ -232,8 +232,8 @@
   <object id="5" name="Slope-W" type="Stairs" x="207.875" y="47.875">
    <polygon points="0,0 -15.75,16 -15.75,79.75 0.125,64.125"/>
   </object>
-  <object id="6" name="cave-tmx.East" type="Portal" x="400" y="294" width="16" height="16"/>
-  <object id="7" name="cave-tmx.West" type="Portal" x="64" y="294" width="16" height="16"/>
+  <object id="6" name="cave-tmx:East" type="Portal" x="400" y="294" width="16" height="16"/>
+  <object id="7" name="cave-tmx:West" type="Portal" x="64" y="294" width="16" height="16"/>
   <object id="8" name="Out-W" type="Spawn" x="72" y="320">
    <point/>
   </object>
