@@ -6,7 +6,7 @@
 
 Example:
 
-<actor version="1.0" name="chest" type="actor" resource="#chest" width="32" height="16" cols="2" rows="1">
+<actor version="0.1" name="chest" type="actor" resource="#chest" width="32" height="16" cols="2" rows="1">
     <collider x="-4" y="-4" width="24" height="24" />
 </actor>
 
@@ -31,7 +31,7 @@ class LoaderACX {
             const actor = doc.querySelector('actor');
             if (actor) {
                 const version = actor.getAttribute('version');
-                if (version && version == '1.0') {
+                if (version && version == '0.1') {
                     const name = actor.getAttribute('name');
                     const type = actor.getAttribute('type');
                     const resource = actor.getAttribute('resource');
