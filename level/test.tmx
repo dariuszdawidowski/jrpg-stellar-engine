@@ -220,7 +220,7 @@
   <object id="2" name="Player" type="Spawn" x="168" y="240">
    <point/>
   </object>
-  <object id="3" name="mob.penguin" type="Spawn" x="312" y="240">
+  <object id="3" name="mob:penguin-acx" type="Spawn" x="312" y="240">
    <point/>
   </object>
   <object id="4" name="Slope-E" type="Stairs" x="272.25" y="48.375">
@@ -237,7 +237,7 @@
   <object id="9" name="Out-E" type="Spawn" x="408" y="320">
    <point/>
   </object>
-  <object id="10" name="item.chest" type="Spawn" x="232" y="90">
+  <object id="10" name="item:chest-acx" type="Spawn" x="232" y="90">
    <point/>
   </object>
  </objectgroup>

@@ -50,7 +50,7 @@
   </object>
   <object id="3" name="test-tmx:Out-E" type="Portal" x="256" y="92" width="16" height="32"/>
   <object id="4" name="test-tmx:Out-W" type="Portal" x="0" y="93" width="16" height="32"/>
-  <object id="7" name="mob.blob" type="Spawn" x="112" y="80">
+  <object id="7" name="mob:blob-acx" type="Spawn" x="112" y="80">
    <point/>
   </object>
  </objectgroup>
