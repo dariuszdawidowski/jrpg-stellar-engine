@@ -144,8 +144,46 @@ class LoaderTMX {
 
                             // Spawn point
                             if (type == 'spawn') {
+
+                                // Add point to list of spawnpoints
                                 if (!(name in level.spawnpoints)) level.spawnpoints[name] = [];
                                 level.spawnpoints[name].push({x, y});
+
+                                // Actual spawn
+                                if (name.search(':') != -1) {
+                                    const [kind, uri] = name.split(':');
+                                    switch (kind.toLowerCase()) {
+
+                                        // Spawn items
+                                        case 'item':
+                                            level.items[`${uri}.${Object.keys(level.items).length + 1}`] = loaderACX.parseActor({
+                                                xml: document.getElementById(uri).innerText,
+                                                transform: {x, y},
+                                                scale
+                                            });
+                                            break;
+
+                                        // Spawn MOBs
+                                        case 'mob':
+                                            level.mobs[`${uri}.${Object.keys(level.mobs).length + 1}`] = loaderACX.parseActor({
+                                                xml: document.getElementById(uri).innerText,
+                                                transform: {x, y},
+                                                scale
+                                            });
+                                            break;
+
+                                        // Spawn NPCs
+                                        case 'npc':
+                                            level.npcs[`${uri}.${Object.keys(level.npcs).length + 1}`] = loaderACX.parseActor({
+                                                xml: document.getElementById(uri).innerText,
+                                                transform: {x, y},
+                                                scale
+                                            });
+                                            break;
+
+                                    }
+                                }
+
                             }
 
                             // Stairs
@@ -170,7 +208,7 @@ class LoaderTMX {
                             // Portals
                             else if (type == 'portal') {
                                 const name = obj.getAttribute('name');
-                                if (name.search('.') != -1) {
+                                if (name.search(':') != -1) {
                                     const [map, spawn] = name.split(':');
                                     const x = parseFloat(obj.getAttribute('x')) * scale;
                                     const y = parseFloat(obj.getAttribute('y')) * scale;

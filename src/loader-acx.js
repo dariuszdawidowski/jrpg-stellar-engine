@@ -4,10 +4,22 @@
 
 /*
 
-Example:
+Example #1:
 
-<actor version="0.1" name="chest" type="actor" resource="#chest" width="32" height="16" cols="2" rows="1">
+<actor version="0.1" name="chest" type="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
     <collider x="-4" y="-4" width="24" height="24" />
+</actor>
+
+Example #2:
+
+<actor version="0.1" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
+    <movement speed="80" />
+    <collider x="0" y="0" width="22" height="22" />
+    <anim name="idle" speed="100">1</anim>
+    <anim name="moveUp" speed="100">8, 9, 10</anim>
+    <anim name="moveDown" speed="100">0, 1, 2</anim>
+    <anim name="moveLeft" speed="100">12, 13, 14</anim>
+    <anim name="moveRight" speed="100">4, 5, 6</anim>
 </actor>
 
 */

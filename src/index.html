@@ -329,7 +329,7 @@
                  <object id="2" name="Player" type="Spawn" x="168" y="240">
                   <point/>
                  </object>
-                 <object id="3" name="mob.penguin" type="Spawn" x="312" y="240">
+                 <object id="3" name="mob:penguin-acx" type="Spawn" x="312" y="240">
                   <point/>
                  </object>
                  <object id="4" name="Slope-E" type="Stairs" x="272.25" y="48.375">
@@ -346,7 +346,7 @@
                  <object id="9" name="Out-E" type="Spawn" x="408" y="320">
                   <point/>
                  </object>
-                 <object id="10" name="item.chest" type="Spawn" x="232" y="90">
+                 <object id="10" name="item:chest-acx" type="Spawn" x="232" y="90">
                   <point/>
                  </object>
                 </objectgroup>
@@ -474,7 +474,7 @@
               </object>
               <object id="3" name="test-tmx:Out-E" type="Portal" x="256" y="92" width="16" height="32"/>
               <object id="4" name="test-tmx:Out-W" type="Portal" x="0" y="93" width="16" height="32"/>
-              <object id="7" name="mob.blob" type="Spawn" x="112" y="80">
+              <object id="7" name="mob:blob-acx" type="Spawn" x="112" y="80">
                <point/>
               </object>
              </objectgroup>
@@ -715,32 +715,6 @@
                 // Centre view context on player
                 view.centre(level.chars.player.transform);
 
-                // Spawn MOBs
-                level.getSpawnPoints('mob.penguin', []).forEach((spawnpoint, index) => {
-                    level.mobs[`mob.penguin.${index}`] = loaderACX.parseActor({
-                        xml: document.getElementById('penguin-acx').innerText,
-                        transform: spawnpoint,
-                        scale
-                    });
-                    level.mobs[`mob.penguin.${index}`].wander();
-                });
-                level.getSpawnPoints('mob.blob', []).forEach((spawnpoint, index) => {
-                    level.mobs[`mob.blob.${index}`] = loaderACX.parseActor({
-                        xml: document.getElementById('blob-acx').innerText,
-                        transform: spawnpoint,
-                        scale
-                    });
-                    level.mobs[`mob.blob.${index}`].wander();
-                });
-
-                // Spawn Items
-                level.getSpawnPoints('item.chest', []).forEach((spawnpoint, index) => {
-                    level.items['chest'] = loaderACX.parseActor({
-                        xml: document.getElementById('chest-acx').innerText,
-                        transform: spawnpoint,
-                        scale
-                    });
-                });
             };
 
             // Init
@@ -874,7 +848,7 @@
                 fpsContainer.textContent = `FPS: ${Math.round(1 / deltaTime)}`;
 
                 // Clear screen
-                // view.cls();
+                view.cls();
 
                 // Player movement
                 if (input.up) {
@@ -899,8 +873,8 @@
 
                 // Player actions
                 if (input.action) {
-                    if (level.chars.player.collideWithSprite({with: level.items.chest, view}) && level.items.chest.frame === 0) {
-                        level.items.chest.frame = 1;
+                    if (level.chars.player.collideWithSprite({with: level.items['chest-acx.1'], view}) && level.items['chest-acx.1'].frame === 0) {
+                        level.items['chest-acx.1'].frame = 1;
                     }
                 }
 

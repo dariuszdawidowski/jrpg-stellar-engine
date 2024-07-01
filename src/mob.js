@@ -20,6 +20,9 @@ class MOB extends Actor {
 
         // Helper counter for actions (seconds)
         this.duration = 0;
+
+        // Start wandewr
+        this.wander();
     }
 
     /**
