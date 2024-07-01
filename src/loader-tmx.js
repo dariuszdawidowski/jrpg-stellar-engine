@@ -116,7 +116,7 @@ class LoaderTMX {
                         const data = node.querySelector('data');
                         const offsetX = node.hasAttribute('offsetx') ? node.getAttribute('offsetx').toLowerCase() : null;
                         const offsetY = node.hasAttribute('offsety') ? node.getAttribute('offsety').toLowerCase() : null;
-                        if (data) {
+                        if (data && !name.trim().startsWith('.')) {
                             const arrayContent = data.textContent.split(',').map(Number);
                             const layer = {
                                 'name': name,
