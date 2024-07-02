@@ -729,11 +729,11 @@
                 // Load level data
                 loaderACX = new LoaderACX();
                 loaderTSX = new LoaderTSX();
-                loaderTMX = new LoaderTMX({
+                loaderTMX = new LoaderTMX({tilesets: {
                     'test.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('test-tsx').innerText, resource: '#env1', scale }),
                     'water.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale }),
                     'props.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('props-tsx').innerText, resource: '#props', scale })
-                });
+                }});
                 loadLevel('test-tmx', 'player').then(() => start());
             });
 

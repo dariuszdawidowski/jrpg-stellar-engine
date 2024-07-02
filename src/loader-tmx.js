@@ -7,13 +7,13 @@ class LoaderTMX {
 
     /**
      * TMX loader constructor
-     * @param tilesets: {'name': reference, ...}
+     * @param args.tilesets - optional tilesets dict
      */
 
-    constructor(tilesets) {
+    constructor(args = {}) {
 
         // Tilesets
-        this.tilesets = tilesets;
+        this.tilesets = 'tilesets' in args ? args.tilesets : null;
 
         // Loaders
         this.loader = {
@@ -63,7 +63,7 @@ class LoaderTMX {
 
         // Resources list 
         const resources = {
-            // {'/url/of/file.tsx': <fetched buffer>, ...}
+            // {'name': { url: '/url/of/file.tsx', buffer: <fetched buffer>}, ...}
             tsx: {},
             // {'/url/of/file.acx': <fetched buffer>, ...}
             acx: {}
@@ -77,7 +77,7 @@ class LoaderTMX {
                     // Tileset
                     if (node.nodeName == 'tileset') {
                         const tilesetName = node.getAttribute('source');
-                        resources.tsx[resolvePath(url, tilesetName)] = null;
+                        resources.tsx[tilesetName] = {url: resolvePath(url, tilesetName), buffer: null};
                     }
 
                     // Objects layer
@@ -103,10 +103,10 @@ class LoaderTMX {
             }
 
             // Fetch tsx resources
-            const tsxPromises = Object.keys(resources.tsx).map(async url => {
-                const tsxFile = await fetch(url);
+            const tsxPromises = Object.keys(resources.tsx).map(async name => {
+                const tsxFile = await fetch(resources.tsx[name].url);
                 const tsxText = await tsxFile.text();
-                resources.tsx[url] = tsxText;
+                resources.tsx[name].buffer = tsxText;
             });
             await Promise.all(tsxPromises);
 
@@ -129,7 +129,21 @@ class LoaderTMX {
                         const tilesetName = node.getAttribute('source');
                         const tilesetFirst = parseInt(node.getAttribute('firstgid'));
                         if (tilesetName && tilesetFirst) {
-                            level.tilesets[tilesetName] = {ref: this.tilesets[tilesetName], first: tilesetFirst};
+                            // Tilesets passed in contructor
+                            if (this.tilesets) {
+                                level.tilesets[tilesetName] = {ref: this.tilesets[tilesetName], first: tilesetFirst};
+                            }
+                            // Tilesets prefetched in resources
+                            else {
+                                level.tilesets[tilesetName] = {
+                                    ref: this.loader.tsx.parseTileSet({
+                                        xml: resources.tsx[tilesetName].buffer,
+                                        url: resources.tsx[tilesetName].url,
+                                        scale
+                                    }),
+                                    first: tilesetFirst
+                                };
+                            }
                         }
                         break;
 
