@@ -11,7 +11,7 @@ function randomRangeInt(min, max) {
 };
 
 /**
- * Match with classic asterick instead of regex
+ * Match with classic asterisk instead of regex
  */
 
 // function matchWithAsterisk(pattern, str) {
@@ -25,3 +25,14 @@ function randomRangeInt(min, max) {
 
 //     return false;
 // }
+
+/**
+ * Making second path absolute too
+ */
+
+function resolvePath(basePath, relativePath) {
+    const fakeBaseUrl = 'http://example.com';
+    const base = new URL(basePath, fakeBaseUrl);
+    const resolved = new URL(relativePath, base);
+    return resolved.pathname;
+}
