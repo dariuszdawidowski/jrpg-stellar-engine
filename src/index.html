@@ -677,7 +677,7 @@
             const loadLevel = async (map, spawn) => {
 
                 // Load Map
-                level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale });
+                level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, prefetch: false });
 
                 // Initialize player
                 level.chars['player'] = new Player({

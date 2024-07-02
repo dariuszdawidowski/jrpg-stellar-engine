@@ -17,7 +17,7 @@ class LoaderTMX {
 
         // Loaders
         this.loader = {
-            //tsx: new LoaderTSX(),
+            tsx: new LoaderTSX(),
             acx: new LoaderACX()
         };
 
@@ -26,27 +26,30 @@ class LoaderTMX {
     /**
      * Load and parse level
      * @param url: string - fetch url
-     * @param prefix: string - prefix path for load resources (optional)
      * @param scale: int - scale for this level (default 1)
+     * @param prefetch: bool - prefetch .acx & .tsx resources
      */
 
     async loadLevel(args) {
-        const file = await fetch(args.url);
+
+        const { url = null, scale = 1, prefetch = true } = args;
+        const file = await fetch(url);
         const text = await file.text();
-        const level = await this.parseLevel({ xml: text, prefix: args.prefix, scale: args.scale });
+        const level = await this.parseLevel({ xml: text, url, scale, prefetch });
         return level;
     }
 
     /**
      * Parse .tmx xml
      * @param xml: string - xml to parse
-     * @param prefix: string - prefix path for load resources (optional)
+     * @param url: string - map's file url
      * @param scale: int - scale for this level (default 1)
+     * @param prefetch: bool - prefetch .acx & .tsx resources
      */
 
     async parseLevel(args) {
 
-        const { xml = null, prefix = '', scale = 1 } = args;
+        const { xml = null, url = null, scale = 1, prefetch = true } = args;
 
         // Parse XML
         const parser = new DOMParser();
@@ -61,40 +64,60 @@ class LoaderTMX {
         // Resources list 
         const resources = {
             // {'/url/of/file.tsx': <fetched buffer>, ...}
-            //tsx: {},
+            tsx: {},
             // {'/url/of/file.acx': <fetched buffer>, ...}
             acx: {}
         };
 
         // Pre-parse for fetching resources
-        for (const node of doc.querySelector('map').childNodes) {
-            if (node.nodeType === Node.ELEMENT_NODE) {
-                if (node.nodeName == 'objectgroup') {
-                    node.querySelectorAll('object').forEach(obj => {
-                        const name = obj.getAttribute('name').toLowerCase();
-                        const type = obj.getAttribute('type').toLowerCase();
-                        const x = parseFloat(obj.getAttribute('x')) * scale;
-                        const y = parseFloat(obj.getAttribute('y')) * scale;
+        if (prefetch) {
+            for (const node of doc.querySelector('map').childNodes) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
 
-                        // ACX from spawn points
-                        if (type == 'spawn') {
-                            if (name.search(':') != -1) {
-                                const [kind, uri] = name.split(':');
-                                if (uri.startsWith('/') && ['item', 'mob', 'npc'].includes(kind.toLowerCase())) resources.acx[uri] = null;
+                    // Tileset
+                    if (node.nodeName == 'tileset') {
+                        const tilesetName = node.getAttribute('source');
+                        resources.tsx[resolvePath(url, tilesetName)] = null;
+                    }
+
+                    // Objects layer
+                    else if (node.nodeName == 'objectgroup') {
+                        node.querySelectorAll('object').forEach(obj => {
+                            const name = obj.getAttribute('name').toLowerCase();
+                            const type = obj.getAttribute('type').toLowerCase();
+                            const x = parseFloat(obj.getAttribute('x')) * scale;
+                            const y = parseFloat(obj.getAttribute('y')) * scale;
+
+                            // ACX from spawn points
+                            if (type == 'spawn') {
+                                if (name.search(':') != -1) {
+                                    const [kind, uri] = name.split(':');
+                                    if (['item', 'mob', 'npc'].includes(kind.toLowerCase())) resources.acx[uri] = null;
+                                }
                             }
-                        }
-                    });
+
+                        });
+                    }
+
                 }
             }
-        }
 
-        // Fetch resources
-        const resourcePromises = Object.keys(resources.acx).map(async url => {
-            const resourceFile = await fetch(url);
-            const resourceText = await resourceFile.text();
-            resources.acx[url] = resourceText;
-        });
-        await Promise.all(resourcePromises);
+            // Fetch tsx resources
+            const tsxPromises = Object.keys(resources.tsx).map(async url => {
+                const tsxFile = await fetch(url);
+                const tsxText = await tsxFile.text();
+                resources.tsx[url] = tsxText;
+            });
+            await Promise.all(tsxPromises);
+
+            // Fetch acx resources
+            const acxPromises = Object.keys(resources.acx).map(async url => {
+                const acxFile = await fetch(url);
+                const acxText = await acxFile.text();
+                resources.acx[url] = acxText;
+            });
+            await Promise.all(acxPromises);
+        }
 
         // Parse
         for (const node of doc.querySelector('map').childNodes) {
@@ -149,7 +172,7 @@ class LoaderTMX {
                             // Load from file
                             else {
                                 const img = new Image();
-                                img.src = prefix + imageSource;
+                                img.src = url ? resolvePath(url, imageSource) : imageSource;
                                 layer.src = img;
                             }
                             if (layer.src) level.layers.push(layer);
