@@ -14,6 +14,13 @@ class LoaderTMX {
 
         // Tilesets
         this.tilesets = tilesets;
+
+        // Loaders
+        this.loader = {
+            //tsx: new LoaderTSX(),
+            acx: new LoaderACX()
+        };
+
     }
 
     /**
@@ -26,7 +33,8 @@ class LoaderTMX {
     async loadLevel(args) {
         const file = await fetch(args.url);
         const text = await file.text();
-        return this.parseLevel({ xml: text, prefix: args.prefix, scale: args.scale });
+        const level = await this.parseLevel({ xml: text, prefix: args.prefix, scale: args.scale });
+        return level;
     }
 
     /**
@@ -36,7 +44,7 @@ class LoaderTMX {
      * @param scale: int - scale for this level (default 1)
      */
 
-    parseLevel(args) {
+    async parseLevel(args) {
 
         const { xml = null, prefix = '', scale = 1 } = args;
 
@@ -50,6 +58,45 @@ class LoaderTMX {
         // Scale
         level.scale = scale;
 
+        // Resources list 
+        const resources = {
+            // {'/url/of/file.tsx': <fetched buffer>, ...}
+            //tsx: {},
+            // {'/url/of/file.acx': <fetched buffer>, ...}
+            acx: {}
+        };
+
+        // Pre-parse for fetching resources
+        for (const node of doc.querySelector('map').childNodes) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.nodeName == 'objectgroup') {
+                    node.querySelectorAll('object').forEach(obj => {
+                        const name = obj.getAttribute('name').toLowerCase();
+                        const type = obj.getAttribute('type').toLowerCase();
+                        const x = parseFloat(obj.getAttribute('x')) * scale;
+                        const y = parseFloat(obj.getAttribute('y')) * scale;
+
+                        // ACX from spawn points
+                        if (type == 'spawn') {
+                            if (name.search(':') != -1) {
+                                const [kind, uri] = name.split(':');
+                                if (['item', 'mob', 'npc'].includes(kind.toLowerCase())) resources.acx[uri] = null;
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // Fetch resources
+        const resourcePromises = Object.keys(resources.acx).map(async url => {
+            const resourceFile = await fetch(url);
+            const resourceText = await resourceFile.text();
+            resources.acx[url] = resourceText;
+        });
+        await Promise.all(resourcePromises);
+
+        // Parse
         for (const node of doc.querySelector('map').childNodes) {
              if (node.nodeType === Node.ELEMENT_NODE) {
                 switch (node.nodeName) {
@@ -156,8 +203,8 @@ class LoaderTMX {
 
                                         // Spawn items
                                         case 'item':
-                                            level.items[`${uri}.${Object.keys(level.items).length + 1}`] = loaderACX.parseActor({
-                                                xml: document.getElementById(uri).innerText,
+                                            level.items[`${uri}.${Object.keys(level.items).length + 1}`] = this.loader.acx.parseActor({
+                                                xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                                                 transform: {x, y},
                                                 scale
                                             });
@@ -165,8 +212,8 @@ class LoaderTMX {
 
                                         // Spawn MOBs
                                         case 'mob':
-                                            level.mobs[`${uri}.${Object.keys(level.mobs).length + 1}`] = loaderACX.parseActor({
-                                                xml: document.getElementById(uri).innerText,
+                                            level.mobs[`${uri}.${Object.keys(level.mobs).length + 1}`] = this.loader.acx.parseActor({
+                                                xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                                                 transform: {x, y},
                                                 scale
                                             });
@@ -174,8 +221,8 @@ class LoaderTMX {
 
                                         // Spawn NPCs
                                         case 'npc':
-                                            level.npcs[`${uri}.${Object.keys(level.npcs).length + 1}`] = loaderACX.parseActor({
-                                                xml: document.getElementById(uri).innerText,
+                                            level.npcs[`${uri}.${Object.keys(level.npcs).length + 1}`] = this.loader.acx.parseActor({
+                                                xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                                                 transform: {x, y},
                                                 scale
                                             });
