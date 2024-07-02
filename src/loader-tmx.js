@@ -80,7 +80,7 @@ class LoaderTMX {
                         if (type == 'spawn') {
                             if (name.search(':') != -1) {
                                 const [kind, uri] = name.split(':');
-                                if (['item', 'mob', 'npc'].includes(kind.toLowerCase())) resources.acx[uri] = null;
+                                if (uri.startsWith('/') && ['item', 'mob', 'npc'].includes(kind.toLowerCase())) resources.acx[uri] = null;
                             }
                         }
                     });

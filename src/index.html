@@ -542,6 +542,9 @@
         <!-- Init -->
         <script type="text/javascript">
 
+            // Loop control
+            let pause = false;
+
             // Rendering
             let level = null;
             let view = null;
@@ -671,10 +674,10 @@
             });
 
             // Load Level
-            const loadLevel = (map, spawn) => {
+            const loadLevel = async (map, spawn) => {
 
                 // Load Map
-                level = loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale });
+                level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale });
 
                 // Initialize player
                 level.chars['player'] = new Player({
@@ -731,14 +734,7 @@
                     'water.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale }),
                     'props.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('props-tsx').innerText, resource: '#props', scale })
                 });
-                loadLevel('test-tmx', 'player');
-
-                // Start
-                requestAnimationFrame(function(currentTime) {
-                    lastTime = currentTime;
-                    mainLoop(currentTime);
-                });
-
+                loadLevel('test-tmx', 'player').then(() => start());
             });
 
             // Player movement
@@ -836,6 +832,20 @@
                 level.chars.player.moveRight(x, view);
             };
 
+            // Start loop
+            const start = () => {
+                pause = false;
+                requestAnimationFrame(function(currentTime) {
+                    lastTime = currentTime;
+                    mainLoop(currentTime);
+                });
+            };
+
+            // Stop loop
+            const stop = () => {
+                pause = true;
+            };
+
             // Main loop
             let lastTime = 0;
             let fpsContainer = document.querySelector('#fps');
@@ -867,7 +877,8 @@
                 // Enter into portal
                 level.getPortals(view).forEach(portal => {
                     if (level.chars.player.collideWithBox({with: portal, view})) {
-                        loadLevel(portal.map, portal.spawn);
+                        stop();
+                        loadLevel(portal.map, portal.spawn).then(() => start());
                     }
                 });
 
@@ -887,7 +898,7 @@
                 lastTime = currentTime;
 
                 // Display synchro
-                requestAnimationFrame(mainLoop);
+                if (!pause) requestAnimationFrame(mainLoop);
             }
 
         </script>
