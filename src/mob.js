@@ -61,7 +61,7 @@ class MOB extends Actor {
                 // Wandering movement
                 case 'wander':
                     if (this.direction > 3) {
-                        this.frame = this.anim.idle[0];
+                        this.frame = this.animations.idle[0];
                         this.transform.v = '';
                         this.transform.h = '';
                     }

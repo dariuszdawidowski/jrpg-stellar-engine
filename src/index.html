@@ -501,32 +501,70 @@
 
         <!-- ACX -->
         <script id="penguin-acx" type="text/xml">
-            <actor version="0.1" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
+            <actor version="0.2" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
                 <movement speed="80" />
-                <collider x="0" y="0" width="22" height="22" />
-                <anim name="idle" speed="100">1</anim>
-                <anim name="moveUp" speed="100">8, 9, 10</anim>
-                <anim name="moveDown" speed="100">0, 1, 2</anim>
-                <anim name="moveLeft" speed="100">12, 13, 14</anim>
-                <anim name="moveRight" speed="100">4, 5, 6</anim>
+                <collider x="0" y="0" width="22" height="22"/>
+                <animation name="idle">
+                    <frame tileid="1" duration="100"/>
+                </animation>
+                <animation name="moveUp">
+                    <frame tileid="8" duration="100"/>
+                    <frame tileid="9" duration="100"/>
+                    <frame tileid="10" duration="100"/>
+                </animation>
+                <animation name="moveDown">
+                    <frame tileid="0" duration="100"/>
+                    <frame tileid="1" duration="100"/>
+                    <frame tileid="2" duration="100"/>
+                </animation>
+                <animation name="moveLeft">
+                    <frame tileid="12" duration="100"/>
+                    <frame tileid="13" duration="100"/>
+                    <frame tileid="14" duration="100"/>
+                </animation>
+                <animation name="moveRight">
+                    <frame tileid="4" duration="100"/>
+                    <frame tileid="5" duration="100"/>
+                    <frame tileid="6" duration="100"/>
+                </animation>
             </actor>
         </script>
 
         <script id="blob-acx" type="text/xml">
-            <actor version="0.1" name="blob1" type="MOB" resource="#blob1" width="57" height="57" cols="3" rows="3">
+            <actor version="0.2" name="blob1" type="MOB" resource="#blob1" width="57" height="57" cols="3" rows="3">
                 <movement speed="80" />
-                <collider x="0" y="0" width="19" height="19" />
-                <anim name="idle" speed="100">0, 1, 2</anim>
-                <anim name="moveUp" speed="100">0, 1, 2</anim>
-                <anim name="moveDown" speed="100">0, 1, 2</anim>
-                <anim name="moveLeft" speed="100">3, 4, 5</anim>
-                <anim name="moveRight" speed="100">6, 7, 8</anim>
+                <collider x="0" y="0" width="19" height="19"/>
+                <animation name="idle">
+                    <frame tileid="0" duration="100"/>
+                    <frame tileid="1" duration="100"/>
+                    <frame tileid="2" duration="100"/>
+                </animation>
+                <animation name="moveUp">
+                    <frame tileid="0" duration="100"/>
+                    <frame tileid="1" duration="100"/>
+                    <frame tileid="2" duration="100"/>
+                </animation>
+                <animation name="moveDown">
+                    <frame tileid="0" duration="100"/>
+                    <frame tileid="1" duration="100"/>
+                    <frame tileid="2" duration="100"/>
+                </animation>
+                <animation name="moveLeft">
+                    <frame tileid="3" duration="100"/>
+                    <frame tileid="4" duration="100"/>
+                    <frame tileid="5" duration="100"/>
+                </animation>
+                <animation name="moveRight">
+                    <frame tileid="6" duration="100"/>
+                    <frame tileid="7" duration="100"/>
+                    <frame tileid="8" duration="100"/>
+                </animation>
             </actor>
         </script>
 
         <script id="chest-acx" type="text/xml">
-            <actor version="0.1" name="chest" type="Actor" resource="#chest1" width="32" height="16" cols="2" rows="1">
-                <collider x="-4" y="-4" width="24" height="24" />
+            <actor version="0.2" name="chest" type="Actor" resource="#chest1" width="32" height="16" cols="2" rows="1">
+                <collider x="-4" y="-4" width="24" height="24"/>
             </actor>
         </script>
 

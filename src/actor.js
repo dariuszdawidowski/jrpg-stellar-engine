@@ -8,7 +8,7 @@ class Actor extends Sprite {
      * Create sprite
      * All Sprite params plus:
      * @param speed: Number - movement speed (pixels on second)
-     * @param anim: Object - map of animations { speed: seconds, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] }
+     * @param animation: Object - map of animations { animName: [{frame: nr, duration: ms}, ...], ... }
      * @param collider: {x, y, width, height} (in screen pixels already scaled)
      */
 
@@ -32,23 +32,26 @@ class Actor extends Sprite {
         this.collider = 'collider' in args ? args.collider : {x: 0, y: 0, width: this.tile.scaled.width, height: this.tile.scaled.height};
 
         // Animation map
-        this.anim = 'anim' in args ? args.anim : { speed: 0, idle: [], moveUp: [], moveDown: [], moveLeft: [], moveRight: [] };
-        this.anim.speed = this.anim.speed / 1000.0;
+        this.animations = 'animations' in args ? args.animations : [];
 
-        // Current frame
-        this.frame = 0;
+        // Frame management
+        this.frame = {
+            // Current frame
+            nr: 0,
 
-        // Current frame counter (horizontal movement)
-        this.frameCounterH = 0;
+            // Current frame counter (horizontal axis)
+            counterH: 0,
 
-        // Time of the last animation frame (horizontal movement)
-        this.frameTimeH = this.anim.speed;
+            // Time of the last animation frame (horizontal axis)
+            timeH: 0,
 
-        // Current frame counter (vertical movement)
-        this.frameCounterV = 0;
+            // Current frame counter (vertical axis)
+            counterV: 0,
 
-        // Time of the last animation frame (vertical movement)
-        this.frameTimeV = this.anim.speed;
+            // Time of the last animation frame (vertical axis)
+            timeV: 0
+        };
+
     }
 
     /**
@@ -58,28 +61,28 @@ class Actor extends Sprite {
     idle() {
 
         // Single idle
-        if ('idle' in this.anim) {
-            this.frame = this.anim.idle[0];
+        if ('idle' in this.animations) {
+            this.frame = this.anim.idle[0].frame;
         }
 
         // Directional idle left
-        else if (('idleLeft' in this.anim) && this.transform.h == 'w') {
-            this.frame = this.anim.idleLeft[0];
+        else if (('idleLeft' in this.animations) && this.transform.h == 'w') {
+            this.frame = this.animations.idleLeft[0].frame;
         }
 
         // Directional idle right
-        else if (('idleRight' in this.anim) && this.transform.h == 'e') {
-            this.frame = this.anim.idleRight[0];
+        else if (('idleRight' in this.animations) && this.transform.h == 'e') {
+            this.frame = this.animations.idleRight[0].frame;
         }
 
         // Directional idle top
-        else if (('idleUp' in this.anim) && this.transform.v == 'n') {
-            this.frame = this.anim.idleUp[0];
+        else if (('idleUp' in this.animations) && this.transform.v == 'n') {
+            this.frame = this.animations.idleUp[0].frame;
         }
 
         // Directional idle bottom
-        else if (('idleDown' in this.anim) && (this.transform.v == 's' || this.transform.v == '')) {
-            this.frame = this.anim.idleDown[0];
+        else if (('idleDown' in this.animations) && (this.transform.v == 's' || this.transform.v == '')) {
+            this.frame = this.animations.idleDown[0].frame;
         }
 
         this.transform.v = '';
@@ -92,13 +95,13 @@ class Actor extends Sprite {
 
     animIdle(deltaTime) {
         // Anim
-        this.frameTimeV -= deltaTime;
-        if (this.frameTimeV <= 0) {
-            this.frameTimeV = this.anim.speed - this.frameTimeV;
-            this.frameCounterV ++;
-            if (this.frameCounterV == this.anim.idle.length) this.frameCounterV = 0;
+        this.frame.timeV -= deltaTime;
+        if (this.frame.timeV <= 0) {
+            this.frame.timeV = this.anim.speed - this.frame.timeV;
+            this.frame.counterV ++;
+            if (this.frame.counterV == this.anim.idle.length) this.frame.counterV = 0;
         }
-        this.frame = this.anim.idle[this.frameCounterV];
+        this.frame = this.anim.idle[this.frame.counterV];
     }
 
     /**
@@ -171,13 +174,13 @@ class Actor extends Sprite {
 
     animUp(deltaTime) {
         // Anim
-        this.frameTimeV -= deltaTime;
-        if (this.frameTimeV <= 0) {
-            this.frameTimeV = this.anim.speed - this.frameTimeV;
-            this.frameCounterV ++;
-            if (this.frameCounterV == this.anim.moveUp.length) this.frameCounterV = 0;
+        /*this.frame.timeV -= deltaTime;
+        if (this.frame.timeV <= 0) {
+            this.frame.timeV = this.animations.speed - this.frame.timeV;
+            this.frame.counterV ++;
+            if (this.frame.counterV == this.anim.moveUp.length) this.frame.counterV = 0;
         }
-        this.frame = this.anim.moveUp[this.frameCounterV];
+        this.frame = this.anim.moveUp[this.frame.counterV];*/
     }
 
     /**
@@ -254,13 +257,13 @@ class Actor extends Sprite {
 
     animDown(deltaTime) {
         // Anim
-        this.frameTimeV -= deltaTime;
-        if (this.frameTimeV <= 0) {
-            this.frameTimeV = this.anim.speed - this.frameTimeV;
-            this.frameCounterV ++;
-            if (this.frameCounterV == this.anim.moveDown.length) this.frameCounterV = 0;
+        /*this.frame.timeV -= deltaTime;
+        if (this.frame.timeV <= 0) {
+            this.frame.timeV = this.anim.speed - this.frame.timeV;
+            this.frame.counterV ++;
+            if (this.frame.counterV == this.anim.moveDown.length) this.frame.counterV = 0;
         }
-        this.frame = this.anim.moveDown[this.frameCounterV];
+        this.frame = this.anim.moveDown[this.frame.counterV];*/
     }
 
     /**
@@ -359,13 +362,13 @@ class Actor extends Sprite {
 
     animRight(deltaTime) {
         // Anim
-        this.frameTimeH -= deltaTime;
-        if (this.frameTimeH <= 0) {
-            this.frameTimeH = this.anim.speed - this.frameTimeH;
-            this.frameCounterH ++;
-            if (this.frameCounterH == this.anim.moveRight.length) this.frameCounterH = 0;
+        /*this.frame.timeH -= deltaTime;
+        if (this.frame.timeH <= 0) {
+            this.frame.timeH = this.anim.speed - this.frame.timeH;
+            this.frame.counterH ++;
+            if (this.frame.counterH == this.anim.moveRight.length) this.frame.counterH = 0;
         }
-        this.frame = this.anim.moveRight[this.frameCounterH];
+        this.frame = this.animations?.moveRight[this.frame.counterH];*/
     }
 
     /**
@@ -463,13 +466,13 @@ class Actor extends Sprite {
 
     animLeft(deltaTime) {
         // Anim
-        this.frameTimeH -= deltaTime;
-        if (this.frameTimeH <= 0) {
-            this.frameTimeH = this.anim.speed - this.frameTimeH;
-            this.frameCounterH ++;
-            if (this.frameCounterH == this.anim.moveLeft.length) this.frameCounterH = 0;
+        /*this.frame.timeH -= deltaTime;
+        if (this.frame.timeH <= 0) {
+            this.frame.timeH = this.anim.speed - this.frame.timeH;
+            this.frame.counterH ++;
+            if (this.frame.counterH == this.anim.moveLeft.length) this.frame.counterH = 0;
         }
-        this.frame = this.anim.moveLeft[this.frameCounterH];
+        this.frame = this.anim.moveLeft[this.frame.counterH];*/
     }
 
     /**

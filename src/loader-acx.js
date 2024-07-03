@@ -6,20 +6,38 @@
 
 Example #1:
 
-<actor version="0.1" name="chest" type="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
+<actor version="0.2" name="chest" type="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
     <collider x="-4" y="-4" width="24" height="24" />
 </actor>
 
 Example #2:
 
-<actor version="0.1" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
+<actor version="0.2" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
     <movement speed="80" />
-    <collider x="0" y="0" width="22" height="22" />
-    <anim name="idle" speed="100">1</anim>
-    <anim name="moveUp" speed="100">8, 9, 10</anim>
-    <anim name="moveDown" speed="100">0, 1, 2</anim>
-    <anim name="moveLeft" speed="100">12, 13, 14</anim>
-    <anim name="moveRight" speed="100">4, 5, 6</anim>
+    <collider x="0" y="0" width="22" height="22"/>
+    <animation name="idle">
+        <frame tileid="1" duration="100"/>
+    </animation>
+    <animation name="moveUp">
+        <frame tileid="8" duration="100"/>
+        <frame tileid="9" duration="100"/>
+        <frame tileid="10" duration="100"/>
+    </animation>
+    <animation name="moveDown">
+        <frame tileid="0" duration="100"/>
+        <frame tileid="1" duration="100"/>
+        <frame tileid="2" duration="100"/>
+    </animation>
+    <animation name="moveLeft">
+        <frame tileid="12" duration="100"/>
+        <frame tileid="13" duration="100"/>
+        <frame tileid="14" duration="100"/>
+    </animation>
+    <animation name="moveRight">
+        <frame tileid="4" duration="100"/>
+        <frame tileid="5" duration="100"/>
+        <frame tileid="6" duration="100"/>
+    </animation>
 </actor>
 
 */
@@ -43,7 +61,7 @@ class LoaderACX {
             const actor = doc.querySelector('actor');
             if (actor) {
                 const version = actor.getAttribute('version');
-                if (version && version == '0.1') {
+                if (version && version == '0.2') {
                     const name = actor.getAttribute('name');
                     const type = actor.getAttribute('type');
                     const resource = actor.getAttribute('resource');
@@ -90,24 +108,30 @@ class LoaderACX {
                         }
 
                         // Animations
-                        const animations = actor.querySelectorAll('anim');
+                        const animations = actor.querySelectorAll('animation');
                         if (animations) {
                             const anim = {};
                             animations.forEach(animation => {
                                 const animName = animation.getAttribute('name');
-                                const animSpeed = parseInt(animation.getAttribute('speed'));
-                                const frames = animation.textContent.split(',').map(Number);
-                                anim[animName] = frames;
-                                anim['speed'] = animSpeed;
+                                anim[animName] = [];
+                                const frames = animation.querySelectorAll('frame');
+                                frames.forEach(frame => {
+                                    const tileId = frame.getAttribute('tileid');
+                                    const duration = frame.getAttribute('duration');
+                                    anim[animName].push({frame: tileId, duration});
+                                });
                             });
-                            params['anim'] = anim;
+                            params['animations'] = anim;
                         }
-
+console.log(params)
                         // Create and return object
                         const classReference = new Function(`return ${type}`)();
                         if (classReference) return new classReference(params);
                         return new window[type];
                     }
+                }
+                else {
+                    console.error('Unreckognized ACX format')
                 }
             }
 
