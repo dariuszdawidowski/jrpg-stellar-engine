@@ -21,7 +21,7 @@ class MOB extends Actor {
         // Helper counter for actions (seconds)
         this.duration = 0;
 
-        // Start wandewr
+        // Start wander
         this.wander();
     }
 
@@ -61,7 +61,7 @@ class MOB extends Actor {
                 // Wandering movement
                 case 'wander':
                     if (this.direction > 3) {
-                        this.frame = this.animations.idle[0];
+                        this.animate('idle', args.deltaTime);
                         this.transform.v = '';
                         this.transform.h = '';
                     }

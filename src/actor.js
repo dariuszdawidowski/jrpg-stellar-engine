@@ -82,47 +82,32 @@ class Actor extends Sprite {
     idle() {
 
         // Single idle
-        /*if ('idle' in this.animations) {
-            this.frame = this.anim.idle[0].frame;
+        if ('idle' in this.animations) {
+            this.animate('idle', 0.01);
         }
 
         // Directional idle left
         else if (('idleLeft' in this.animations) && this.transform.h == 'w') {
-            this.frame = this.animations.idleLeft[0].frame;
+            this.animate('idleLeft', 0.01);
         }
 
         // Directional idle right
         else if (('idleRight' in this.animations) && this.transform.h == 'e') {
-            this.frame = this.animations.idleRight[0].frame;
+            this.animate('idleRight', 0.01);
         }
 
         // Directional idle top
         else if (('idleUp' in this.animations) && this.transform.v == 'n') {
-            this.frame = this.animations.idleUp[0].frame;
+            this.animate('idleUp', 0.01);
         }
 
         // Directional idle bottom
         else if (('idleDown' in this.animations) && (this.transform.v == 's' || this.transform.v == '')) {
-            this.frame = this.animations.idleDown[0].frame;
-        }*/
+            this.animate('idleDown', 0.01);
+        }
 
         this.transform.v = '';
         this.transform.h = '';
-    }
-
-    /**
-     * Idle animation
-     */
-
-    animIdle(deltaTime) {
-        // Anim
-        /*this.frame.v.time -= deltaTime;
-        if (this.frame.v.time <= 0) {
-            this.frame.v.time = this.anim.speed - this.frame.v.time;
-            this.frame.v.counter ++;
-            if (this.frame.v.counter == this.anim.idle.length) this.frame.v.counter = 0;
-        }
-        this.frame = this.anim.idle[this.frame.v.counter];*/
     }
 
     /**

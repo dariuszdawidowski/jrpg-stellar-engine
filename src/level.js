@@ -187,7 +187,12 @@ class Level {
 
         // Idle all NPCs
         Object.values(this.npcs).forEach(character => {
-            character.animIdle(deltaTime);
+            //character.animIdle(deltaTime);
+            character.update({
+                view,
+                deltaTime,
+                colliders
+            });
         });
 
         // Move all MOBs
