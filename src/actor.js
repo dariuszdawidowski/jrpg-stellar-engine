@@ -83,27 +83,27 @@ class Actor extends Sprite {
 
         // Single idle
         if ('idle' in this.animations) {
-            this.animate('idle', 0.01);
+            this.animate('idle');
         }
 
         // Directional idle left
         else if (('idleLeft' in this.animations) && this.transform.h == 'w') {
-            this.animate('idleLeft', 0.01);
+            this.animate('idleLeft');
         }
 
         // Directional idle right
         else if (('idleRight' in this.animations) && this.transform.h == 'e') {
-            this.animate('idleRight', 0.01);
+            this.animate('idleRight');
         }
 
         // Directional idle top
         else if (('idleUp' in this.animations) && this.transform.v == 'n') {
-            this.animate('idleUp', 0.01);
+            this.animate('idleUp');
         }
 
         // Directional idle bottom
         else if (('idleDown' in this.animations) && (this.transform.v == 's' || this.transform.v == '')) {
-            this.animate('idleDown', 0.01);
+            this.animate('idleDown');
         }
 
         this.transform.v = '';
@@ -178,7 +178,7 @@ class Actor extends Sprite {
      * @param deltaTime Number - time passed since last frame
      */
 
-    animate(name, deltaTime) {
+    animate(name, deltaTime = 0) {
         if (this.anim.name != name) this.anim.start(name, this.animations[name]);
         this.anim.advance(deltaTime);
     }
