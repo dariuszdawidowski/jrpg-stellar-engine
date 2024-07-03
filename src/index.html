@@ -726,16 +726,15 @@
                     rows: 4,
                     scale: scale,
                     speed: 320,
-                    anim: {
-                        speed: 100,
-                        idleUp: [10],
-                        idleDown: [1],
-                        idleLeft: [4],
-                        idleRight: [7],
-                        moveUp: [9, 10, 11],
-                        moveDown: [0, 1, 2],
-                        moveLeft: [3, 4, 5],
-                        moveRight: [6, 7, 8],
+                    animations: {
+                        idleUp: [{frame: 10, duration: 100}],
+                        idleDown: [{frame: 1, duration: 100}],
+                        idleLeft: [{frame: 4, duration: 100}],
+                        idleRight: [{frame: 7, duration: 100}],
+                        moveUp: [{frame: 9, duration: 100}, {frame: 10, duration: 100}, {frame: 11, duration: 100}],
+                        moveDown: [{frame: 0, duration: 100}, {frame: 1, duration: 100}, {frame: 2, duration: 100}],
+                        moveLeft: [{frame: 3, duration: 100}, {frame: 4, duration: 100}, {frame: 5, duration: 100}],
+                        moveRight: [{frame: 6, duration: 100}, {frame: 7, duration: 100}, {frame: 8, duration: 100}],
                     },
                     collider: {
                         x: 7,
@@ -790,7 +789,7 @@
                 else if (x > 0.1) level.chars.player.moveRight(x, view);
 
                 // Anim & Move
-                level.chars.player.animUp(deltaTime);
+                level.chars.player.animate('moveUp', deltaTime);
                 level.chars.player.moveUp(y, view);
             };
 
@@ -808,7 +807,7 @@
                 else if (x > 0.1) level.chars.player.moveRight(x, view);
 
                 // Anim & Move
-                level.chars.player.animDown(deltaTime);
+                level.chars.player.animate('moveDown', deltaTime);
                 level.chars.player.moveDown(y, view);
             };
 
@@ -837,7 +836,7 @@
                 else if (y > 0.1) level.chars.player.moveDown(y, view);
 
                 // Anim & Move
-                level.chars.player.animLeft(deltaTime);
+                level.chars.player.animate('moveLeft', deltaTime);
                 level.chars.player.moveLeft(x, view);
             };
 
@@ -866,7 +865,7 @@
                 else if (y > 0.1) level.chars.player.moveDown(y, view);
 
                 // Anim & Move
-                level.chars.player.animRight(deltaTime);
+                level.chars.player.animate('moveRight', deltaTime);
                 level.chars.player.moveRight(x, view);
             };
 

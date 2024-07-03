@@ -72,7 +72,7 @@ class MOB extends Actor {
                             with: args.colliders
                         });
                         if (y < 0.001) this.wander();
-                        this.animUp(args.deltaTime);
+                        this.animate('moveUp', args.deltaTime);
                         this.moveUp(Math.round(y));
                     }
                     else if (this.direction == 3) {
@@ -82,7 +82,7 @@ class MOB extends Actor {
                             with: args.colliders
                         });
                         if (y < 0.001) this.wander();
-                        this.animDown(args.deltaTime);
+                        this.animate('moveDown', args.deltaTime);
                         this.moveDown(Math.round(y));
                     }
                     if (this.direction == 0) {
@@ -92,7 +92,7 @@ class MOB extends Actor {
                             with: args.colliders
                         });
                         if (x < 0.001) this.wander();
-                        this.animLeft(args.deltaTime);
+                        this.animate('moveLeft', args.deltaTime);
                         this.moveLeft(Math.round(x));
                     }
                     else if (this.direction == 2) {
@@ -102,7 +102,7 @@ class MOB extends Actor {
                             with: args.colliders
                         });
                         if (x < 0.001) this.wander();
-                        this.animRight(args.deltaTime);
+                        this.animate('moveRight', args.deltaTime);
                         this.moveRight(Math.round(x));
                     }
                     break;

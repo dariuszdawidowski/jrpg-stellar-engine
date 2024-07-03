@@ -8,7 +8,7 @@ class Actor extends Sprite {
      * Create sprite
      * All Sprite params plus:
      * @param speed: Number - movement speed (pixels on second)
-     * @param animation: Object - map of animations { animName: [{frame: nr, duration: ms}, ...], ... }
+     * @param animations: Object - map of animations { animName: [{frame: nr, duration: ms}, ...], ... }
      * @param collider: {x, y, width, height} (in screen pixels already scaled)
      */
 
@@ -32,24 +32,45 @@ class Actor extends Sprite {
         this.collider = 'collider' in args ? args.collider : {x: 0, y: 0, width: this.tile.scaled.width, height: this.tile.scaled.height};
 
         // Animation map
-        this.animations = 'animations' in args ? args.animations : [];
+        this.animations = 'animations' in args ? args.animations : {};
 
-        // Frame management
-        this.frame = {
-            // Current frame
-            nr: 0,
+        // Current animation state
+        this.anim = {
 
-            // Current frame counter (horizontal axis)
-            counterH: 0,
+            // Animation name
+            name: null,
 
-            // Time of the last animation frame (horizontal axis)
-            timeH: 0,
+            // Frames list from this.animations
+            frames: null,
 
-            // Current frame counter (vertical axis)
-            counterV: 0,
+            // Current frame counter
+            index: 0,
 
-            // Time of the last animation frame (vertical axis)
-            timeV: 0
+            // Current time of the animation frame
+            time: 0,
+
+            // Start new anim
+            start: function(name, animation) {
+                this.name = name;
+                this.frames = animation;
+                this.index = 0;
+                this.time = 0;
+            },
+
+            // Play forward a little bit
+            advance: function(deltaTime) {
+                this.time += deltaTime;
+                if (this.time * 1000 >= this.frames[this.index].duration) {
+                    this.time = 0;
+                    this.index ++;
+                    if (this.index == this.frames.length) this.index = 0;
+                }
+            },
+
+            // Get current tile index
+            frame: function() {
+                return this.frames ? this.frames[this.index].frame : 0;
+            }
         };
 
     }
@@ -61,7 +82,7 @@ class Actor extends Sprite {
     idle() {
 
         // Single idle
-        if ('idle' in this.animations) {
+        /*if ('idle' in this.animations) {
             this.frame = this.anim.idle[0].frame;
         }
 
@@ -83,7 +104,7 @@ class Actor extends Sprite {
         // Directional idle bottom
         else if (('idleDown' in this.animations) && (this.transform.v == 's' || this.transform.v == '')) {
             this.frame = this.animations.idleDown[0].frame;
-        }
+        }*/
 
         this.transform.v = '';
         this.transform.h = '';
@@ -95,13 +116,13 @@ class Actor extends Sprite {
 
     animIdle(deltaTime) {
         // Anim
-        this.frame.timeV -= deltaTime;
-        if (this.frame.timeV <= 0) {
-            this.frame.timeV = this.anim.speed - this.frame.timeV;
-            this.frame.counterV ++;
-            if (this.frame.counterV == this.anim.idle.length) this.frame.counterV = 0;
+        /*this.frame.v.time -= deltaTime;
+        if (this.frame.v.time <= 0) {
+            this.frame.v.time = this.anim.speed - this.frame.v.time;
+            this.frame.v.counter ++;
+            if (this.frame.v.counter == this.anim.idle.length) this.frame.v.counter = 0;
         }
-        this.frame = this.anim.idle[this.frame.counterV];
+        this.frame = this.anim.idle[this.frame.v.counter];*/
     }
 
     /**
@@ -168,19 +189,13 @@ class Actor extends Sprite {
     }
 
     /**
-     * Animate to the up side
+     * Update animation
      * @param deltaTime Number - time passed since last frame
      */
 
-    animUp(deltaTime) {
-        // Anim
-        /*this.frame.timeV -= deltaTime;
-        if (this.frame.timeV <= 0) {
-            this.frame.timeV = this.animations.speed - this.frame.timeV;
-            this.frame.counterV ++;
-            if (this.frame.counterV == this.anim.moveUp.length) this.frame.counterV = 0;
-        }
-        this.frame = this.anim.moveUp[this.frame.counterV];*/
+    animate(name, deltaTime) {
+        if (this.anim.name != name) this.anim.start(name, this.animations[name]);
+        this.anim.advance(deltaTime);
     }
 
     /**
@@ -248,22 +263,6 @@ class Actor extends Sprite {
         }
 
         return [collided > 1 ? 0 : sidePixels, collided > 0 ? 0 : pixels];
-    }
-
-    /**
-     * Animate to the up side
-     * @param deltaTime Number - time passed since last frame
-     */
-
-    animDown(deltaTime) {
-        // Anim
-        /*this.frame.timeV -= deltaTime;
-        if (this.frame.timeV <= 0) {
-            this.frame.timeV = this.anim.speed - this.frame.timeV;
-            this.frame.counterV ++;
-            if (this.frame.counterV == this.anim.moveDown.length) this.frame.counterV = 0;
-        }
-        this.frame = this.anim.moveDown[this.frame.counterV];*/
     }
 
     /**
@@ -356,22 +355,6 @@ class Actor extends Sprite {
     }
 
     /**
-     * Animate to the right side
-     * @param deltaTime Number - time passed since last frame
-     */
-
-    animRight(deltaTime) {
-        // Anim
-        /*this.frame.timeH -= deltaTime;
-        if (this.frame.timeH <= 0) {
-            this.frame.timeH = this.anim.speed - this.frame.timeH;
-            this.frame.counterH ++;
-            if (this.frame.counterH == this.anim.moveRight.length) this.frame.counterH = 0;
-        }
-        this.frame = this.animations?.moveRight[this.frame.counterH];*/
-    }
-
-    /**
      * Transfrom to the right side
      * @param pixels Number - how many pixels to move (constant or calculated by collideRight)
      */
@@ -460,22 +443,6 @@ class Actor extends Sprite {
     }
 
     /**
-     * Animate to the left side
-     * @param deltaTime Number - time passed since last frame
-     */
-
-    animLeft(deltaTime) {
-        // Anim
-        /*this.frame.timeH -= deltaTime;
-        if (this.frame.timeH <= 0) {
-            this.frame.timeH = this.anim.speed - this.frame.timeH;
-            this.frame.counterH ++;
-            if (this.frame.counterH == this.anim.moveLeft.length) this.frame.counterH = 0;
-        }
-        this.frame = this.anim.moveLeft[this.frame.counterH];*/
-    }
-
-    /**
      * Transfrom to the left side
      * @param pixels Number - how many pixels to move (constant or calculated by collideLeft)
      */
@@ -546,7 +513,7 @@ class Actor extends Sprite {
 
     render(view) {
         super.position(this.transform.x, this.transform.y);
-        super.cell(this.frame);
+        super.cell(this.anim.frame());
         super.render(view);
     }
 

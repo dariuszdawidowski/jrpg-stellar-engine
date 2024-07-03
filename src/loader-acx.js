@@ -123,7 +123,7 @@ class LoaderACX {
                             });
                             params['animations'] = anim;
                         }
-console.log(params)
+
                         // Create and return object
                         const classReference = new Function(`return ${type}`)();
                         if (classReference) return new classReference(params);
