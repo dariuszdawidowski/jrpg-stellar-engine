@@ -76,6 +76,17 @@ class Actor extends Sprite {
     }
 
     /**
+     * Update animation
+     * @param name: string - time passed since last frame
+     * @param deltaTime: Number - time passed since last frame
+     */
+
+    animate(name, deltaTime = 0) {
+        if (this.anim.name != name) this.anim.start(name, this.animations[name]);
+        this.anim.advance(deltaTime);
+    }
+
+    /**
      * Idle movement
      */
 
@@ -171,16 +182,6 @@ class Actor extends Sprite {
         }
 
         return [collided > 1 ? 0 : sidePixels, collided > 0 ? 0 : pixels];
-    }
-
-    /**
-     * Update animation
-     * @param deltaTime Number - time passed since last frame
-     */
-
-    animate(name, deltaTime = 0) {
-        if (this.anim.name != name) this.anim.start(name, this.animations[name]);
-        this.anim.advance(deltaTime);
     }
 
     /**
