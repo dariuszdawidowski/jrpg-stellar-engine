@@ -225,6 +225,8 @@ class LoaderTMX {
                             const type = obj.getAttribute('type').toLowerCase();
                             const x = parseFloat(obj.getAttribute('x')) * scale;
                             const y = parseFloat(obj.getAttribute('y')) * scale;
+                            const w = obj.hasAttribute('width') ? parseFloat(obj.getAttribute('width')) * scale : 0;
+                            const h = obj.hasAttribute('height') ? parseFloat(obj.getAttribute('height')) * scale : 0;
 
                             // Spawn point
                             if (type == 'spawn') {
@@ -242,7 +244,7 @@ class LoaderTMX {
                                         case 'item':
                                             level.items[`${uri}.${Object.keys(level.items).length + 1}`] = this.loader.acx.parseActor({
                                                 xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                                                transform: {x, y},
+                                                transform: {x: x + (w / 2), y: y - (h / 2)},
                                                 scale
                                             });
                                             break;
@@ -251,7 +253,7 @@ class LoaderTMX {
                                         case 'mob':
                                             level.mobs[`${uri}.${Object.keys(level.mobs).length + 1}`] = this.loader.acx.parseActor({
                                                 xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                                                transform: {x, y},
+                                                transform: {x: x + (w / 2), y: y - (h / 2)},
                                                 scale
                                             });
                                             break;
@@ -260,7 +262,7 @@ class LoaderTMX {
                                         case 'npc':
                                             level.npcs[`${uri}.${Object.keys(level.npcs).length + 1}`] = this.loader.acx.parseActor({
                                                 xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                                                transform: {x, y},
+                                                transform: {x: x + (w / 2), y: y - (h / 2)},
                                                 scale
                                             });
                                             break;
