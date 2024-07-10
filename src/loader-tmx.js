@@ -242,7 +242,7 @@ class LoaderTMX {
 
                                         // Spawn items
                                         case 'item':
-                                            level.items[`${uri}.${Object.keys(level.items).length + 1}`] = this.loader.acx.parseActor({
+                                            level.actors.item[`${uri}.${Object.keys(level.actors.item).length + 1}`] = this.loader.acx.parseActor({
                                                 xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                                                 transform: {x: x + (w / 2), y: y - (h / 2)},
                                                 scale
@@ -251,7 +251,7 @@ class LoaderTMX {
 
                                         // Spawn MOBs
                                         case 'mob':
-                                            level.mobs[`${uri}.${Object.keys(level.mobs).length + 1}`] = this.loader.acx.parseActor({
+                                            level.actors.mob[`${uri}.${Object.keys(level.actors.mob).length + 1}`] = this.loader.acx.parseActor({
                                                 xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                                                 transform: {x: x + (w / 2), y: y - (h / 2)},
                                                 scale
@@ -260,7 +260,7 @@ class LoaderTMX {
 
                                         // Spawn NPCs
                                         case 'npc':
-                                            level.npcs[`${uri}.${Object.keys(level.npcs).length + 1}`] = this.loader.acx.parseActor({
+                                            level.actors.npc[`${uri}.${Object.keys(level.actors.npc).length + 1}`] = this.loader.acx.parseActor({
                                                 xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                                                 transform: {x: x + (w / 2), y: y - (h / 2)},
                                                 scale

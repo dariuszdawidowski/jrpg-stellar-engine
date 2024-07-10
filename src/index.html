@@ -647,7 +647,7 @@
                 if (event.code == 'Space' || event.code == 'ControlRight' || event.code == 'ControlLeft' || event.key == 'Enter') {
                     input.action = false;
                 }
-                level.chars.player.idle();
+                level.actors.char.player.idle();
             };
 
             const touchStartHandler = (event) => {
@@ -724,7 +724,7 @@
                 level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, prefetch: false });
 
                 // Initialize player
-                level.chars['player'] = new Player({
+                level.actors.char['player'] = new Player({
                     resource: '#char1',
                     width: 48,
                     height: 80,
@@ -756,10 +756,10 @@
                     },
                     transform: level.getSpawnPoint(spawn.toLowerCase(), {x: 0, y: 0})
                 });
-                level.chars.player.idle();
+                level.actors.char.player.idle();
 
                 // Centre view context on player
-                view.centre(level.chars.player.transform);
+                view.centre(level.actors.char.player.transform);
 
             };
 
@@ -784,50 +784,50 @@
             const playerMoveUp = (deltaTime) => {
 
                 // Collide
-                const [x, y] = level.chars.player.collideUp({
+                const [x, y] = level.actors.char.player.collideUp({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
 
                 // Slide
-                if (x < -0.1) level.chars.player.moveLeft(-x, view);
-                else if (x > 0.1) level.chars.player.moveRight(x, view);
+                if (x < -0.1) level.actors.char.player.moveLeft(-x, view);
+                else if (x > 0.1) level.actors.char.player.moveRight(x, view);
 
                 // Anim & Move
-                level.chars.player.animate('moveUp', deltaTime);
-                level.chars.player.moveUp(y, view);
+                level.actors.char.player.animate('moveUp', deltaTime);
+                level.actors.char.player.moveUp(y, view);
             };
 
             const playerMoveDown = (deltaTime) => {
 
                 // Collide
-                const [x, y] = level.chars.player.collideDown({
+                const [x, y] = level.actors.char.player.collideDown({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
 
                 // Slide
-                if (x < -0.1) level.chars.player.moveLeft(-x, view);
-                else if (x > 0.1) level.chars.player.moveRight(x, view);
+                if (x < -0.1) level.actors.char.player.moveLeft(-x, view);
+                else if (x > 0.1) level.actors.char.player.moveRight(x, view);
 
                 // Anim & Move
-                level.chars.player.animate('moveDown', deltaTime);
-                level.chars.player.moveDown(y, view);
+                level.actors.char.player.animate('moveDown', deltaTime);
+                level.actors.char.player.moveDown(y, view);
             };
 
             const playerMoveLeft = (deltaTime) => {
 
                 // Collide
-                let [x, y] = level.chars.player.collideLeft({
+                let [x, y] = level.actors.char.player.collideLeft({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
 
                 // Stairs
-                const [stx, sty] = level.chars.player.stairsLeft({
+                const [stx, sty] = level.actors.char.player.stairsLeft({
                     view,
                     deltaTime,
                     with: level.getStairs(view)
@@ -838,25 +838,25 @@
                 y += sty;
 
                 // Slide
-                if (y < -0.1) level.chars.player.moveUp(-y, view);
-                else if (y > 0.1) level.chars.player.moveDown(y, view);
+                if (y < -0.1) level.actors.char.player.moveUp(-y, view);
+                else if (y > 0.1) level.actors.char.player.moveDown(y, view);
 
                 // Anim & Move
-                level.chars.player.animate('moveLeft', deltaTime);
-                level.chars.player.moveLeft(x, view);
+                level.actors.char.player.animate('moveLeft', deltaTime);
+                level.actors.char.player.moveLeft(x, view);
             };
 
             const playerMoveRight = (deltaTime) => {
 
                 // Collide
-                let [x, y] = level.chars.player.collideRight({
+                let [x, y] = level.actors.char.player.collideRight({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
 
                 // Stairs
-                const [stx, sty] = level.chars.player.stairsRight({
+                const [stx, sty] = level.actors.char.player.stairsRight({
                     view,
                     deltaTime,
                     with: level.getStairs(view)
@@ -867,12 +867,12 @@
                 y += sty;
 
                 // Slide
-                if (y < -0.1) level.chars.player.moveUp(-y, view);
-                else if (y > 0.1) level.chars.player.moveDown(y, view);
+                if (y < -0.1) level.actors.char.player.moveUp(-y, view);
+                else if (y > 0.1) level.actors.char.player.moveDown(y, view);
 
                 // Anim & Move
-                level.chars.player.animate('moveRight', deltaTime);
-                level.chars.player.moveRight(x, view);
+                level.actors.char.player.animate('moveRight', deltaTime);
+                level.actors.char.player.moveRight(x, view);
             };
 
             // Start loop
@@ -919,7 +919,7 @@
 
                 // Enter into portal
                 level.getPortals(view).forEach(portal => {
-                    if (level.chars.player.collideWithBox({with: portal, view})) {
+                    if (level.actors.char.player.collideWithBox({with: portal, view})) {
                         stop();
                         loadLevel(portal.map, portal.spawn).then(() => start());
                     }
@@ -927,9 +927,9 @@
 
                 // Player actions
                 if (input.action) {
-                    if (level.chars.player.collideWithSprite({with: level.items['chest-acx.1'], view})) {
-                        level.items['chest-acx.1'].animate('open');
-                        level.items['chest-acx.1'].render(view);
+                    if (level.actors.char.player.collideWithSprite({with: level.actors.item['chest-acx.1'], view})) {
+                        level.actors.item['chest-acx.1'].animate('open');
+                        level.actors.item['chest-acx.1'].render(view);
                     }
                 }
 

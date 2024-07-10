@@ -22,17 +22,13 @@ class Level {
         // Environment layers [{name: 'string', class: 'colliders|empty', map: [[]]}, ...]
         this.layers = [];
 
-        // Items {'name/id': object, ...}
-        this.items = {};
-
-        // Characters {'name/id': Actor-like object, ...}
-        this.chars = {};
-
-        // NPCs {'name/id': Actor-like object, ...}
-        this.npcs = {};
-
-        // MOBS {'name/id': MOB object, ...}
-        this.mobs = {};
+        // Actors {type: {'name': object, ...}, ...} for items, chars, npcs, mobs, mounts, vehicles, etc.
+        this.actors = {
+            item: {},
+            char: {},
+            npc: {},
+            mob: {}
+        };
 
         // Spawn points {'player': [{x, y}, ...], 'mob': [{x, y}, ...], ...}
         this.spawnpoints = {};
@@ -186,7 +182,7 @@ class Level {
         const colliders = this.getColliders(view);
 
         // Idle all NPCs
-        Object.values(this.npcs).forEach(character => {
+        Object.values(this.actors.npc).forEach(character => {
             character.update({
                 view,
                 deltaTime,
@@ -195,7 +191,7 @@ class Level {
         });
 
         // Move all MOBs
-        Object.values(this.mobs).forEach(character => {
+        Object.values(this.actors.mob).forEach(character => {
             character.update({
                 view,
                 deltaTime,
@@ -230,13 +226,13 @@ class Level {
             else if (layer.class == 'objects') {
 
                 // Items
-                Object.values(this.items).forEach(item => item.render(view));
+                Object.values(this.actors.item).forEach(item => item.render(view));
 
                 // Characters
                 const characters = [];
 
                 // Collect culled characters
-                Object.values(this.chars).forEach(character => {
+                Object.values(this.actors.char).forEach(character => {
                     const pos = view.world2Screen({
                         x: character.transform.x - character.tile.scaled.halfWidth,
                         y: character.transform.y - character.tile.scaled.halfHeight
@@ -245,7 +241,7 @@ class Level {
                 });
 
                 // Collect culled NPCs
-                Object.values(this.npcs).forEach(character => {
+                Object.values(this.actors.npc).forEach(character => {
                     const pos = view.world2Screen({
                         x: character.transform.x - character.tile.scaled.halfWidth,
                         y: character.transform.y - character.tile.scaled.halfHeight
@@ -254,7 +250,7 @@ class Level {
                 });
 
                 // Collect culled MOBs
-                Object.values(this.mobs).forEach(character => {
+                Object.values(this.actors.mob).forEach(character => {
                     const pos = view.world2Screen({
                         x: character.transform.x - character.tile.scaled.halfWidth,
                         y: character.transform.y - character.tile.scaled.halfHeight
@@ -349,10 +345,10 @@ class Level {
         });
 
         // Items
-        Object.values(this.items).forEach(item => item.debug(view));
+        Object.values(this.actors.item).forEach(item => item.debug(view));
 
         // Characters
-        Object.values(this.chars).forEach(character => character.debug(view));
+        Object.values(this.actors.char).forEach(character => character.debug(view));
 
         // View
         if (view.debugEnabled) view.debug();
