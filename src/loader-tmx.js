@@ -238,36 +238,13 @@ class LoaderTMX {
                                 // Actual spawn
                                 if (name.search(':') != -1) {
                                     const [kind, uri] = name.split(':');
-                                    switch (kind.toLowerCase()) {
-
-                                        // Spawn items
-                                        case 'item':
-                                            level.actors.item[`${uri}.${Object.keys(level.actors.item).length + 1}`] = this.loader.acx.parseActor({
-                                                xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                                                transform: {x: x + (w / 2), y: y - (h / 2)},
-                                                scale
-                                            });
-                                            break;
-
-                                        // Spawn MOBs
-                                        case 'mob':
-                                            level.actors.mob[`${uri}.${Object.keys(level.actors.mob).length + 1}`] = this.loader.acx.parseActor({
-                                                xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                                                transform: {x: x + (w / 2), y: y - (h / 2)},
-                                                scale
-                                            });
-                                            break;
-
-                                        // Spawn NPCs
-                                        case 'npc':
-                                            level.actors.npc[`${uri}.${Object.keys(level.actors.npc).length + 1}`] = this.loader.acx.parseActor({
-                                                xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                                                transform: {x: x + (w / 2), y: y - (h / 2)},
-                                                scale
-                                            });
-                                            break;
-
-                                    }
+                                    const kindName = kind.toLowerCase();
+                                    const kindCount = (kindName in level.actors) ? Object.keys(level.actors[kindName]).length + 1 : 1;
+                                    level.actors[kindName][`${uri}.${kindCount}`] = this.loader.acx.parseActor({
+                                        xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
+                                        transform: {x: x + (w / 2), y: y - (h / 2)},
+                                        scale
+                                    });
                                 }
 
                             }

@@ -504,6 +504,14 @@ class Actor extends Sprite {
     }
 
     /**
+     * Update actor
+     */
+
+    update() {
+        /*** Overload ***/
+    }
+
+    /**
      * Debug render
      * @param view: View context
      */

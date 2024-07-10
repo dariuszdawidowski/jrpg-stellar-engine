@@ -181,21 +181,14 @@ class Level {
         // Gather level colliders
         const colliders = this.getColliders(view);
 
-        // Idle all NPCs
-        Object.values(this.actors.npc).forEach(character => {
-            character.update({
-                view,
-                deltaTime,
-                colliders
-            });
-        });
-
-        // Move all MOBs
-        Object.values(this.actors.mob).forEach(character => {
-            character.update({
-                view,
-                deltaTime,
-                colliders
+        // Update all actors
+        Object.values(this.actors).forEach(actors => {
+            Object.values(actors).forEach(actor => {
+                actor.update({
+                    view,
+                    deltaTime,
+                    colliders
+                });
             });
         });
 
@@ -222,51 +215,33 @@ class Level {
                 );
             }
 
-            // Render objects
+            // Render actors
             else if (layer.class == 'objects') {
 
-                // Items
-                Object.values(this.actors.item).forEach(item => item.render(view));
+                // Visible actors
+                const actors = [];
 
-                // Characters
-                const characters = [];
-
-                // Collect culled characters
-                Object.values(this.actors.char).forEach(character => {
-                    const pos = view.world2Screen({
-                        x: character.transform.x - character.tile.scaled.halfWidth,
-                        y: character.transform.y - character.tile.scaled.halfHeight
+                // Collect culled actors
+                Object.values(this.actors).forEach(actorsList => {
+                    Object.values(actorsList).forEach(actor => {
+                        const pos = view.world2Screen({
+                            x: actor.transform.x - actor.tile.scaled.halfWidth,
+                            y: actor.transform.y - actor.tile.scaled.halfHeight
+                        });
+                        if (pos.x > -actor.tile.scaled.width && pos.x < view.canvas.width + actor.tile.scaled.width && pos.y > -actor.tile.scaled.height && pos.y < view.canvas.height + actor.tile.scaled.height) actors.push(actor);
                     });
-                    if (pos.x > -character.tile.scaled.width && pos.x < view.canvas.width + character.tile.scaled.width && pos.y > -character.tile.scaled.height && pos.y < view.canvas.height + character.tile.scaled.height) characters.push(character);
                 });
 
-                // Collect culled NPCs
-                Object.values(this.actors.npc).forEach(character => {
-                    const pos = view.world2Screen({
-                        x: character.transform.x - character.tile.scaled.halfWidth,
-                        y: character.transform.y - character.tile.scaled.halfHeight
-                    });
-                    if (pos.x > -character.tile.scaled.width && pos.x < view.canvas.width + character.tile.scaled.width && pos.y > -character.tile.scaled.height && pos.y < view.canvas.height + character.tile.scaled.height) characters.push(character);
-                });
-
-                // Collect culled MOBs
-                Object.values(this.actors.mob).forEach(character => {
-                    const pos = view.world2Screen({
-                        x: character.transform.x - character.tile.scaled.halfWidth,
-                        y: character.transform.y - character.tile.scaled.halfHeight
-                    });
-                    if (pos.x > -character.tile.scaled.width && pos.x < view.canvas.width + character.tile.scaled.width && pos.y > -character.tile.scaled.height && pos.y < view.canvas.height + character.tile.scaled.height) characters.push(character);
-                });
-
-                // Sort characters
-                characters.sort(function(a, b) {
+                // Sort actors
+                actors.sort(function(a, b) {
                     return (a.transform.y + a.tile.scaled.halfHeight) - (b.transform.y + b.tile.scaled.halfHeight);
                 });
 
-                // Render characters
-                characters.forEach(character => {
-                    character.render(view);
+                // Render actors
+                actors.forEach(actor => {
+                    actor.render(view);
                 });
+
             }
 
             // Render tiles
