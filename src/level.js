@@ -23,12 +23,7 @@ class Level {
         this.layers = [];
 
         // Actors {type: {'name': object, ...}, ...} for items, chars, npcs, mobs, mounts, vehicles, etc.
-        this.actors = {
-            item: {},
-            char: {},
-            npc: {},
-            mob: {}
-        };
+        this.actors = {};
 
         // Spawn points {'player': [{x, y}, ...], 'mob': [{x, y}, ...], ...}
         this.spawnpoints = {};

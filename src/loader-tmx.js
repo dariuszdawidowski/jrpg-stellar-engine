@@ -92,7 +92,7 @@ class LoaderTMX {
                             if (type == 'spawn') {
                                 if (name.search(':') != -1) {
                                     const [kind, uri] = name.split(':');
-                                    if (['item', 'mob', 'npc'].includes(kind.toLowerCase())) resources.acx[uri] = null;
+                                    if (kind && uri) resources.acx[uri] = null;
                                 }
                             }
 
@@ -240,6 +240,7 @@ class LoaderTMX {
                                     const [kind, uri] = name.split(':');
                                     const kindName = kind.toLowerCase();
                                     const kindCount = (kindName in level.actors) ? Object.keys(level.actors[kindName]).length + 1 : 1;
+                                    if (!(kindName in level.actors)) level.actors[kindName] = {};
                                     level.actors[kindName][`${uri}.${kindCount}`] = this.loader.acx.parseActor({
                                         xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                                         transform: {x: x + (w / 2), y: y - (h / 2)},

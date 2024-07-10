@@ -724,6 +724,7 @@
                 level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, prefetch: false });
 
                 // Initialize player
+                level.actors['char'] = {};
                 level.actors.char['player'] = new Player({
                     resource: '#char1',
                     width: 48,
