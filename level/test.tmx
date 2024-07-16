@@ -217,7 +217,7 @@
 </data>
  </layer>
  <objectgroup id="4" name="Objects" locked="1">
-  <object id="2" name="Player" type="Spawn" x="168" y="240">
+  <object id="2" name="char:player-acx" type="Spawn" x="168" y="240">
    <point/>
   </object>
   <object id="3" name="mob:penguin-acx" type="Spawn" x="312" y="240">

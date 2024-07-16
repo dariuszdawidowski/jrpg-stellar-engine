@@ -327,7 +327,7 @@
             </data>
              </layer>
              <objectgroup id="4" name="Objects" locked="1">
-              <object id="2" name="Player" type="Spawn" x="168" y="240">
+              <object id="2" name="char:player-acx" type="Spawn" x="168" y="240">
                <point/>
               </object>
               <object id="3" name="mob:penguin-acx" type="Spawn" x="312" y="240">
@@ -507,6 +507,45 @@
         </script>
 
         <!-- ACX -->
+        <script id="player-acx" type="text/xml">
+            <actor version="0.2" name="player" type="Player" resource="#char1" width="48" height="80" cols="3" rows="4">
+                <movement speed="320" />
+                <collider x="7" y="50" width="50" height="30"/>
+                <animation name="idleUp">
+                    <frame tileid="10" duration="100"/>
+                </animation>
+                <animation name="idleDown">
+                    <frame tileid="1" duration="100"/>
+                </animation>
+                <animation name="idleLeft">
+                    <frame tileid="4" duration="100"/>
+                </animation>
+                <animation name="idleRight">
+                    <frame tileid="7" duration="100"/>
+                </animation>
+                <animation name="moveUp">
+                    <frame tileid="9" duration="100"/>
+                    <frame tileid="10" duration="100"/>
+                    <frame tileid="11" duration="100"/>
+                </animation>
+                <animation name="moveDown">
+                    <frame tileid="0" duration="100"/>
+                    <frame tileid="1" duration="100"/>
+                    <frame tileid="2" duration="100"/>
+                </animation>
+                <animation name="moveLeft">
+                    <frame tileid="3" duration="100"/>
+                    <frame tileid="4" duration="100"/>
+                    <frame tileid="5" duration="100"/>
+                </animation>
+                <animation name="moveRight">
+                    <frame tileid="6" duration="100"/>
+                    <frame tileid="7" duration="100"/>
+                    <frame tileid="8" duration="100"/>
+                </animation>
+            </actor>
+        </script>
+
         <script id="penguin-acx" type="text/xml">
             <actor version="0.2" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
                 <movement speed="80" />
@@ -683,7 +722,7 @@
                 if (event.code == 'Space' || event.code == 'ControlRight' || event.code == 'ControlLeft' || event.key == 'Enter') {
                     input.action = false;
                 }
-                level.actors.char.player.idle();
+                level.actors.char['player-acx.1'].idle();
             };
 
             const touchStartHandler = (event) => {
@@ -758,9 +797,10 @@
 
                 // Load Map
                 level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, prefetch: false });
+                // console.log(level)
 
                 // Initialize player
-                level.actors['char'] = {};
+                /*level.actors['char'] = {};
                 level.actors.char['player'] = new Player({
                     resource: '#char1',
                     width: 48,
@@ -793,10 +833,13 @@
                     },
                     transform: level.getSpawnPoint(spawn.toLowerCase(), {x: 0, y: 0})
                 });
-                level.actors.char.player.idle();
+                level.actors.char['player-acx.1'].idle();*/
+
+                // Player view bounds
+                level.actors.char['player-acx.1'].bounds = {top: -150, bottom: 150, left: -150, right: 150};
 
                 // Centre view context on player
-                view.centre(level.actors.char.player.transform);
+                view.centre(level.actors.char['player-acx.1'].transform);
 
             };
 
@@ -821,50 +864,50 @@
             const playerMoveUp = (deltaTime) => {
 
                 // Collide
-                const [x, y] = level.actors.char.player.collideUp({
+                const [x, y] = level.actors.char['player-acx.1'].collideUp({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
 
                 // Slide
-                if (x < -0.1) level.actors.char.player.moveLeft(-x, view);
-                else if (x > 0.1) level.actors.char.player.moveRight(x, view);
+                if (x < -0.1) level.actors.char['player-acx.1'].moveLeft(-x, view);
+                else if (x > 0.1) level.actors.char['player-acx.1'].moveRight(x, view);
 
                 // Anim & Move
-                level.actors.char.player.animate('moveUp', deltaTime);
-                level.actors.char.player.moveUp(y, view);
+                level.actors.char['player-acx.1'].animate('moveUp', deltaTime);
+                level.actors.char['player-acx.1'].moveUp(y, view);
             };
 
             const playerMoveDown = (deltaTime) => {
 
                 // Collide
-                const [x, y] = level.actors.char.player.collideDown({
+                const [x, y] = level.actors.char['player-acx.1'].collideDown({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
 
                 // Slide
-                if (x < -0.1) level.actors.char.player.moveLeft(-x, view);
-                else if (x > 0.1) level.actors.char.player.moveRight(x, view);
+                if (x < -0.1) level.actors.char['player-acx.1'].moveLeft(-x, view);
+                else if (x > 0.1) level.actors.char['player-acx.1'].moveRight(x, view);
 
                 // Anim & Move
-                level.actors.char.player.animate('moveDown', deltaTime);
-                level.actors.char.player.moveDown(y, view);
+                level.actors.char['player-acx.1'].animate('moveDown', deltaTime);
+                level.actors.char['player-acx.1'].moveDown(y, view);
             };
 
             const playerMoveLeft = (deltaTime) => {
 
                 // Collide
-                let [x, y] = level.actors.char.player.collideLeft({
+                let [x, y] = level.actors.char['player-acx.1'].collideLeft({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
 
                 // Stairs
-                const [stx, sty] = level.actors.char.player.stairsLeft({
+                const [stx, sty] = level.actors.char['player-acx.1'].stairsLeft({
                     view,
                     deltaTime,
                     with: level.getStairs(view)
@@ -875,25 +918,25 @@
                 y += sty;
 
                 // Slide
-                if (y < -0.1) level.actors.char.player.moveUp(-y, view);
-                else if (y > 0.1) level.actors.char.player.moveDown(y, view);
+                if (y < -0.1) level.actors.char['player-acx.1'].moveUp(-y, view);
+                else if (y > 0.1) level.actors.char['player-acx.1'].moveDown(y, view);
 
                 // Anim & Move
-                level.actors.char.player.animate('moveLeft', deltaTime);
-                level.actors.char.player.moveLeft(x, view);
+                level.actors.char['player-acx.1'].animate('moveLeft', deltaTime);
+                level.actors.char['player-acx.1'].moveLeft(x, view);
             };
 
             const playerMoveRight = (deltaTime) => {
 
                 // Collide
-                let [x, y] = level.actors.char.player.collideRight({
+                let [x, y] = level.actors.char['player-acx.1'].collideRight({
                     view,
                     deltaTime,
                     with: level.getColliders(view)
                 });
 
                 // Stairs
-                const [stx, sty] = level.actors.char.player.stairsRight({
+                const [stx, sty] = level.actors.char['player-acx.1'].stairsRight({
                     view,
                     deltaTime,
                     with: level.getStairs(view)
@@ -904,12 +947,12 @@
                 y += sty;
 
                 // Slide
-                if (y < -0.1) level.actors.char.player.moveUp(-y, view);
-                else if (y > 0.1) level.actors.char.player.moveDown(y, view);
+                if (y < -0.1) level.actors.char['player-acx.1'].moveUp(-y, view);
+                else if (y > 0.1) level.actors.char['player-acx.1'].moveDown(y, view);
 
                 // Anim & Move
-                level.actors.char.player.animate('moveRight', deltaTime);
-                level.actors.char.player.moveRight(x, view);
+                level.actors.char['player-acx.1'].animate('moveRight', deltaTime);
+                level.actors.char['player-acx.1'].moveRight(x, view);
             };
 
             // Start loop
@@ -956,7 +999,7 @@
 
                 // Enter into portal
                 level.getPortals(view).forEach(portal => {
-                    if (level.actors.char.player.collideWithBox({with: portal, view})) {
+                    if (level.actors.char['player-acx.1'].collideWithBox({with: portal, view})) {
                         stop();
                         loadLevel(portal.map, portal.spawn).then(() => start());
                     }
@@ -964,7 +1007,7 @@
 
                 // Player actions
                 if (input.action) {
-                    if (level.actors.char.player.collideWithSprite({with: level.actors.item['chest-acx.1'], view})) {
+                    if (level.actors.char['player-acx.1'].collideWithSprite({with: level.actors.item['chest-acx.1'], view})) {
                         level.actors.item['chest-acx.1'].animate('open');
                         level.actors.item['chest-acx.1'].render(view);
                     }

@@ -195,6 +195,9 @@ class Level {
 
     render(view) {
 
+        // console.log('layers', this.layers)
+        // console.log('actors', this.actors)
+
         // Iterate layers
         this.layers.forEach(layer => {
 
@@ -213,6 +216,20 @@ class Level {
             // Render actors
             else if (layer.class == 'objects') {
 
+                // Iterate global actors groups
+                Object.values(this.actors).forEach(actorsGroup => {
+                    // Iterate actors in group
+                    Object.entries(actorsGroup).forEach(([actorId, actor]) => {
+                        // Iterate actor IDs in the current layer
+                        layer.actors.forEach(actorIdOnLayer => {
+                            if (actorIdOnLayer == actorId) actor.render(view);
+                        });
+                        // console.log(layer)
+                        // console.log(actorId, actor)
+                    });
+                });
+
+                /*
                 // Visible actors
                 const actors = [];
 
@@ -236,6 +253,7 @@ class Level {
                 actors.forEach(actor => {
                     actor.render(view);
                 });
+                */
 
             }
 

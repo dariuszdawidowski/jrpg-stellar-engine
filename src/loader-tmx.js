@@ -216,10 +216,13 @@ class LoaderTMX {
 
                     // Objects
                     case 'objectgroup':
-                        level.layers.push({
-                            'name': 'objects',
-                            'class': 'objects'
-                        });
+                        const layerName = node.getAttribute('name').toLowerCase();
+                        const layer = {
+                            'name': layerName,
+                            'class': 'objects',
+                            'actors': []
+                        }
+                        level.layers.push(layer);
                         node.querySelectorAll('object').forEach(obj => {
                             const name = obj.getAttribute('name').toLowerCase();
                             const type = obj.getAttribute('type').toLowerCase();
@@ -237,15 +240,26 @@ class LoaderTMX {
 
                                 // Actual spawn
                                 if (name.search(':') != -1) {
+
+                                    // Determine naming
                                     const [kind, uri] = name.split(':');
                                     const kindName = kind.toLowerCase();
                                     const kindCount = (kindName in level.actors) ? Object.keys(level.actors[kindName]).length + 1 : 1;
+                                    const actorID = `${uri}.${kindCount}`;
+
+                                    // Add to layer registry
+                                    if (!layer.actors.includes(actorID)) layer.actors.push(actorID);
+
+                                    // Add to global actors registry
                                     if (!(kindName in level.actors)) level.actors[kindName] = {};
-                                    level.actors[kindName][`${uri}.${kindCount}`] = this.loader.acx.parseActor({
+
+                                    // Parse ACX
+                                    level.actors[kindName][actorID] = this.loader.acx.parseActor({
                                         xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                                         transform: {x: x + (w / 2), y: y - (h / 2)},
                                         scale
                                     });
+
                                 }
 
                             }
