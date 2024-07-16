@@ -310,7 +310,7 @@
 </data>
  </layer>
  <objectgroup id="13" name="Air">
-  <object id="12" name="npc:jinn-acx" x="128" y="96">
+  <object id="12" name="mob:jinn-acx" type="Spawn" x="128" y="96">
    <point/>
   </object>
  </objectgroup>
