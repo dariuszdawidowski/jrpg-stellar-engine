@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="13" nextobjectid="12">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="13">
  <tileset firstgid="1" source="test.tsx"/>
  <tileset firstgid="88" source="water.tsx"/>
  <tileset firstgid="97" source="props.tsx"/>
@@ -309,4 +309,9 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="13" name="Air">
+  <object id="12" name="npc:jinn-acx" x="128" y="96">
+   <point/>
+  </object>
+ </objectgroup>
 </map>
