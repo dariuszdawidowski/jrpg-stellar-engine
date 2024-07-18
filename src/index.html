@@ -510,7 +510,7 @@
         <script id="player-acx" type="text/xml">
             <actor version="0.2" name="player" type="Player" resource="#char1" width="48" height="80" cols="3" rows="4">
                 <movement speed="320" />
-                <collider x="7" y="50" width="50" height="30"/>
+                <collider x="4" y="16" width="8" height="4"/>
                 <animation name="idleUp">
                     <frame tileid="10" duration="100"/>
                 </animation>
@@ -797,43 +797,6 @@
 
                 // Load Map
                 level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, prefetch: false });
-                // console.log(level)
-
-                // Initialize player
-                /*level.actors['char'] = {};
-                level.actors.char['player'] = new Player({
-                    resource: '#char1',
-                    width: 48,
-                    height: 80,
-                    cols: 3,
-                    rows: 4,
-                    scale: scale,
-                    speed: 320,
-                    animations: {
-                        idleUp: [{frame: 10, duration: 100}],
-                        idleDown: [{frame: 1, duration: 100}],
-                        idleLeft: [{frame: 4, duration: 100}],
-                        idleRight: [{frame: 7, duration: 100}],
-                        moveUp: [{frame: 9, duration: 100}, {frame: 10, duration: 100}, {frame: 11, duration: 100}],
-                        moveDown: [{frame: 0, duration: 100}, {frame: 1, duration: 100}, {frame: 2, duration: 100}],
-                        moveLeft: [{frame: 3, duration: 100}, {frame: 4, duration: 100}, {frame: 5, duration: 100}],
-                        moveRight: [{frame: 6, duration: 100}, {frame: 7, duration: 100}, {frame: 8, duration: 100}],
-                    },
-                    collider: {
-                        x: 7,
-                        y: 50,
-                        width: 50,
-                        height: 30
-                    },
-                    bounds: {
-                        top: -150,
-                        bottom: 150,
-                        left: -150,
-                        right: 150
-                    },
-                    transform: level.getSpawnPoint(spawn.toLowerCase(), {x: 0, y: 0})
-                });
-                level.actors.char['player-acx.1'].idle();*/
 
                 // Player view bounds
                 level.actors.char['player-acx.1'].bounds = {top: -150, bottom: 150, left: -150, right: 150};
