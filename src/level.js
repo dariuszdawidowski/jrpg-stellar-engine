@@ -224,36 +224,8 @@ class Level {
                         layer.actors.forEach(actorIdOnLayer => {
                             if (actorIdOnLayer == actorId) actor.render(view);
                         });
-                        // console.log(layer)
-                        // console.log(actorId, actor)
                     });
                 });
-
-                /*
-                // Visible actors
-                const actors = [];
-
-                // Collect culled actors
-                Object.values(this.actors).forEach(actorsList => {
-                    Object.values(actorsList).forEach(actor => {
-                        const pos = view.world2Screen({
-                            x: actor.transform.x - actor.tile.scaled.halfWidth,
-                            y: actor.transform.y - actor.tile.scaled.halfHeight
-                        });
-                        if (pos.x > -actor.tile.scaled.width && pos.x < view.canvas.width + actor.tile.scaled.width && pos.y > -actor.tile.scaled.height && pos.y < view.canvas.height + actor.tile.scaled.height) actors.push(actor);
-                    });
-                });
-
-                // Sort actors
-                actors.sort(function(a, b) {
-                    return (a.transform.y + a.tile.scaled.halfHeight) - (b.transform.y + b.tile.scaled.halfHeight);
-                });
-
-                // Render actors
-                actors.forEach(actor => {
-                    actor.render(view);
-                });
-                */
 
             }
 
@@ -332,11 +304,13 @@ class Level {
             );
         });
 
-        // Items
-        Object.values(this.actors.item).forEach(item => item.debug(view));
-
-        // Characters
-        Object.values(this.actors.char).forEach(character => character.debug(view));
+        // Actors
+        Object.values(this.actors).forEach(actorsGroup => {
+            // Iterate actors in group
+            Object.values(actorsGroup).forEach(actor => {
+                actor.debug(view);
+            });
+        });
 
         // View
         if (view.debugEnabled) view.debug();
