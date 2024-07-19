@@ -801,10 +801,16 @@
                 // Load Map
                 level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, prefetch: false });
 
+                // Insert player in layer
+                level.actors['player'] = {
+                    'player': player
+                };
+                level.getLayer('objects').actors.push('player');
+
                 // Move player to spawn point
                 const {x, y} = level.getSpawnPoint(spawn.toLowerCase(), {x: 0, y: 0});
-                console.log(spawn.toLowerCase(), x, y)
                 player.position(x, y);
+                player.idle();
 
                 // Centre view context on player
                 view.centre(player.transform);
@@ -993,9 +999,9 @@
                 // Update and render environment
                 level.update(view, deltaTime);
                 level.render(view);
-                level.debug(view);
-                player.render(view);
-                player.debug(view);
+                // level.debug(view);
+                // player.render(view);
+                // player.debug(view);
 
                 // Time udpate
                 lastTime = currentTime;

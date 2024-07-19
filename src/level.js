@@ -163,6 +163,25 @@ class Level {
     }
 
     /**
+     * Find layer
+     */
+
+    getLayer(name) {
+        for (const layer of this.layers) {
+            if (layer.name == name) return layer;
+        }
+        return null;
+    }
+
+    /**
+     * Returns list of all layers
+     */
+
+    getLayers() {
+        return this.layers;
+    }
+
+    /**
      * Update all actors
      */
 
