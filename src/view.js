@@ -180,6 +180,23 @@ class View {
     }
 
     /**
+     * Make a screenshot
+     */
+
+    screenshot(download = false) {
+        const dataURL = this.canvas.toDataURL('image/png');
+        const img = new Image();
+        img.src = dataURL;
+        if (download) {
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'canvas-screenshot.png';
+            link.click();
+        }
+        return img;
+    }
+
+    /**
      * Debug render
      * @param args.center: bool - display 0,0 of the world coordinates
      * @param args.sprite: Sprite object - sprite to display it's bounds
