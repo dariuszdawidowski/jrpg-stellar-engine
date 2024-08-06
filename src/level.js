@@ -235,15 +235,34 @@ class Level {
             // Render actors
             else if (layer.class == 'objects') {
 
-                // Iterate global actors groups
+                // Visible actors
+                const actors = [];
+
+                // Collect culled actors
                 Object.values(this.actors).forEach(actorsGroup => {
                     // Iterate actors in group
                     Object.entries(actorsGroup).forEach(([actorId, actor]) => {
                         // Iterate actor IDs in the current layer
                         layer.actors.forEach(actorIdOnLayer => {
-                            if (actorIdOnLayer == actorId) actor.render(view);
+                            if (actorIdOnLayer == actorId) {
+                                const pos = view.world2Screen({
+                                    x: actor.transform.x - actor.tile.scaled.halfWidth,
+                                    y: actor.transform.y - actor.tile.scaled.halfHeight
+                                });
+                                if (pos.x > -actor.tile.scaled.width && pos.x < view.canvas.width + actor.tile.scaled.width && pos.y > -actor.tile.scaled.height && pos.y < view.canvas.height + actor.tile.scaled.height) actors.push(actor);
+                            }
                         });
                     });
+                });
+
+                // Sort actors
+                actors.sort(function(a, b) {
+                    return (a.transform.y + a.tile.scaled.halfHeight) - (b.transform.y + b.tile.scaled.halfHeight);
+                });
+
+                // Render actors
+                actors.forEach(actor => {
+                    actor.render(view);
                 });
 
             }
