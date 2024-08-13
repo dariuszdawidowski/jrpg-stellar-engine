@@ -214,9 +214,6 @@ class Level {
 
     render(view) {
 
-        // console.log('layers', this.layers)
-        // console.log('actors', this.actors)
-
         // Iterate layers
         this.layers.forEach(layer => {
 

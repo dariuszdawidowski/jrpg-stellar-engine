@@ -44,6 +44,15 @@ class View {
     }
 
     /**
+     * Fill background with color
+     */
+
+    fill(color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    /**
      * Fill with background image
      * @param resource: object - image to display
      * @param position: {x, y} - image offset
