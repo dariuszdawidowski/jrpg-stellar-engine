@@ -14,7 +14,8 @@ class LoaderTSX {
     async loadTileSet(args) {
         const file = await fetch(args.url);
         const text = await file.text();
-        return this.parseTileSet({ xml: text, url: args.url, resource: args?.resource, scale: args.scale });
+        const tileset = await this.parseTileSet({ xml: text, url: args.url, resource: args?.resource, scale: args.scale });
+        return tileset;
     }
 
     /**
@@ -25,13 +26,15 @@ class LoaderTSX {
      * @param scale: int - scale for this tileset (default 1)
      */
 
-    parseTileSet(args) {
+    async parseTileSet(args) {
         const { xml = null, url = null, resource = null, scale = 1 } = args;
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'application/xml');
         const tileset = doc.querySelector('tileset');
         if (tileset) {
+
+            // Image
             const image = tileset.querySelector('image');
             if (image) {
                 const params = {
@@ -41,6 +44,7 @@ class LoaderTSX {
                     cell: parseInt(tileset.getAttribute('tilewidth')),
                     scale
                 };
+
                 // Animations
                 const anim = {};
                 tileset.querySelectorAll('tile').forEach(tile => {

@@ -63,7 +63,7 @@ class LoaderTMX {
 
         // Resources list 
         const resources = {
-            // {'name': { url: '/url/of/file.tsx', buffer: <fetched buffer>}, ...}
+            // {'name': { url: '/url/of/file.tsx', buffer: <fetched buffer>, tileset: <TileSet object>}, ...}
             tsx: {},
             // {'/url/of/file.acx': <fetched buffer>, ...}
             acx: {}
@@ -77,7 +77,7 @@ class LoaderTMX {
                     // Tileset
                     if (node.nodeName == 'tileset') {
                         const tilesetName = node.getAttribute('source');
-                        resources.tsx[tilesetName] = {url: resolvePath(url, tilesetName), buffer: null};
+                        resources.tsx[tilesetName] = {url: resolvePath(url, tilesetName), buffer: null, tileset: null};
                     }
 
                     // Objects layer
@@ -107,6 +107,11 @@ class LoaderTMX {
                 const tsxFile = await fetch(resources.tsx[name].url);
                 const tsxText = await tsxFile.text();
                 resources.tsx[name].buffer = tsxText;
+                resources.tsx[name].tileset = await this.loader.tsx.parseTileSet({
+                    xml: resources.tsx[name].buffer,
+                    url: resources.tsx[name].url,
+                    scale
+                });
             });
             await Promise.all(tsxPromises);
 
@@ -117,6 +122,7 @@ class LoaderTMX {
                 resources.acx[url] = acxText;
             });
             await Promise.all(acxPromises);
+
         }
 
         // Parse
@@ -136,11 +142,12 @@ class LoaderTMX {
                             // Tilesets prefetched in resources
                             else {
                                 level.tilesets[tilesetName] = {
-                                    ref: this.loader.tsx.parseTileSet({
-                                        xml: resources.tsx[tilesetName].buffer,
-                                        url: resources.tsx[tilesetName].url,
-                                        scale
-                                    }),
+                                    ref: resources.tsx[tilesetName].tileset,
+                                    // ref: this.loader.tsx.parseTileSet({
+                                    //     xml: resources.tsx[tilesetName].buffer,
+                                    //     url: resources.tsx[tilesetName].url,
+                                    //     scale
+                                    // }),
                                     first: tilesetFirst
                                 };
                             }

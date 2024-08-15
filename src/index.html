@@ -823,24 +823,36 @@
                 // Initialize view context
                 view = new View({ canvas: document.getElementById('main'), debug: true });
 
-                // Load level data
+                // Loaders
                 loaderACX = new LoaderACX();
                 loaderTSX = new LoaderTSX();
-                loaderTMX = new LoaderTMX({tilesets: {
-                    'test.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('test-tsx').innerText, resource: '#env1', scale }),
-                    'water.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale }),
-                    'props.tsx': loaderTSX.parseTileSet({ xml: document.getElementById('props-tsx').innerText, resource: '#props', scale })
-                }});
 
-                // Load Player
-                player = loaderACX.parseActor({
-                    xml: document.getElementById('player-acx').innerText,
-                    scale
+                // Load tielsets
+                const tilesets = {'test.tsx': null, 'water.tsx': null, 'props.tsx': null};
+                loaderTSX.parseTileSet({ xml: document.getElementById('test-tsx').innerText, resource: '#env1', scale }).then(result => {
+                    tilesets['test.tsx'] = result;
+                    loaderTSX.parseTileSet({ xml: document.getElementById('water-tsx').innerText, resource: '#env2', scale }).then(result => {
+                        tilesets['water.tsx'] = result;
+                        loaderTSX.parseTileSet({ xml: document.getElementById('props-tsx').innerText, resource: '#props', scale }).then(result => {
+                            tilesets['props.tsx'] = result;
+
+                            // Load level data
+                            loaderTMX = new LoaderTMX({tilesets});
+
+                            // Load Player
+                            player = loaderACX.parseActor({
+                                xml: document.getElementById('player-acx').innerText,
+                                scale
+                            });
+                            player.bounds = {top: -150, bottom: 150, left: -150, right: 150};
+
+                            // Load Level
+                            loadLevel('test-tmx', 'player').then(() => start());
+
+                        });
+                    });
                 });
-                player.bounds = {top: -150, bottom: 150, left: -150, right: 150};
 
-                // Load Level
-                loadLevel('test-tmx', 'player').then(() => start());
             });
 
             // Player movement
