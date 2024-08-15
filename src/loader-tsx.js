@@ -24,10 +24,11 @@ class LoaderTSX {
      * @param url: string - url of tsx file
      * @param resource: object - image with tiles
      * @param scale: int - scale for this tileset (default 1)
+     * @param preload: bool - preload atlas image (default false)
      */
 
     async parseTileSet(args) {
-        const { xml = null, url = null, resource = null, scale = 1 } = args;
+        const { xml = null, url = null, resource = null, scale = 1, preload = false } = args;
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'application/xml');
@@ -44,6 +45,11 @@ class LoaderTSX {
                     cell: parseInt(tileset.getAttribute('tilewidth')),
                     scale
                 };
+
+                // Preload image
+                if (preload) {
+                    params.resource = await this.fetchImage(params.resource);
+                }
 
                 // Animations
                 const anim = {};
@@ -64,6 +70,27 @@ class LoaderTSX {
             }
         }
         return null;
+    }
+
+    async fetchImage(url) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const imageURL = URL.createObjectURL(blob);
+        const img = new Image();
+        img.src = imageURL;
+        let resourcesDiv = document.querySelector('#resources');
+        if (!resourcesDiv) {
+            resourcesDiv = document.createElement('div');
+            resourcesDiv.id = 'resources';
+            resourcesDiv.style.display = 'none';
+            document.body.appendChild(resourcesDiv);
+        }
+        resourcesDiv.appendChild(img);
+        img.onload = () => {
+            URL.revokeObjectURL(imageURL);
+        };
+
+        return img;
     }
 
 }

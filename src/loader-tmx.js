@@ -110,6 +110,7 @@ class LoaderTMX {
                 resources.tsx[name].tileset = await this.loader.tsx.parseTileSet({
                     xml: resources.tsx[name].buffer,
                     url: resources.tsx[name].url,
+                    preload: true,
                     scale
                 });
             });

@@ -38,14 +38,18 @@ class Sprite {
         };
 
         // Load image from HTML
-        if (args.resource.startsWith('#')) {
+        if (typeof(args.resource) == 'string' && args.resource.startsWith('#')) {
             this.atlas.image = document.querySelector(args.resource);
         }
-        // Load image from file
-        else {
+        // Load image from URL
+        else if (typeof(args.resource) == 'string') {
             const img = new Image();
             img.src = args.resource;
             this.atlas.image = img;
+        }
+        // Preloaded image
+        else if (typeof(args.resource) == 'object') {
+            this.atlas.image = args.resource;
         }
 
         // Dimensions of one tile
