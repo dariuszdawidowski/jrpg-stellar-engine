@@ -87,7 +87,7 @@ class LoaderACX {
                         const movement = actor.querySelector('movement');
                         if (movement) {
                             const speed = movement.getAttribute('speed');
-                            params['speed'] = parseInt(speed);
+                            params['speed'] = parseInt(speed) * scale;
                         }
 
                         // Collider
