@@ -12,38 +12,41 @@ class MOB extends Actor {
     constructor(args) {
         super(args);
 
-        // Current action
+        // Current action (used)
         this.action = 'idle';
 
-        // Direction of movement 0=left 1=top 2=right 3=bottom
-        this.direction = 3;
+        // Direction of movement L=left U=up R=right D=down I=idle
+        this.direction = '';
 
-        // Helper counter for actions (seconds)
+        // Helper counter for movement (seconds)
         this.duration = 0;
+
+        // Last collision bounce direction (to avoid)
+        this.bounced = '';
 
         // Start wander
         this.wander();
     }
 
-    /**
-     * Stop and do nothing
-     */
-
-    idle() {
-        this.action = 'idle';
-        this.duration = 0;
-        this.direction = 3;
-        super.idle();
-    }
 
     /**
      * Start wandering around
      */
 
     wander() {
-        this.action = 'wander';
-        this.duration = randomRangeInt(1, 2);
-        this.direction = randomRangeInt(0, 4);
+        this.duration = randomRangeFloat(0.5, 2.0);
+        // Available directions without last bounced
+        const directions = ['L', 'U', 'R', 'D', 'I'].filter(direction => direction !== this.bounced);
+        // Random direction
+        this.direction = directions[randomRangeInt(0, directions.length - 1)];
+        // Assign action
+        if (this.direction == 'I') {
+            this.action = 'idle';
+        }
+        else {
+            this.action = 'wander';
+            this.bounced = '';
+        }
     }
 
     /**
@@ -56,64 +59,87 @@ class MOB extends Actor {
     update(args) {
         if (this.duration > 0) {
             this.duration -= args.deltaTime;
-            switch(this.action) {
 
-                // Wandering movement
-                case 'wander':
-                    if (this.direction > 3) {
-                        this.animate('idle', args.deltaTime);
-                        this.transform.v = '';
-                        this.transform.h = '';
+            // IDLE
+            if (this.action == 'idle') {
+
+                // Idle
+                if (this.direction == 'I') {
+                    this.action = 'idle';
+                    this.animate('idle', args.deltaTime);
+                    this.transform.v = '';
+                    this.transform.h = '';
+                }
+
+            }
+
+            // WANDER
+            else if (this.action == 'wander') {
+
+                // Wander up
+                if (this.direction == 'U') {
+                    const [x, y] = this.collideUp({
+                        view: args.view,
+                        deltaTime: args.deltaTime,
+                        with: args.colliders
+                    });
+                    if (y < 0.001) {
+                        this.wander();
+                        this.bounced = 'U';
                     }
-                    else if (this.direction == 1) {
-                        const [x, y] = this.collideUp({
-                            view: args.view,
-                            deltaTime: args.deltaTime,
-                            with: args.colliders
-                        });
-                        if (y < 0.001) this.wander();
-                        this.animate('moveUp', args.deltaTime);
-                        this.moveUp(Math.round(y));
+                    this.animate('moveUp', args.deltaTime);
+                    this.moveUp(Math.round(y));
+                }
+
+                // Wander down
+                else if (this.direction == 'D') {
+                    const [x, y] = this.collideDown({
+                        view: args.view,
+                        deltaTime: args.deltaTime,
+                        with: args.colliders
+                    });
+                    if (y < 0.001) {
+                        this.wander();
+                        this.bounced = 'D';
                     }
-                    else if (this.direction == 3) {
-                        const [x, y] = this.collideDown({
-                            view: args.view,
-                            deltaTime: args.deltaTime,
-                            with: args.colliders
-                        });
-                        if (y < 0.001) this.wander();
-                        this.animate('moveDown', args.deltaTime);
-                        this.moveDown(Math.round(y));
+                    this.animate('moveDown', args.deltaTime);
+                    this.moveDown(Math.round(y));
+                }
+
+                // Wander left
+                if (this.direction == 'L') {
+                    const [x, y] = this.collideLeft({
+                        view: args.view,
+                        deltaTime: args.deltaTime,
+                        with: args.colliders
+                    });
+                    if (x < 0.001) {
+                        this.wander();
+                        this.bounced = 'L';
                     }
-                    if (this.direction == 0) {
-                        const [x, y] = this.collideLeft({
-                            view: args.view,
-                            deltaTime: args.deltaTime,
-                            with: args.colliders
-                        });
-                        if (x < 0.001) this.wander();
-                        this.animate('moveLeft', args.deltaTime);
-                        this.moveLeft(Math.round(x));
+                    this.animate('moveLeft', args.deltaTime);
+                    this.moveLeft(Math.round(x));
+                }
+
+                // Wander right
+                else if (this.direction == 'R') {
+                    const [x, y] = this.collideRight({
+                        view: args.view,
+                        deltaTime: args.deltaTime,
+                        with: args.colliders
+                    });
+                    if (x < 0.001) {
+                        this.wander();
+                        this.bounced = 'R';
                     }
-                    else if (this.direction == 2) {
-                        const [x, y] = this.collideRight({
-                            view: args.view,
-                            deltaTime: args.deltaTime,
-                            with: args.colliders
-                        });
-                        if (x < 0.001) this.wander();
-                        this.animate('moveRight', args.deltaTime);
-                        this.moveRight(Math.round(x));
-                    }
-                    break;
+                    this.animate('moveRight', args.deltaTime);
+                    this.moveRight(Math.round(x));
+                }
             }
         }
         else {
-            switch(this.action) {
-                case 'wander':
-                    this.wander();
-                    break;
-            }
+            // Random new direction
+            this.wander();
         }
     }
 

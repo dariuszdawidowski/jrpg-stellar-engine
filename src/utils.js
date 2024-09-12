@@ -11,20 +11,12 @@ function randomRangeInt(min, max) {
 };
 
 /**
- * Match with classic asterisk instead of regex
+ * Random float number in range min-max
  */
 
-// function matchWithAsterisk(pattern, str) {
-//     const parts = pattern.split('*');
-//     const start = parts[0];
-//     const end = parts[1];
-
-//     if (str.startsWith(start) && str.endsWith(end)) {
-//         return true;
-//     }
-
-//     return false;
-// }
+function randomRangeFloat(min, max) {
+    return Math.random() * (max - min) + min;
+};
 
 /**
  * Making second path absolute too
