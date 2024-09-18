@@ -78,16 +78,26 @@ class MOB extends Actor {
 
                 // Wander up
                 if (this.direction == 'U') {
+
+                    // Collision detection
                     const [x, y] = this.collideUp({
                         view: args.view,
                         deltaTime: args.deltaTime,
                         with: args.colliders
                     });
+
+                    // Slide
+
+                    // Bounce
                     if (y < 0.001) {
                         this.wander();
                         this.bounced = 'U';
                     }
+
+                    // Animate
                     this.animate('moveUp', args.deltaTime);
+
+                    // Translate
                     this.moveUp(Math.round(y));
                 }
 

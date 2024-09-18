@@ -420,9 +420,9 @@
             </data>
              </layer>
              <objectgroup id="13" name="Air">
-              <object id="12" name="mob:jinn-acx" type="Spawn" x="128" y="96">
+              <!-- <object id="12" name="mob:jinn-acx" type="Spawn" x="128" y="96">
                <point/>
-              </object>
+              </object> -->
              </objectgroup>
             </map>
         </script>
@@ -548,7 +548,7 @@
         <script id="penguin-acx" type="text/xml">
             <actor version="0.2" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
                 <movement speed="20" />
-                <collider x="0" y="0" width="22" height="22"/>
+                <collider x="4" y="15" width="14" height="6"/>
                 <animation name="idle">
                     <frame tileid="1" duration="100"/>
                 </animation>
@@ -1011,9 +1011,7 @@
                 // Update and render environment
                 level.update(view, deltaTime);
                 level.render(view);
-                // level.debug(view);
-                // player.render(view);
-                // player.debug(view);
+                level.debug(view);
 
                 // Time udpate
                 lastTime = currentTime;
