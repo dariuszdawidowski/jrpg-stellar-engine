@@ -86,64 +86,78 @@ class MOB extends Actor {
                         with: args.colliders
                     });
 
-                    // Slide
-
                     // Bounce
                     if (y < 0.001) {
                         this.wander();
                         this.bounced = 'U';
                     }
 
-                    // Animate
+                    // Animate & translate
                     this.animate('moveUp', args.deltaTime);
-
-                    // Translate
-                    this.moveUp(Math.round(y));
+                    this.moveUp(y);
                 }
 
                 // Wander down
                 else if (this.direction == 'D') {
+
+                    // Collision detection
                     const [x, y] = this.collideDown({
                         view: args.view,
                         deltaTime: args.deltaTime,
                         with: args.colliders
                     });
+
+                    // Bounce
                     if (y < 0.001) {
                         this.wander();
                         this.bounced = 'D';
                     }
+
+                    // Animate & translate
                     this.animate('moveDown', args.deltaTime);
-                    this.moveDown(Math.round(y));
+                    this.moveDown(y);
                 }
 
                 // Wander left
                 if (this.direction == 'L') {
+
+                    // Collision detection
                     const [x, y] = this.collideLeft({
                         view: args.view,
                         deltaTime: args.deltaTime,
                         with: args.colliders
                     });
+
+                    // Bounce
                     if (x < 0.001) {
                         this.wander();
                         this.bounced = 'L';
                     }
+
+                    // Animate & translate
                     this.animate('moveLeft', args.deltaTime);
-                    this.moveLeft(Math.round(x));
+                    this.moveLeft(x);
                 }
 
                 // Wander right
                 else if (this.direction == 'R') {
+
+                    // Collision detection
                     const [x, y] = this.collideRight({
                         view: args.view,
                         deltaTime: args.deltaTime,
                         with: args.colliders
                     });
+
+                    // Bounce
                     if (x < 0.001) {
                         this.wander();
                         this.bounced = 'R';
                     }
+
+                    // Animate & translate
                     this.animate('moveRight', args.deltaTime);
-                    this.moveRight(Math.round(x));
+                    this.moveRight(x);
                 }
             }
         }

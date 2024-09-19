@@ -970,7 +970,7 @@
             const mainLoop = (currentTime) => {
 
                 // Universal frame time
-                const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.01);
+                const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.1);
 
                 // Calculate FPS
                 fpsContainer.textContent = `FPS: ${Math.round(1 / deltaTime)}`;
