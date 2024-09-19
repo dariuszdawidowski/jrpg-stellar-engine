@@ -17,14 +17,7 @@
     "browser"
   ],
   "license": "MIT",
-  "author": [
-    {
-      "name": "Dariusz Dawidowski"
-    },
-    {
-      "name": "Jagoda Dawidowska"
-    }
-  ],
+  "author": "Dariusz Dawidowski",
   "bugs": {
     "url": "https://github.com/dariuszdawidowski/jrpg-stellar-engine/issues"
   },
