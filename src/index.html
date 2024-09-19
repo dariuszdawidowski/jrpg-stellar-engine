@@ -420,9 +420,9 @@
             </data>
              </layer>
              <objectgroup id="13" name="Air">
-              <!-- <object id="12" name="mob:jinn-acx" type="Spawn" x="128" y="96">
+              <object id="12" name="mob:jinn-acx" type="Spawn" x="128" y="96">
                <point/>
-              </object> -->
+              </object>
              </objectgroup>
             </map>
         </script>
@@ -970,7 +970,7 @@
             const mainLoop = (currentTime) => {
 
                 // Universal frame time
-                const deltaTime = (currentTime - lastTime) / 1000;
+                const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.01);
 
                 // Calculate FPS
                 fpsContainer.textContent = `FPS: ${Math.round(1 / deltaTime)}`;
@@ -1011,7 +1011,7 @@
                 // Update and render environment
                 level.update(view, deltaTime);
                 level.render(view);
-                level.debug(view);
+                // level.debug(view);
 
                 // Time udpate
                 lastTime = currentTime;
