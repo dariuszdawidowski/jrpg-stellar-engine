@@ -141,23 +141,12 @@ class View {
     }
 
     /**
-     * Util: round number to nearest even
-     * @param number: Number - value to round
-     */
-
-    roundToNearestEven(number) {
-        let roundedNumber = Math.round(number);
-        if (roundedNumber % 2 !== 0) roundedNumber += 1;
-        return roundedNumber;
-    }
-
-    /**
      * Fit canvas dimensions and settings
      */
 
     fitCanvas() {
-        this.canvas.width = this.roundToNearestEven(window.innerWidth);
-        this.canvas.height = this.roundToNearestEven(window.innerHeight);
+        this.canvas.width = roundToNearestEven(window.innerWidth);
+        this.canvas.height = roundToNearestEven(window.innerHeight);
         this.center.x = this.canvas.width / 2;
         this.center.y = this.canvas.height / 2;
         this.ctx.imageSmoothingEnabled = false;
@@ -177,7 +166,7 @@ class View {
     }
 
     /**
-     * World transform -> output screen transform (0,0 in the corner)
+     * World transform -> screen transform (0,0 in the corner)
      * @param transform: {x, y}
      */
 
@@ -185,6 +174,18 @@ class View {
         return {
             x: transform.x + this.center.x + this.offset.x,
             y: transform.y + this.center.y + this.offset.y
+        };
+    }
+
+    /**
+     * Screen transform -> world transform (0,0 in the center)
+     * @param transform: {x, y}
+     */
+
+    screen2World(transform) {
+        return {
+            x: transform.x - this.center.x - this.offset.x,
+            y: transform.y - this.center.y - this.offset.y
         };
     }
 
