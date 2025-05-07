@@ -70,30 +70,7 @@ class LoaderTMX {
         };
 
         // Parse global level properties
-        level.properties = {};
-        const propertiesNode = doc.querySelector('map > properties');
-        if (propertiesNode) {
-            propertiesNode.querySelectorAll('property').forEach(prop => {
-                const name = prop.getAttribute('name').toLowerCase();
-                const type = prop.getAttribute('type') || 'string';
-                let value = prop.getAttribute('value');
-                
-                // Convert value based on type
-                switch (type) {
-                    case 'bool':
-                        value = value === 'true';
-                        break;
-                    case 'int':
-                        value = parseInt(value, 10);
-                        break;
-                    case 'float':
-                        value = parseFloat(value);
-                        break;
-                }
-                
-                level.properties[name] = value;
-            });
-        }
+        level.properties = this.parseProperties(doc.querySelector('map > properties'));
 
         // Pre-parse for fetching resources
         if (prefetch) {
@@ -111,12 +88,14 @@ class LoaderTMX {
                         node.querySelectorAll('object').forEach(obj => {
                             const name = obj.getAttribute('name').toLowerCase();
                             const type = obj.getAttribute('type').toLowerCase();
-                            const x = parseFloat(obj.getAttribute('x')) * scale;
-                            const y = parseFloat(obj.getAttribute('y')) * scale;
+                            const properties = this.parseProperties(obj.querySelector('properties'));
 
                             // ACX from spawn points
                             if (type == 'spawn') {
-                                if (name.search(':') != -1) {
+                                if ('actor' in properties) {
+                                    resources.acx[properties.actor] = null;
+                                }
+                                else if (name.search(':') != -1) {
                                     const [kind, uri] = name.split(':');
                                     if (kind && uri) resources.acx[uri] = null;
                                 }
@@ -170,11 +149,6 @@ class LoaderTMX {
                             else {
                                 level.tilesets[tilesetName] = {
                                     ref: resources.tsx[tilesetName].tileset,
-                                    // ref: this.loader.tsx.parseTileSet({
-                                    //     xml: resources.tsx[tilesetName].buffer,
-                                    //     url: resources.tsx[tilesetName].url,
-                                    //     scale
-                                    // }),
                                     first: tilesetFirst
                                 };
                             }
@@ -258,6 +232,8 @@ class LoaderTMX {
                         }
                         level.layers.push(layer);
                         node.querySelectorAll('object').forEach(obj => {
+
+                            // Parse attributes
                             const name = obj.getAttribute('name').toLowerCase();
                             const type = obj.getAttribute('type').toLowerCase();
                             const x = parseFloat(obj.getAttribute('x')) * scale;
@@ -265,19 +241,34 @@ class LoaderTMX {
                             const w = obj.hasAttribute('width') ? parseFloat(obj.getAttribute('width')) * scale : 0;
                             const h = obj.hasAttribute('height') ? parseFloat(obj.getAttribute('height')) * scale : 0;
 
+                            // Parse properties
+                            const properties = this.parseProperties(obj.querySelector('properties'));
+
                             // Spawn point
                             if (type == 'spawn') {
 
                                 // Add point to list of spawnpoints
                                 if (!(name in level.spawnpoints)) level.spawnpoints[name] = [];
-                                level.spawnpoints[name].push({x, y});
+                                level.spawnpoints[name].push({x, y, ...properties});
+
+                                // Determine URI
+                                let kindName = '';
+                                let uri = null;
+                                
+                                if ('actor' in properties) {
+                                    kindName = 'npc';
+                                    uri = properties.actor;
+                                }
+                                else if (name.search(':') != -1) {
+                                    const twin = name.split(':');
+                                    kindName = twin[0].toLowerCase();
+                                    uri = twin[1];
+                                }
 
                                 // Actual spawn
-                                if (name.search(':') != -1) {
+                                if (uri) {
 
                                     // Determine naming
-                                    const [kind, uri] = name.split(':');
-                                    const kindName = kind.toLowerCase();
                                     const kindCount = (kindName in level.actors) ? Object.keys(level.actors[kindName]).length + 1 : 1;
                                     const actorID = `${uri}.${kindCount}`;
 
@@ -351,6 +342,52 @@ class LoaderTMX {
         level.precalcStairs();
 
         return level;
+    }
+
+    /**
+     * Util to parse properties
+     */
+
+    parseProperties(propertiesNode) {
+        // Data
+        const properties = {};
+        // Iterate properties
+        if (propertiesNode) propertiesNode.querySelectorAll('property').forEach(prop => {
+
+            // Attributes
+            const name = prop.getAttribute('name').toLowerCase();
+            const type = prop.getAttribute('type') || 'string';
+            let value = prop.getAttribute('value');
+            
+            // Convert value based on type
+            switch (type) {
+                case 'string':
+                    // Random range (a..b) if needed
+                    if (value && value.includes('..')) {
+                        const [min, max] = value.split('..').map(Number);
+                        if (!isNaN(min) && !isNaN(max)) {
+                            value = min + Math.floor(Math.random() * (max - min + 1));
+                        }
+                    }
+                    // Detect number and convert
+                    if (value && /^\d+$/.test(value)) {
+                        value = Number(value);
+                    }
+                    break;
+                case 'bool':
+                    value = value === 'true';
+                    break;
+                case 'int':
+                    value = parseInt(value, 10);
+                    break;
+                case 'float':
+                    value = parseFloat(value);
+                    break;
+            }
+            
+            properties[name] = value;
+        });
+        return properties;
     }
 
     /**
