@@ -69,6 +69,32 @@ class LoaderTMX {
             acx: {}
         };
 
+        // Parse global level properties
+        level.properties = {};
+        const propertiesNode = doc.querySelector('map > properties');
+        if (propertiesNode) {
+            propertiesNode.querySelectorAll('property').forEach(prop => {
+                const name = prop.getAttribute('name').toLowerCase();
+                const type = prop.getAttribute('type') || 'string';
+                let value = prop.getAttribute('value');
+                
+                // Convert value based on type
+                switch (type) {
+                    case 'bool':
+                        value = value === 'true';
+                        break;
+                    case 'int':
+                        value = parseInt(value, 10);
+                        break;
+                    case 'float':
+                        value = parseFloat(value);
+                        break;
+                }
+                
+                level.properties[name] = value;
+            });
+        }
+
         // Pre-parse for fetching resources
         if (prefetch) {
             for (const node of doc.querySelector('map').childNodes) {

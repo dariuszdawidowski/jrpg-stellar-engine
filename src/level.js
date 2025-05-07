@@ -34,6 +34,9 @@ class Level {
         // Portals to other maps [{map, spawn, left, top, right, bottom}, ...]
         this.portals = [];
 
+        // Map global properties
+        this.properties = {};
+
     }
 
     /**
@@ -136,23 +139,6 @@ class Level {
         }
         return fallback;
     }
-
-    /**
-     * Returns spawn points with given match name e.g. 'mob.*'
-     */
-
-    // getSpawnPoints(pattern) {
-    //     const spawnpoints = [];
-    //     Object.entries(this.spawnpoints).forEach(([name, point]) => {
-    //         console.log(point)
-    //         if (matchWithAsterisk(pattern, name)) {
-    //             point.forEach(p => {
-    //                 spawnpoints.push({name, ...p});
-    //             });
-    //         }
-    //     });
-    //     return spawnpoints;
-    // }
 
     /**
      * Returns list of all objects with class 'portal'
@@ -350,6 +336,5 @@ class Level {
         // View
         if (view.debugEnabled) view.debug();
     }
-
 
 }
