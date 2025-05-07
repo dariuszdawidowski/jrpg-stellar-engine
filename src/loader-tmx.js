@@ -267,26 +267,22 @@ class LoaderTMX {
 
                                 // Actual spawn
                                 if (uri) {
-
-                                    // Determine naming
-                                    const kindCount = (kindName in level.actors) ? Object.keys(level.actors[kindName]).length + 1 : 1;
-                                    const actorID = `${uri}.${kindCount}`;
-
-                                    // Add to layer registry
-                                    if (!layer.actors.includes(actorID)) layer.actors.push(actorID);
-
-                                    // Add to global actors registry
-                                    if (!(kindName in level.actors)) level.actors[kindName] = {};
-
-                                    // Parse ACX
-                                    level.actors[kindName][actorID] = this.loader.acx.parseActor({
-                                        xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                                        transform: {x: x + (w / 2), y: y - (h / 2)},
-                                        scale
-                                    });
-
+                                    for (let n = 0; n < (properties.number || 1); n++) {
+                                        const spawnPos = {
+                                            x: x + (w / 2) + Math.floor(Math.random() * (w + 1) - (w / 2)),
+                                            y: y + (h / 2) + Math.floor(Math.random() * (h + 1) - (h / 2))
+                                        };
+                                        this.spawn({
+                                            name: kindName,
+                                            uri,
+                                            xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
+                                            transform: spawnPos,
+                                            scale,
+                                            level,
+                                            layer
+                                        });
+                                    }
                                 }
-
                             }
 
                             // Stairs
@@ -342,6 +338,29 @@ class LoaderTMX {
         level.precalcStairs();
 
         return level;
+    }
+
+    /**
+     * Spawn helper
+     */
+
+    spawn(args) {
+        // Determine naming
+        const kindCount = (args.name in args.level.actors) ? Object.keys(args.level.actors[args.name]).length + 1 : 1;
+        const actorID = `${args.uri}.${kindCount}`;
+
+        // Add to layer registry
+        if (!args.layer.actors.includes(actorID)) args.layer.actors.push(actorID);
+
+        // Add to global actors registry
+        if (!(args.name in args.level.actors)) args.level.actors[args.name] = {};
+
+        // Parse ACX
+        args.level.actors[args.name][actorID] = this.loader.acx.parseActor({
+            xml: args.xml,
+            transform: args.transform,
+            scale: args.scale
+        });
     }
 
     /**
