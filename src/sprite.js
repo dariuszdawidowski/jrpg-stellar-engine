@@ -6,14 +6,15 @@ class Sprite {
 
     /**
      * Constructor
+     * @param name: string name for the sprite
      * @param transform: {x, y} - initial position
-     * @params resource: string - selector for image preloaded resource
-     * @params width: Number - image width in pixels
-     * @params height: Number - image height in pixels
-     * @params cols: Number - number of columns in atlas (optional)
-     * @params rows: Number - number of rows in atlas (optional)
-     * @params cell: Number - grid cell size in pixels instead of providing rows and cols (optional)
-     * @params scale: Number - scale image (optional)
+     * @param resource: string - selector for image preloaded resource
+     * @param width: Number - image width in pixels
+     * @param height: Number - image height in pixels
+     * @param cols: Number - number of columns in atlas (optional)
+     * @param rows: Number - number of rows in atlas (optional)
+     * @param cell: Number - grid cell size in pixels instead of providing rows and cols (optional)
+     * @param scale: Number - scale image (optional)
      */
 
     constructor(args = {}) {

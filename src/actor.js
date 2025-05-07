@@ -82,8 +82,13 @@ class Actor extends Sprite {
      */
 
     animate(name, deltaTime = 0) {
-        if (this.anim.name != name) this.anim.start(name, this.animations[name]);
-        this.anim.advance(deltaTime);
+        if (this.anim.name != name) {
+            if (name in this.animations) this.anim.start(name, this.animations[name]);
+            else console.error(`Can't find animation '${name}' in the ${this.name}!`)
+        }
+        else {
+            this.anim.advance(deltaTime);
+        }
     }
 
     /**
