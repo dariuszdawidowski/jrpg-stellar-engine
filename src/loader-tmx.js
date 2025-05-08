@@ -70,7 +70,7 @@ class LoaderTMX {
         };
 
         // Parse global level properties
-        level.properties = this.parseProperties(doc.querySelector('map > properties'));
+        level.properties = parseProperties(doc.querySelector('map > properties'));
 
         // Pre-parse for fetching resources
         if (prefetch) {
@@ -88,7 +88,7 @@ class LoaderTMX {
                         node.querySelectorAll('object').forEach(obj => {
                             const name = obj.getAttribute('name').toLowerCase();
                             const type = obj.getAttribute('type').toLowerCase();
-                            const properties = this.parseProperties(obj.querySelector('properties'));
+                            const properties = parseProperties(obj.querySelector('properties'));
 
                             // ACX from spawn points
                             if (type == 'spawn') {
@@ -242,7 +242,7 @@ class LoaderTMX {
                             const h = obj.hasAttribute('height') ? parseFloat(obj.getAttribute('height')) * scale : 0;
 
                             // Parse properties
-                            const properties = this.parseProperties(obj.querySelector('properties'));
+                            const properties = parseProperties(obj.querySelector('properties'));
 
                             // Spawn point
                             if (type == 'spawn') {
@@ -363,52 +363,6 @@ class LoaderTMX {
             scale: args.scale,
             properties: args.properties
         });
-    }
-
-    /**
-     * Util to parse properties
-     */
-
-    parseProperties(propertiesNode) {
-        // Data
-        const properties = {};
-        // Iterate properties
-        if (propertiesNode) propertiesNode.querySelectorAll('property').forEach(prop => {
-
-            // Attributes
-            const name = prop.getAttribute('name').toLowerCase();
-            const type = prop.getAttribute('type') || 'string';
-            let value = prop.getAttribute('value');
-            
-            // Convert value based on type
-            switch (type) {
-                case 'string':
-                    // Random range (a..b) if needed
-                    if (value && value.includes('..')) {
-                        const [min, max] = value.split('..').map(Number);
-                        if (!isNaN(min) && !isNaN(max)) {
-                            value = min + Math.floor(Math.random() * (max - min + 1));
-                        }
-                    }
-                    // Detect number and convert
-                    if (value && /^\d+$/.test(value)) {
-                        value = Number(value);
-                    }
-                    break;
-                case 'bool':
-                    value = value === 'true';
-                    break;
-                case 'int':
-                    value = parseInt(value, 10);
-                    break;
-                case 'float':
-                    value = parseFloat(value);
-                    break;
-            }
-            
-            properties[name] = value;
-        });
-        return properties;
     }
 
     /**

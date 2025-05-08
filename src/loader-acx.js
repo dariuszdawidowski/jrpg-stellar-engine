@@ -6,14 +6,17 @@
 
 Example #1:
 
-<actor version="0.2" name="chest" type="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
+<actor version="0.3" name="chest" type="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
     <collider x="-4" y="-4" width="24" height="24" />
 </actor>
 
 Example #2:
 
-<actor version="0.2" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
-    <movement speed="80" />
+<actor version="0.3" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
+    <properties>
+        <property name="spd" value="80"/>
+        <property name="foo" value="bar"/>
+    </properties>
     <collider x="0" y="0" width="22" height="22"/>
     <animation name="idle">
         <frame tileid="1" duration="100"/>
@@ -62,7 +65,7 @@ class LoaderACX {
             const actor = doc.querySelector('actor');
             if (actor) {
                 const version = actor.getAttribute('version');
-                if (version && version == '0.2') {
+                if (version && (version == '0.2' || version == '0.3')) {
                     const name = actor.getAttribute('name');
                     const type = actor.getAttribute('type');
                     const resource = actor.getAttribute('resource');
@@ -84,10 +87,11 @@ class LoaderACX {
                             transform
                         };
 
-                        // Properties
+                        // Properties (v0.3)
                         if (!('properties' in params)) params['properties'] = { ...args.properties };
+                        params['properties'] = parseProperties(actor.querySelector('properties'));
 
-                        // Movement
+                        // Movement (v0.2)
                         const movement = actor.querySelector('movement');
                         if (movement) {
                             const speed = movement.getAttribute('speed');
