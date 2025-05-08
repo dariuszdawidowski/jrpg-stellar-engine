@@ -58,6 +58,36 @@ function pointInRect(point, rect) {
 }
 
 /**
+ * Angle between two points
+ * @param point1 {x: Number, y: Number}
+ * @param point2 {x: Number, y: Number}
+ * @returns angle: Number (degrees 0..359, 0=north, clockwise) 
+ */
+
+function anglePoints(point1, point2) {
+    const dx = point2.x - point1.x;
+    const dy = point2.y - point1.y;
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    if (angle < 0) angle += 360;
+    angle = (angle + 90) % 360;
+    if (angle < 0) angle += 360;
+    return angle;
+}
+
+/**
+ * Distance between two points
+ * @param point1 {x: Number, y: Number}
+ * @param point2 {x: Number, y: Number}
+ * @returns distance: Number
+ */
+
+function distancePoints(point1, point2) {
+    const dx = point2.x - point1.x;
+    const dy = point2.y - point1.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
  * Util to parse properties
  */
 
