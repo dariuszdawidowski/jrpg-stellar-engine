@@ -7,7 +7,8 @@ class Actor extends Sprite {
     /**
      * Create sprite
      * All Sprite params plus:
-     * @param speed: Number - movement speed (pixels on second)
+     * @param properties: {} - custom properties
+     * @param properties.spd: Number - movement speed (pixels on second)
      * @param animations: Object - map of animations { animName: [{frame: nr, duration: ms}, ...], ... }
      * @param collider: {x, y, width, height} (in screen pixels already scaled)
      */
@@ -15,10 +16,8 @@ class Actor extends Sprite {
     constructor(args) {
         super(args);
 
-        // Stats
-        this.stats = {
-            speed: args.speed,
-        };
+        // Properties
+        this.properties = { ...args.properties };
 
         /**
          * Movement direction
@@ -153,7 +152,7 @@ class Actor extends Sprite {
         let collided = 0;
 
         // Move by pixels
-        let pixels = this.stats.speed * args.deltaTime;
+        let pixels = this.properties.spd * args.deltaTime;
         let sidePixels = 0;
 
         // My collider
@@ -168,13 +167,13 @@ class Actor extends Sprite {
 
                 // Slide right
                 if (my.right > other.right) {
-                    sidePixels = this.stats.speed * 0.7 * args.deltaTime;
+                    sidePixels = this.properties.spd * 0.7 * args.deltaTime;
                     collided ++;
                 }
 
                 // Slide left
                 else if (my.left < other.left) {
-                    sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
+                    sidePixels = -(this.properties.spd * 0.7 * args.deltaTime);
                     collided ++;
                 }
 
@@ -220,7 +219,7 @@ class Actor extends Sprite {
         let collided = 0;
 
         // Move by pixels
-        let pixels = this.stats.speed * args.deltaTime;
+        let pixels = this.properties.spd * args.deltaTime;
         let sidePixels = 0;
 
         // My collider
@@ -235,13 +234,13 @@ class Actor extends Sprite {
 
                 // Slide to right
                 if (my.right > other.right) {
-                    sidePixels = this.stats.speed * 0.7 * args.deltaTime;
+                    sidePixels = this.properties.spd * 0.7 * args.deltaTime;
                     collided ++;
                 }
 
                 // Slide to left
                 else if (my.left < other.left) {
-                    sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
+                    sidePixels = -(this.properties.spd * 0.7 * args.deltaTime);
                     collided ++;
                 }
 
@@ -283,7 +282,7 @@ class Actor extends Sprite {
         let collided = 0;
 
         // Move by pixels
-        let pixels = this.stats.speed * args.deltaTime;
+        let pixels = this.properties.spd * args.deltaTime;
         let sidePixels = 0;
 
         // My collider
@@ -298,13 +297,13 @@ class Actor extends Sprite {
 
                 // Slide to up
                 if (my.top < other.top) {
-                    sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
+                    sidePixels = -(this.properties.spd * 0.7 * args.deltaTime);
                     collided ++;
                 }
 
                 // Slide to down
                 else if (my.bottom > other.bottom) {
-                    sidePixels = this.stats.speed * 0.7 * args.deltaTime;
+                    sidePixels = this.properties.spd * 0.7 * args.deltaTime;
                     collided ++;
                 }
 
@@ -329,7 +328,7 @@ class Actor extends Sprite {
     stairsRight(args) {
 
         // Move by pixels
-        const pixels = this.stats.speed * args.deltaTime;
+        const pixels = this.properties.spd * args.deltaTime;
 
         // My collider
         const my = this.getCollider(args.view);
@@ -372,7 +371,7 @@ class Actor extends Sprite {
         let collided = 0;
 
         // Move by pixels
-        let pixels = this.stats.speed * args.deltaTime;
+        let pixels = this.properties.spd * args.deltaTime;
         let sidePixels = 0;
 
         // My collider
@@ -387,13 +386,13 @@ class Actor extends Sprite {
 
                 // Slide to up
                 if (my.top < other.top) {
-                    sidePixels = -(this.stats.speed * 0.7 * args.deltaTime);
+                    sidePixels = -(this.properties.spd * 0.7 * args.deltaTime);
                     collided ++;
                 }
 
                 // Slide to down
                 else if (my.bottom > other.bottom) {
-                    sidePixels = this.stats.speed * 0.7 * args.deltaTime;
+                    sidePixels = this.properties.spd * 0.7 * args.deltaTime;
                     collided ++;
                 }
 
@@ -417,7 +416,7 @@ class Actor extends Sprite {
 
     stairsLeft(args) {
         // Move by pixels
-        const pixels = this.stats.speed * args.deltaTime;
+        const pixels = this.properties.spd * args.deltaTime;
 
         // My collider
         const my = this.getCollider(args.view);

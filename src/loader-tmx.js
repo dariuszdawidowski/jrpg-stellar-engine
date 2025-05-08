@@ -279,7 +279,8 @@ class LoaderTMX {
                                             transform: spawnPos,
                                             scale,
                                             level,
-                                            layer
+                                            layer,
+                                            properties
                                         });
                                     }
                                 }
@@ -359,7 +360,8 @@ class LoaderTMX {
         args.level.actors[args.name][actorID] = this.loader.acx.parseActor({
             xml: args.xml,
             transform: args.transform,
-            scale: args.scale
+            scale: args.scale,
+            properties: args.properties
         });
     }
 

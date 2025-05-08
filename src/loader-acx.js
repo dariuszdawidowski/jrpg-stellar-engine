@@ -49,6 +49,7 @@ class LoaderACX {
      * @param args.xml: string - xml to parse
      * @param args.scale: float - scale to multiply (default 1)
      * @param args.transform: {x, y} - where to spawn (default 0,0)
+     * @param args.properties: custom properties
      */
 
     parseActor(args) {
@@ -83,11 +84,14 @@ class LoaderACX {
                             transform
                         };
 
+                        // Properties
+                        if (!('properties' in params)) params['properties'] = { ...args.properties };
+
                         // Movement
                         const movement = actor.querySelector('movement');
                         if (movement) {
                             const speed = movement.getAttribute('speed');
-                            params['speed'] = parseInt(speed) * scale;
+                            params['properties']['spd'] = parseInt(speed) * scale;
                         }
 
                         // Collider
