@@ -84,20 +84,23 @@ class LoaderACX {
                             cols: parseInt(cols),
                             rows: parseInt(rows),
                             scale,
-                            transform
+                            transform,
                         };
 
                         // Properties (v0.3)
-                        if (!('properties' in params)) params['properties'] = { ...args.properties };
-                        params['properties'] = parseProperties(actor.querySelector('properties'));
-                        if ('spd' in params['properties']) params['properties']['spd'] *= scale;
+                        const acxProperties = parseProperties(actor.querySelector('properties'));
+                        const tmxProperties = ('properties' in args) ? args.properties : {};
+                        params['properties'] = {...acxProperties, ...tmxProperties};
 
                         // Movement (v0.2)
                         const movement = actor.querySelector('movement');
                         if (movement) {
                             const speed = movement.getAttribute('speed');
-                            params['properties']['spd'] = parseInt(speed) * scale;
+                            if (speed) params['properties']['spd'] = parseInt(speed);
                         }
+
+                        // Precalculate speed
+                        if ('spd' in params['properties']) params['properties']['spd'] *= scale;
 
                         // Collider
                         const collider = actor.querySelector('collider');
