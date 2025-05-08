@@ -90,6 +90,7 @@ class LoaderACX {
                         // Properties (v0.3)
                         if (!('properties' in params)) params['properties'] = { ...args.properties };
                         params['properties'] = parseProperties(actor.querySelector('properties'));
+                        if ('spd' in params['properties']) params['properties']['spd'] *= scale;
 
                         // Movement (v0.2)
                         const movement = actor.querySelector('movement');
