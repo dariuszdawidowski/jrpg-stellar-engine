@@ -7,7 +7,7 @@ class Sprite {
     /**
      * Constructor
      * @param name: string name for the sprite
-     * @param transform: {x, y, rot} - initial position and rotation (deg clockwise up)
+     * @param transform: {x, y, rotation: {angle, offsetX, offsetY}} - initial position and rotation (deg clockwise up)
      * @param resource: string - selector for image preloaded resource
      * @param width: Number - image width in pixels
      * @param height: Number - image height in pixels
@@ -22,14 +22,14 @@ class Sprite {
         // Sprite name
         this.name = 'name' in args ? args.name : null;
 
-        // Current position in space - x, y, rot: screen
+        // Current position in space - x, y, {angle, offsetX, offsetY}: screen
         this.transform = {
             x: ('transform' in args) && ('x' in args.transform) ? args.transform.x : 0,
             y: ('transform' in args) && ('y' in args.transform) ? args.transform.y : 0,
-            rot:  ('transform' in args) && ('rot' in args.transform) ? args.transform.rot : null,
+            rotation: ('transform' in args) && ('rotation' in args.transform) ? args.transform.rotation : null,
             clear: function() {
                 this.x = this.y = 0;
-                this.rot = null;
+                this.rotation = null;
             }
         };
 
@@ -90,8 +90,8 @@ class Sprite {
      * @param rot: Number
      */
 
-    rotation(rot) {
-        this.transform.rot = rot;
+    rotation(angle, offsetX, offsetY) {
+        this.transform.rotation = {angle, offsetX, offsetY};
     }
 
     /**
@@ -105,10 +105,9 @@ class Sprite {
 
     /**
      * Returns screen collider
-     * @param view: View context
      */
 
-    getCollider(view) {
+    getCollider() {
         return {
             left: this.transform.x - this.tile.scaled.halfWidth,
             top: this.transform.y - this.tile.scaled.halfHeight,
@@ -132,13 +131,14 @@ class Sprite {
         if (d.x > -this.tile.scaled.width && d.x < view.canvas.width && 
             d.y > -this.tile.scaled.height && d.y < view.canvas.height) {
             
-            if (this.transform.rot !== null) {
+            if (this.transform.rotation !== null) {
                 const centerX = Math.round(d.x) + this.tile.scaled.halfWidth;
                 const centerY = Math.round(d.y) + this.tile.scaled.halfHeight;
                 
                 view.ctx.save();
                 view.ctx.translate(centerX, centerY);
-                view.ctx.rotate(this.transform.rot * Math.PI / 180);
+                view.ctx.rotate(this.transform.rotation.angle * Math.PI / 180);
+                view.ctx.translate(this.transform.rotation.offsetX, this.transform.rotation.offsetY);
                 
                 view.ctx.drawImage(
                     this.atlas.image,
