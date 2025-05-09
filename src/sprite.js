@@ -7,7 +7,7 @@ class Sprite {
     /**
      * Constructor
      * @param name: string name for the sprite
-     * @param transform: {x, y} - initial position
+     * @param transform: {x, y, rot} - initial position and rotation (deg clockwise up)
      * @param resource: string - selector for image preloaded resource
      * @param width: Number - image width in pixels
      * @param height: Number - image height in pixels
@@ -22,10 +22,15 @@ class Sprite {
         // Sprite name
         this.name = 'name' in args ? args.name : null;
 
-        // Current position in space - x,y: screen
+        // Current position in space - x, y, rot: screen
         this.transform = {
-            x: 'transform' in args && 'x' in args.transform ? args.transform.x : 0,
-            y: 'transform' in args && 'y' in args.transform ? args.transform.y : 0,
+            x: ('transform' in args) && ('x' in args.transform) ? args.transform.x : 0,
+            y: ('transform' in args) && ('y' in args.transform) ? args.transform.y : 0,
+            rot:  ('transform' in args) && ('rot' in args.transform) ? args.transform.rot : null,
+            clear: function() {
+                this.x = this.y = 0;
+                this.rot = null;
+            }
         };
 
         // Sprite atlas
@@ -81,6 +86,15 @@ class Sprite {
     }
 
     /**
+     * Set rotation
+     * @param rot: Number
+     */
+
+    rotation(rot) {
+        this.transform.rot = rot;
+    }
+
+    /**
      * Set/Get current frame cell
      * @param nr: Number
      */
@@ -107,7 +121,6 @@ class Sprite {
      * Draw single tile
      * @param view: View context
      */
-
     render(view) {
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
@@ -115,17 +128,45 @@ class Sprite {
             x: this.transform.x - this.tile.scaled.halfWidth,
             y: this.transform.y - this.tile.scaled.halfHeight,
         });
-        if (d.x > -this.tile.scaled.width && d.x < view.canvas.width && d.y > -this.tile.scaled.height && d.y < view.canvas.height) view.ctx.drawImage(
-            this.atlas.image,
-            sx,
-            sy,
-            this.tile.width,
-            this.tile.height,
-            Math.round(d.x),
-            Math.round(d.y),
-            this.tile.scaled.width,
-            this.tile.scaled.height
-        );
+        
+        if (d.x > -this.tile.scaled.width && d.x < view.canvas.width && 
+            d.y > -this.tile.scaled.height && d.y < view.canvas.height) {
+            
+            if (this.transform.rot !== null) {
+                const centerX = Math.round(d.x) + this.tile.scaled.halfWidth;
+                const centerY = Math.round(d.y) + this.tile.scaled.halfHeight;
+                
+                view.ctx.save();
+                view.ctx.translate(centerX, centerY);
+                view.ctx.rotate(this.transform.rot * Math.PI / 180);
+                
+                view.ctx.drawImage(
+                    this.atlas.image,
+                    sx,
+                    sy,
+                    this.tile.width,
+                    this.tile.height,
+                    -this.tile.scaled.halfWidth,
+                    -this.tile.scaled.halfHeight,
+                    this.tile.scaled.width,
+                    this.tile.scaled.height
+                );
+                
+                view.ctx.restore();
+            } else {
+                view.ctx.drawImage(
+                    this.atlas.image,
+                    sx,
+                    sy,
+                    this.tile.width,
+                    this.tile.height,
+                    Math.round(d.x),
+                    Math.round(d.y),
+                    this.tile.scaled.width,
+                    this.tile.scaled.height
+                );
+            }
+        }
     }
 
     /**

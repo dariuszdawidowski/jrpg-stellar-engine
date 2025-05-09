@@ -59,7 +59,7 @@ class AnimSprite extends Sprite {
 
     /**
      * Update animation
-     * @param name: string - time passed since last frame
+     * @param name: string - name of the animation
      * @param deltaTime: Number - time passed since last frame
      */
 
