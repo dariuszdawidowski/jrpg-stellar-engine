@@ -2,14 +2,13 @@
  * Actor - sprite with collision checking, animation and movement
  */
 
-class Actor extends Sprite {
+class Actor extends AnimSprite {
 
     /**
      * Create sprite
-     * All Sprite params plus:
+     * All AnimSprite params plus:
      * @param properties: {} - custom properties
      * @param properties.spd: Number - movement speed (pixels on second)
-     * @param animations: Object - map of animations { animName: [{frame: nr, duration: ms}, ...], ... }
      * @param collider: {x, y, width, height} (in screen pixels already scaled)
      */
 
@@ -30,64 +29,6 @@ class Actor extends Sprite {
         // Collider
         this.collider = 'collider' in args ? args.collider : {x: 0, y: 0, width: this.tile.scaled.width, height: this.tile.scaled.height};
 
-        // Animation map
-        this.animations = 'animations' in args ? args.animations : {};
-
-        // Current animation state
-        this.anim = {
-
-            // Animation name
-            name: null,
-
-            // Frames list from this.animations
-            frames: null,
-
-            // Current frame counter
-            index: 0,
-
-            // Current time of the animation frame
-            time: 0,
-
-            // Start new anim
-            start: function(name, animation) {
-                this.name = name;
-                this.frames = animation;
-                this.index = 0;
-                this.time = 0;
-            },
-
-            // Play forward a little bit
-            advance: function(deltaTime) {
-                this.time += deltaTime;
-                if (this.time * 1000 >= this.frames[this.index].duration) {
-                    this.time = 0;
-                    this.index ++;
-                    if (this.index == this.frames.length) this.index = 0;
-                }
-            },
-
-            // Get current tile index
-            frame: function() {
-                return this.frames ? this.frames[this.index].frame : 0;
-            }
-        };
-
-    }
-
-    /**
-     * Update animation
-     * @param name: string - time passed since last frame
-     * @param deltaTime: Number - time passed since last frame
-     */
-
-    animate(name, deltaTime = 0) {
-        if (this.anim.name != name) {
-            if (name in this.animations) this.anim.start(name, this.animations[name]);
-            else console.error(`Can't find animation '${name}' in the ${this.name}!`)
-        }
-        else {
-            this.anim.advance(deltaTime);
-        }
     }
 
     /**
@@ -495,16 +436,6 @@ class Actor extends Sprite {
         else if (my.right > args.with.left && my.right < args.with.right && my.bottom > args.with.top && my.bottom < args.with.bottom) return true;
 
         return false;
-    }
-
-    /**
-     * Render sprite
-     */
-
-    render(view) {
-        super.position(this.transform.x, this.transform.y);
-        super.cell(this.anim.frame());
-        super.render(view);
     }
 
     /**
