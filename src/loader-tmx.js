@@ -135,7 +135,6 @@ class LoaderTMX {
         for (const node of doc.querySelector('map').childNodes) {
              if (node.nodeType === Node.ELEMENT_NODE) {
                 switch (node.nodeName) {
-
                     // Tileset
                     case 'tileset':
                         this.parseTileSet(level, resources, node);
@@ -153,49 +152,8 @@ class LoaderTMX {
 
                     // Objects
                     case 'objectgroup':
-                        const layerName = node.getAttribute('name').toLowerCase();
-                        const layer = {
-                            'name': layerName,
-                            'class': 'objects',
-                            'actors': []
-                        }
-                        level.layers.push(layer);
-                        node.querySelectorAll('object').forEach(obj => {
-
-                            // Parse attributes
-                            const name = obj.getAttribute('name').toLowerCase();
-                            const type = obj.getAttribute('type').toLowerCase();
-                            const x = parseFloat(obj.getAttribute('x')) * scale;
-                            const y = parseFloat(obj.getAttribute('y')) * scale;
-                            const w = obj.hasAttribute('width') ? parseFloat(obj.getAttribute('width')) * scale : 0;
-                            const h = obj.hasAttribute('height') ? parseFloat(obj.getAttribute('height')) * scale : 0;
-
-                            // Parse properties
-                            const properties = parseProperties(obj.querySelector('properties'));
-
-                            // Spawn point (direct)
-                            if (type == 'spawn') {
-                                this.parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties);
-                            }
-
-                            // Respawn point (random repeatable spawn)
-                            if (type == 'respawn') {
-                                this.parseObjectRespawn(level, layer, resources, name, x, y, w, h, properties);
-                            }
-
-                            // Stairs
-                            else if (type == 'stairs') {
-                                this.parseObjectStairs(level, obj, x, y);
-                            }
-
-                            // Portals
-                            else if (type == 'portal') {
-                                this.parseObjectPortal(level, obj);
-                            }
-
-                        });
+                        this.parseObjectGroup(level, resources, node);
                         break;
-
                 }
             }
         }
@@ -299,6 +257,54 @@ class LoaderTMX {
             if (offsetY !== null) layer.offset.y = offsetY;
             level.layers.push(layer);
         }
+    }
+
+    /**
+     * Parse <objectgroup id="1" name="Objects" locked="1">
+     */
+
+    parseObjectGroup(level, resources, node) {
+        const layerName = node.getAttribute('name').toLowerCase();
+        const layer = {
+            'name': layerName,
+            'class': 'objects',
+            'actors': []
+        }
+        level.layers.push(layer);
+        node.querySelectorAll('object').forEach(obj => {
+
+            // Parse attributes
+            const name = obj.getAttribute('name').toLowerCase();
+            const type = obj.getAttribute('type').toLowerCase();
+            const x = parseFloat(obj.getAttribute('x')) * level.scale;
+            const y = parseFloat(obj.getAttribute('y')) * level.scale;
+            const w = obj.hasAttribute('width') ? parseFloat(obj.getAttribute('width')) * level.scale : 0;
+            const h = obj.hasAttribute('height') ? parseFloat(obj.getAttribute('height')) * level.scale : 0;
+
+            // Parse properties
+            const properties = parseProperties(obj.querySelector('properties'));
+
+            // Spawn point (direct)
+            if (type == 'spawn') {
+                this.parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties);
+            }
+
+            // Respawn point (random repeatable spawn)
+            if (type == 'respawn') {
+                this.parseObjectRespawn(level, layer, resources, name, x, y, w, h, properties);
+            }
+
+            // Stairs
+            else if (type == 'stairs') {
+                this.parseObjectStairs(level, obj, x, y);
+            }
+
+            // Portals
+            else if (type == 'portal') {
+                this.parseObjectPortal(level, obj);
+            }
+
+        });
     }
 
     /**

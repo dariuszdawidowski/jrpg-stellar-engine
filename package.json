@@ -1,6 +1,6 @@
 {
   "name": "jrpg-stellar-engine",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Retro JRPG browser game engine.",
   "scripts": {
     "build": "node build.js"
