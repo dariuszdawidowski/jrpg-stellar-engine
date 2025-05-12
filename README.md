@@ -5,7 +5,7 @@ JRPG Stellar Engine
 Retro JRPG browser game engine.
 </p>
 <p align="center">
-v0.5.2
+v0.5.3
 </p>
 
 [![build](https://github.com/dariuszdawidowski/jrpg-stellar-engine/actions/workflows/build.yml/badge.svg)](https://github.com/dariuszdawidowski/jrpg-stellar-engine/actions/workflows/build.yml)
@@ -25,6 +25,14 @@ Compatible with "Tiled" map editor format (tsx+tmx) https://www.mapeditor.org/.
 
 # Load from CDN
 https://unpkg.com/jrpg-stellar-engine@latest/dist/jrpg-stellar-engine.js
+
+# Deploy
+This is a Vanilla-JS project, NodeJS is used only as a build system.
+
+# Release
+* Bump version in the package.json
+* Bump version in the README.md
+* Bump version in the jrpg-stellar-engine.js.ejs and build number `git rev-list --count HEAD`
 
 # License
 The library is distributed under the MIT License (see LICENSE file for details).
