@@ -102,7 +102,7 @@ function distancePoints(point1, point2) {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-/****** XML UTILS ******/
+/****** PARSE UTILS ******/
 
 /**
  * Util to parse properties
@@ -118,6 +118,7 @@ function parseProperties(propertiesNode) {
         const name = prop.getAttribute('name').toLowerCase();
         const type = prop.getAttribute('type') || 'string';
         let value = prop.getAttribute('value');
+        let valueCalc = null;
         
         // Convert value based on type
         switch (type) {
@@ -126,26 +127,54 @@ function parseProperties(propertiesNode) {
                 if (value && value.includes('..')) {
                     const [min, max] = value.split('..').map(Number);
                     if (!isNaN(min) && !isNaN(max)) {
-                        value = min + Math.floor(Math.random() * (max - min + 1));
+                        valueCalc = min + Math.floor(Math.random() * (max - min + 1));
                     }
                 }
                 // Detect number and convert
-                if (value && /^\d+$/.test(value)) {
-                    value = Number(value);
+                else if (value && /^\d+$/.test(value)) {
+                    valueCalc = Number(value);
+                }
+                // Passthru string
+                else {
+                    valueCalc = value;
                 }
                 break;
             case 'bool':
-                value = value === 'true';
+                valueCalc = value === 'true';
                 break;
             case 'int':
-                value = parseInt(value, 10);
+                valueCalc = parseInt(value, 10);
                 break;
             case 'float':
-                value = parseFloat(value);
+                valueCalc = parseFloat(value);
                 break;
         }
-        
-        properties[name] = value;
+        // Original value
+        properties['_' + name] = value;
+        // Parsed value
+        properties[name] = valueCalc;
     });
     return properties;
+}
+
+/**
+ * Util to parse range 'a..b'
+ * @returns 'a..b' == [a, b] | 'a' = [a, a]
+ */
+
+function parseIntRange(value) {
+    const valueCalc = [0, 0];
+    if (value && value.includes('..')) {
+        const [min, max] = value.split('..').map(Number);
+        if (!isNaN(min) && !isNaN(max)) {
+            valueCalc[0] = min;
+            valueCalc[1] = max;
+        }
+    }
+    // Detect number and convert
+    else if (value && /^\d+$/.test(value)) {
+        valueCalc[0] = Number(value);
+        valueCalc[1] = Number(value);
+    }
+    return valueCalc;
 }

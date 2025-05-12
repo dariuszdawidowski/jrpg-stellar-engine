@@ -17,8 +17,7 @@ class LoaderTMX {
 
         // Loaders
         this.loader = {
-            tsx: new LoaderTSX(),
-            acx: new LoaderACX()
+            tsx: new LoaderTSX()
         };
 
     }
@@ -61,7 +60,50 @@ class LoaderTMX {
         // Scale
         level.scale = scale;
 
+        // Parse global level properties
+        level.properties = parseProperties(doc.querySelector('map > properties'));
+
         // Resources list 
+        const resources = await this.fetchResources(doc.querySelector('map'), url, scale, prefetch);
+
+        // Parse
+        for (const node of doc.querySelector('map').childNodes) {
+             if (node.nodeType === Node.ELEMENT_NODE) {
+                switch (node.nodeName) {
+                    // Tileset
+                    case 'tileset':
+                        this.parseTileSet(level, resources, node);
+                        break;
+
+                    // Image
+                    case 'imagelayer':
+                        this.parseImageLayer(level, url, node);
+                        break;
+
+                    // Layer
+                    case 'layer':
+                        this.parseLayer(level, node);
+                        break;
+
+                    // Objects
+                    case 'objectgroup':
+                        this.parseObjectGroup(level, resources, node);
+                        break;
+                }
+            }
+        }
+
+        // Bake precalculations
+        level.precalcStairs();
+
+        return level;
+    }
+
+    /**
+     * Init and fetch resoruces if necesssary
+     */
+
+    async fetchResources(selector, url, scale, prefetch) {
         const resources = {
             // {'name': { url: '/url/of/file.tsx', buffer: <fetched buffer>, tileset: <TileSet object>}, ...}
             tsx: {},
@@ -69,12 +111,9 @@ class LoaderTMX {
             acx: {}
         };
 
-        // Parse global level properties
-        level.properties = parseProperties(doc.querySelector('map > properties'));
-
         // Pre-parse for fetching resources
         if (prefetch) {
-            for (const node of doc.querySelector('map').childNodes) {
+            for (const node of selector.childNodes) {
                 if (node.nodeType === Node.ELEMENT_NODE) {
 
                     // Tileset
@@ -131,37 +170,7 @@ class LoaderTMX {
 
         }
 
-        // Parse
-        for (const node of doc.querySelector('map').childNodes) {
-             if (node.nodeType === Node.ELEMENT_NODE) {
-                switch (node.nodeName) {
-                    // Tileset
-                    case 'tileset':
-                        this.parseTileSet(level, resources, node);
-                        break;
-
-                    // Image
-                    case 'imagelayer':
-                        this.parseImageLayer(level, url, node);
-                        break;
-
-                    // Layer
-                    case 'layer':
-                        this.parseLayer(level, node);
-                        break;
-
-                    // Objects
-                    case 'objectgroup':
-                        this.parseObjectGroup(level, resources, node);
-                        break;
-                }
-            }
-        }
-
-        // Bake precalculations
-        level.precalcStairs();
-
-        return level;
+        return resources;
     }
 
     /**
@@ -290,7 +299,7 @@ class LoaderTMX {
             }
 
             // Respawn point (random repeatable spawn)
-            if (type == 'respawn') {
+            else if (type == 'respawn') {
                 this.parseObjectRespawn(level, layer, resources, name, x, y, w, h, properties);
             }
 
@@ -333,19 +342,15 @@ class LoaderTMX {
         // Actual spawn
         if (uri) {
             for (let n = 0; n < (properties.number || 1); n++) {
-                const spawnPos = {
-                    x: x + (w / 2) + Math.floor(Math.random() * (w + 1) - (w / 2)),
-                    y: y + (h / 2) + Math.floor(Math.random() * (h + 1) - (h / 2))
-                };
                 level.spawn({
+                    x, y, w, h,
                     type: kindName,
                     layer: layer.name,
-                    actor: this.loader.acx.parseActor({
+                    actor: {
                         xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                        transform: spawnPos,
                         properties,
                         scale: level.scale
-                    })
+                    }
                 });
             }
         }
@@ -376,16 +381,15 @@ class LoaderTMX {
         // Add respawn info
         if (uri) {
             level.respawnpoints[name] = new RespawnPoint({
-                x,
-                y,
-                w,
-                h,
+                x, y, w, h,
+                type: kindName,
                 layer: layer.name,
-                actor: this.loader.acx.parseActor({
+                range: parseIntRange(properties._number),
+                actor: {
                     xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                     properties,
                     scale: level.scale
-                })
+                }
             });
         }
     }

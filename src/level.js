@@ -43,6 +43,11 @@ class Level {
         // Id generation counter
         this.idGen = 0;
 
+        // Loaders
+        this.loader = {
+            acx: new LoaderACX()
+        };
+
     }
 
     /**
@@ -147,28 +152,51 @@ class Level {
     }
 
     /**
-     * Spawn an actor
+     * Check respawn points and spawn if necessary
+     */
+
+    respawn() {
+        // Iterate through all respawn types
+        for (const point of Object.values(this.respawnpoints)) {
+            const spawnArgs = point.respawn();
+            if (spawnArgs) this.spawn(spawnArgs);
+        }
+    }
+
+    /**
+     * Spawn an actor directly
      * @param args.type: string - actor group 'mobs', 'vehicles' etc.
-     * @param args.actor: Object - actor's object instance
+     * @param args.actor: Object - actor's properties for creating instance
      * @param args.layer: string - layer name of the level in which to spawn
      */
 
     spawn(args) {
+        // Position in the area range
+        const pos = {
+            transform: {
+                x: args.x + (args.w / 2) + Math.floor(Math.random() * (args.w + 1) - (args.w / 2)),
+                y: args.y + (args.h / 2) + Math.floor(Math.random() * (args.h + 1) - (args.h / 2))
+            }
+        };
+
+        // Crerate instance
+        const actorInstance = this.loader.acx.parseActor({ ...args.actor, ...pos });
+
         // Generate unique actor's id if none
-        if (!args.actor.id) args.actor.id = `${args.layer}.${args.actor.name}.${this.idGen++}`;
+        if (!actorInstance.id) actorInstance.id = `${args.layer}.${actorInstance.name}.${this.idGen++}`;
 
         // Add to layer registry
         const objectLayer = this.layers.find(layer => layer.name === args.layer);
         if (objectLayer && objectLayer.class === 'objects') {
             if (!objectLayer.actors) objectLayer.actors = [];
-            if (!objectLayer.actors.includes(args.actor.id)) objectLayer.actors.push(args.actor.id);
+            if (!objectLayer.actors.includes(actorInstance.id)) objectLayer.actors.push(actorInstance.id);
         }
 
         // Add a type to global actors registry
         if (!(args.type in this.actors)) this.actors[args.type] = {};
 
         // Add an actor
-        this.actors[args.type][args.actor.id] = args.actor;
+        this.actors[args.type][actorInstance.id] = actorInstance;
     }
 
     /**
