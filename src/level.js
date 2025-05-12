@@ -20,13 +20,16 @@ class Level {
         this.tilesets = {};
 
         // Environment layers [{name: 'string', class: 'colliders|empty', map: [[]]}, ...]
-        this.layers = [];
+        this.layers = []; // [class Layer]
 
         // Actors {type: {'name': object, ...}, ...} for items, chars, npcs, mobs, mounts, vehicles, etc.
         this.actors = {};
 
-        // Spawn points {'player': [{x, y}, ...], 'mob': [{x, y}, ...], ...}
+        // Spawn points {'player-1': [ SpawnPoint, ...], ...}
         this.spawnpoints = {};
+
+        // Respawn points {'player-1': [ RespawnPoint, ...], ...}
+        this.respawnpoints = {};
 
         // Stairs [{x1, y1, x2, y2, x3, y3, x4, y4}, ...] from left-top clockwise in world coordinates
         this.stairs = [];
@@ -121,7 +124,7 @@ class Level {
     }
 
     /**
-     * Returns a random spawn point
+     * Returns a random spawn point of type
      */
 
     getSpawnPoint(type, fallback = {x: 0, y: 0}) {
