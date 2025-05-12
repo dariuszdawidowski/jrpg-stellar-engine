@@ -289,28 +289,32 @@ class LoaderTMX {
             const y = parseFloat(obj.getAttribute('y')) * level.scale;
             const w = obj.hasAttribute('width') ? parseFloat(obj.getAttribute('width')) * level.scale : 0;
             const h = obj.hasAttribute('height') ? parseFloat(obj.getAttribute('height')) * level.scale : 0;
+            const visible = obj.hasAttribute('visible') ? parseInt(obj.getAttribute('visible')) : 1;
 
             // Parse properties
             const properties = parseProperties(obj.querySelector('properties'));
 
-            // Spawn point (direct)
-            if (type == 'spawn') {
-                this.parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties);
-            }
+            if (visible == 1) {
 
-            // Respawn point (random repeatable spawn)
-            else if (type == 'respawn') {
-                this.parseObjectRespawn(level, layer, resources, name, x, y, w, h, properties);
-            }
+                // Spawn point (direct)
+                if (type == 'spawn') {
+                    this.parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties);
+                }
 
-            // Stairs
-            else if (type == 'stairs') {
-                this.parseObjectStairs(level, obj, x, y);
-            }
+                // Respawn point (random repeatable spawn)
+                else if (type == 'respawn') {
+                    this.parseObjectRespawn(level, layer, resources, name, x, y, w, h, properties);
+                }
 
-            // Portals
-            else if (type == 'portal') {
-                this.parseObjectPortal(level, obj);
+                // Stairs
+                else if (type == 'stairs') {
+                    this.parseObjectStairs(level, obj, x, y);
+                }
+
+                // Portals
+                else if (type == 'portal') {
+                    this.parseObjectPortal(level, obj);
+                }
             }
 
         });
@@ -380,17 +384,18 @@ class LoaderTMX {
 
         // Add respawn info
         if (uri) {
-            level.respawnpoints[name] = new RespawnPoint({
+            level.respawnpoints.push(new RespawnPoint({
                 x, y, w, h,
                 type: kindName,
                 layer: layer.name,
                 range: parseIntRange(properties._number),
+                delay: parseIntRange(properties._delay),
                 actor: {
                     xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
                     properties,
                     scale: level.scale
                 }
-            });
+            }));
         }
     }
 

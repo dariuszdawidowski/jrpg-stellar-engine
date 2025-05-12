@@ -17,16 +17,16 @@ class RespawnPoint extends SpawnPoint {
         this.layer = args.layer;
         // Actor info
         this.actor = args.actor;
-
         // Range count [min, max]
         this.range = args.range;
         // Number of currently spawned actors
         this.count = 0;
-
+        // Delay count [min, max]
+        this.delay = args.delay;
+        // Next Delay
+        this.next = 0;
         // Timestamp of the last spawn (Number | null)
         this.lastSpawn = null;
-
-        // console.log(this)
     }
 
     /**
@@ -38,9 +38,14 @@ class RespawnPoint extends SpawnPoint {
         if (this.lastSpawn == null) {
             return this.spawn();
         }
-        // Spawn if max not reached
-        else if (this.count < this.range[1]) {
+        // Spawn at least minimum amount
+        else if (this.count < this.range[0]) {
             return this.spawn();
+        }
+        // Optionally spawn if max not reached
+        else if (this.count < this.range[1]) {
+            // Check if 10 seconds have passed since last spawn
+            if (Date.now() - this.lastSpawn >= this.next) return this.spawn();
         }
         return null;
     }
@@ -50,8 +55,9 @@ class RespawnPoint extends SpawnPoint {
      */
 
     spawn() {
-        this.lastSpawn = Date.now();
         this.count ++;
+        this.lastSpawn = Date.now();
+        this.next = randomRangeInt(this.delay[0] * 1000, this.delay[1] * 1000);
         return {
             x: this.x,
             y: this.y,
@@ -61,6 +67,16 @@ class RespawnPoint extends SpawnPoint {
             layer: this.layer,
             actor: this.actor
         };
+    }
+
+    /**
+     * Decrease number of spawned actors
+     */
+
+    decrease() {
+        this.count --;
+        this.lastSpawn = Date.now();
+        this.next = randomRangeInt(this.delay[0] * 1000, this.delay[1] * 1000);
     }
 
 }

@@ -28,8 +28,8 @@ class Level {
         // Spawn points {'player-1': [ SpawnPoint, ...], ...}
         this.spawnpoints = {};
 
-        // Respawn points {'player-1': [ RespawnPoint, ...], ...}
-        this.respawnpoints = {};
+        // Respawn points [RespawnPoint, ...]
+        this.respawnpoints = [];
 
         // Stairs [{x1, y1, x2, y2, x3, y3, x4, y4}, ...] from left-top clockwise in world coordinates
         this.stairs = [];
@@ -157,9 +157,9 @@ class Level {
 
     respawn() {
         // Iterate through all respawn types
-        for (const point of Object.values(this.respawnpoints)) {
+        for (const point of this.respawnpoints) {
             const spawnArgs = point.respawn();
-            if (spawnArgs) this.spawn(spawnArgs);
+            if (spawnArgs) this.spawn({ ...spawnArgs, point });
         }
     }
 
@@ -168,19 +168,19 @@ class Level {
      * @param args.type: string - actor group 'mobs', 'vehicles' etc.
      * @param args.actor: Object - actor's properties for creating instance
      * @param args.layer: string - layer name of the level in which to spawn
+     * @param args.point: Object - optional point reference
      */
 
     spawn(args) {
         // Position in the area range
-        const pos = {
-            transform: {
-                x: args.x + (args.w / 2) + Math.floor(Math.random() * (args.w + 1) - (args.w / 2)),
-                y: args.y + (args.h / 2) + Math.floor(Math.random() * (args.h + 1) - (args.h / 2))
-            }
+        const transform = {
+            x: args.x + (args.w / 2) + Math.floor(Math.random() * (args.w + 1) - (args.w / 2)),
+            y: args.y + (args.h / 2) + Math.floor(Math.random() * (args.h + 1) - (args.h / 2))
         };
 
         // Crerate instance
-        const actorInstance = this.loader.acx.parseActor({ ...args.actor, ...pos });
+        const actorInstance = this.loader.acx.parseActor({ ...args.actor, transform });
+        if ('point' in args) actorInstance.spawn = args.point;
 
         // Generate unique actor's id if none
         if (!actorInstance.id) actorInstance.id = `${args.layer}.${actorInstance.name}.${this.idGen++}`;
@@ -208,6 +208,7 @@ class Level {
         // Find the actor's type by traversing all actor groups
         for (const type in this.actors) {
             if (id in this.actors[type]) {
+                if ('spawn' in this.actors[type][id]) this.actors[type][id].spawn.decrease();
                 delete this.actors[type][id];
                 return;
             }
