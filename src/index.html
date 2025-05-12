@@ -993,7 +993,7 @@
                 }
 
                 // Enter into portal
-                level.getPortals(view).forEach(portal => {
+                level.getPortals().forEach(portal => {
                     if (player.collideWithBox({with: portal, view})) {
                         stop();
                         loadLevel(portal.map, portal.spawn).then(() => start());

@@ -37,6 +37,9 @@ class Level {
         // Map global properties
         this.properties = {};
 
+        // Id generation counter
+        this.idGen = 0;
+
     }
 
     /**
@@ -141,10 +144,50 @@ class Level {
     }
 
     /**
+     * Spawn an actor
+     * @param args.type: string - actor group 'mobs', 'vehicles' etc.
+     * @param args.actor: Object - actor's object instance
+     * @param args.layer: string - layer name of the level in which to spawn
+     */
+
+    spawn(args) {
+        // Generate unique actor's id if none
+        if (!args.actor.id) args.actor.id = `${args.layer}.${args.actor.name}.${this.idGen++}`;
+
+        // Add to layer registry
+        const objectLayer = this.layers.find(layer => layer.name === args.layer);
+        if (objectLayer && objectLayer.class === 'objects') {
+            if (!objectLayer.actors) objectLayer.actors = [];
+            if (!objectLayer.actors.includes(args.actor.id)) objectLayer.actors.push(args.actor.id);
+        }
+
+        // Add a type to global actors registry
+        if (!(args.type in this.actors)) this.actors[args.type] = {};
+
+        // Add an actor
+        this.actors[args.type][args.actor.id] = args.actor;
+    }
+
+    /**
+     * Despawn an actor
+     * @param id: string - actor's unique id
+     */
+
+    despawn(id) {
+        // Find the actor's type by traversing all actor groups
+        for (const type in this.actors) {
+            if (id in this.actors[type]) {
+                delete this.actors[type][id];
+                return;
+            }
+        }
+    }
+
+    /**
      * Returns list of all objects with class 'portal'
      */
 
-    getPortals(view) {
+    getPortals() {
         return this.portals;
     }
 

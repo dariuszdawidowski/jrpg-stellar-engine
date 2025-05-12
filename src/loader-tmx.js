@@ -214,7 +214,7 @@ class LoaderTMX {
                                 'name': name,
                                 'class': cl,
                                 'offset': {x: 0, y: 0},
-                                'map': this.create2DArray(arrayContent, parseInt(node.getAttribute('width')))
+                                'map': create2DArray(arrayContent, parseInt(node.getAttribute('width')))
                             };
                             if (offsetX !== null) layer.offset.x = offsetX;
                             if (offsetY !== null) layer.offset.y = offsetY;
@@ -256,7 +256,7 @@ class LoaderTMX {
                                 let uri = null;
                                 
                                 if ('actor' in properties) {
-                                    kindName = 'npc';
+                                    kindName = ('type' in properties) ? properties.type : 'actor';
                                     uri = properties.actor;
                                 }
                                 else if (name.search(':') != -1) {
@@ -272,15 +272,15 @@ class LoaderTMX {
                                             x: x + (w / 2) + Math.floor(Math.random() * (w + 1) - (w / 2)),
                                             y: y + (h / 2) + Math.floor(Math.random() * (h + 1) - (h / 2))
                                         };
-                                        this.spawn({
-                                            name: kindName,
-                                            uri,
-                                            xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
-                                            transform: spawnPos,
-                                            scale,
-                                            level,
-                                            layer,
-                                            properties
+                                        level.spawn({
+                                            type: kindName,
+                                            layer: layer.name,
+                                            actor: this.loader.acx.parseActor({
+                                                xml: (uri in resources.acx) ? resources.acx[uri] : document.getElementById(uri).innerText,
+                                                transform: spawnPos,
+                                                properties,
+                                                scale
+                                            })
                                         });
                                     }
                                 }
@@ -339,44 +339,6 @@ class LoaderTMX {
         level.precalcStairs();
 
         return level;
-    }
-
-    /**
-     * Spawn helper
-     */
-
-    spawn(args) {
-        // Determine naming
-        const kindCount = (args.name in args.level.actors) ? Object.keys(args.level.actors[args.name]).length + 1 : 1;
-        const actorID = `${args.uri}.${kindCount}`;
-
-        // Add to layer registry
-        if (!args.layer.actors.includes(actorID)) args.layer.actors.push(actorID);
-
-        // Add to global actors registry
-        if (!(args.name in args.level.actors)) args.level.actors[args.name] = {};
-
-        // Parse ACX
-        args.level.actors[args.name][actorID] = this.loader.acx.parseActor({
-            xml: args.xml,
-            transform: args.transform,
-            scale: args.scale,
-            properties: args.properties
-        });
-    }
-
-    /**
-     * Util to generate 2d array
-     * @param arr: Array
-     * @param width: Number
-     */
-
-    create2DArray(arr, width) {
-        let result = [];
-        for (let i = 0; i < arr.length; i += width) {
-            result.push(arr.slice(i, i + width));
-        }
-        return result;
     }
 
 }

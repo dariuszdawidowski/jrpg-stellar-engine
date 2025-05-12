@@ -49,6 +49,7 @@ class LoaderACX {
 
     /**
      * Parse xml
+     * @param args.id: string - optional unique id for an actor
      * @param args.xml: string - xml to parse
      * @param args.scale: float - scale to multiply (default 1)
      * @param args.transform: {x, y} - where to spawn (default 0,0)
@@ -86,6 +87,9 @@ class LoaderACX {
                             scale,
                             transform,
                         };
+
+                        // Optional ID
+                        if ('id' in args) params['id'] = args.id;
 
                         // Properties (v0.3)
                         const acxProperties = parseProperties(actor.querySelector('properties'));

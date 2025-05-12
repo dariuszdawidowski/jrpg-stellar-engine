@@ -1,4 +1,4 @@
-/*** MATH UTILS ***/
+/****** MATH UTILS ******/
 
 /**
  * Random int number in range min-max
@@ -29,7 +29,22 @@ function roundToNearestEven(number) {
     return roundedNumber;
 }
 
-/*** PATH UTILS ***/
+/**
+ * Util to generate 2d array
+ * @param arr: Array
+ * @param width: Number
+ */
+
+function create2DArray(arr, width) {
+    let result = [];
+    for (let i = 0; i < arr.length; i += width) {
+        result.push(arr.slice(i, i + width));
+    }
+    return result;
+}
+
+
+/****** URL UTILS ******/
 
 /**
  * Making second path absolute too
@@ -42,7 +57,7 @@ function resolvePath(basePath, relativePath) {
     return resolved.pathname;
 }
 
-/*** GEOMETRY UTILS ***/
+/****** GEOMETRY UTILS ******/
 
 /**
  * Checking collision
@@ -86,6 +101,8 @@ function distancePoints(point1, point2) {
     const dy = point2.y - point1.y;
     return Math.sqrt(dx * dx + dy * dy);
 }
+
+/****** XML UTILS ******/
 
 /**
  * Util to parse properties

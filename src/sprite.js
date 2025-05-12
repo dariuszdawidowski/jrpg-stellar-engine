@@ -6,7 +6,8 @@ class Sprite {
 
     /**
      * Constructor
-     * @param name: string name for the sprite
+     * @param id: string - optional unique id
+     * @param name: string - name for the sprite
      * @param transform: {x, y, rotation: {angle, offsetX, offsetY}} - initial position and rotation (deg clockwise up)
      * @param resource: string - selector for image preloaded resource
      * @param width: Number - image width in pixels
@@ -18,6 +19,9 @@ class Sprite {
      */
 
     constructor(args = {}) {
+
+        // Sprite ID
+        this.id = 'id' in args ? args.id : null;
 
         // Sprite name
         this.name = 'name' in args ? args.name : null;
