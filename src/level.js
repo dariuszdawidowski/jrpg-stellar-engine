@@ -179,7 +179,7 @@ class Level {
         };
 
         // Crerate instance
-        const actorInstance = this.loader.acx.parseActor({ ...args.actor, transform });
+        const actorInstance = this.loader.acx.parseActor({ ...args.actor, type: args.type, transform });
         if ('point' in args) actorInstance.spawn = args.point;
 
         // Generate unique actor's id if none

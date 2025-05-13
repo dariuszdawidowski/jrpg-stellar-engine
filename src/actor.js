@@ -15,6 +15,9 @@ class Actor extends AnimSprite {
     constructor(args) {
         super(args);
 
+        // Type
+        this.type = args.type || 'actor';
+
         // Properties
         this.properties = { ...args.properties };
 

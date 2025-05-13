@@ -6,13 +6,13 @@
 
 Example #1:
 
-<actor version="0.3" name="chest" type="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
+<actor version="0.4" name="chest" class="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
     <collider x="-4" y="-4" width="24" height="24" />
 </actor>
 
 Example #2:
 
-<actor version="0.3" name="penguin1" type="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
+<actor version="0.4" name="penguin1" class="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
     <properties>
         <property name="spd" value="80"/>
         <property name="foo" value="bar"/>
@@ -66,15 +66,15 @@ class LoaderACX {
             const actor = doc.querySelector('actor');
             if (actor) {
                 const version = actor.getAttribute('version');
-                if (version && (version == '0.2' || version == '0.3')) {
+                if (version && (version == '0.2' || version == '0.3' || version == '0.4')) {
                     const name = actor.getAttribute('name');
-                    const type = actor.getAttribute('type');
+                    const className = (version == '0.4') ? actor.getAttribute('class') : actor.getAttribute('type');
                     const resource = actor.getAttribute('resource');
                     const width = actor.getAttribute('width');
                     const height = actor.getAttribute('height');
                     const cols = actor.getAttribute('cols');
                     const rows = actor.getAttribute('rows');
-                    if (name && type && resource && width && height && cols && rows) {
+                    if (name && className && resource && width && height && cols && rows) {
 
                         // Base params
                         const params = {
@@ -90,6 +90,8 @@ class LoaderACX {
 
                         // Optional ID
                         if ('id' in args) params['id'] = args.id;
+                        // Optional type
+                        if ('type' in args) params['type'] = args.type;
 
                         // Properties (v0.3)
                         const acxProperties = parseProperties(actor.querySelector('properties'));
@@ -141,9 +143,9 @@ class LoaderACX {
                         }
 
                         // Create and return object
-                        const classReference = new Function(`return ${type}`)();
+                        const classReference = new Function(`return ${className}`)();
                         if (classReference) return new classReference(params);
-                        return new window[type];
+                        return new window[className];
                     }
                 }
                 else {
