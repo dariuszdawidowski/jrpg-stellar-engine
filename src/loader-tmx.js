@@ -24,9 +24,10 @@ class LoaderTMX {
 
     /**
      * Load and parse level
-     * @param url: string - fetch url
-     * @param scale: int - scale for this level (default 1)
-     * @param prefetch: bool - prefetch .acx & .tsx resources
+     * @param args.url: string - fetch url
+     * @param args.scale: int - scale for this level (default 1)
+     * @param args.view: Object - view reference
+     * @param args.prefetch: bool - prefetch .acx & .tsx resources
      */
 
     async loadLevel(args) {
@@ -34,16 +35,17 @@ class LoaderTMX {
         const { url = null, scale = 1, prefetch = true } = args;
         const file = await fetch(url);
         const text = await file.text();
-        const level = await this.parseLevel({ xml: text, url, scale, prefetch });
+        const level = await this.parseLevel({ xml: text, url, scale, prefetch, view: args.view });
         return level;
     }
 
     /**
      * Parse .tmx xml
-     * @param xml: string - xml to parse
-     * @param url: string - map's file url
-     * @param scale: int - scale for this level (default 1)
-     * @param prefetch: bool - prefetch .acx & .tsx resources
+     * @param args.xml: string - xml to parse
+     * @param args.url: string - map's file url
+     * @param args.scale: int - scale for this level (default 1)
+     * @param args.view: Object - view reference
+     * @param args.prefetch: bool - prefetch .acx & .tsx resources
      */
 
     async parseLevel(args) {
@@ -55,7 +57,7 @@ class LoaderTMX {
         const doc = parser.parseFromString(xml, 'application/xml');
 
         // Create Level instance to return to
-        const level = new Level();
+        const level = new Level({ view: args.view });
 
         // Scale
         level.scale = scale;

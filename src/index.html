@@ -799,7 +799,7 @@
             const loadLevel = async (map, spawn) => {
 
                 // Load Map
-                level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, prefetch: false });
+                level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, view, prefetch: false });
 
                 // Insert player in layer
                 level.actors['player'] = {

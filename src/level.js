@@ -6,9 +6,10 @@ class Level {
 
     /**
      * Constructor
+     * @param args.view: Object - view refernece
      */
 
-    constructor() {
+    constructor(args) {
 
         // Center of the coordinate system correction (this is constant not scroll)
         this.offset = {x: 0, y: 0};
@@ -47,6 +48,9 @@ class Level {
         this.loader = {
             acx: new LoaderACX()
         };
+
+        // View reference
+        this.view = args.view;
 
     }
 
@@ -181,6 +185,10 @@ class Level {
         // Crerate instance
         const actorInstance = this.loader.acx.parseActor({ ...args.actor, type: args.type, transform });
         if ('point' in args) actorInstance.spawn = args.point;
+
+        // Assign references
+        actorInstance.level = this;
+        actorInstance.view = this.view;
 
         // Generate unique actor's id if none
         if (!actorInstance.id) actorInstance.id = `${args.layer}.${actorInstance.name}.${this.idGen++}`;

@@ -18,6 +18,10 @@ class Actor extends AnimSprite {
         // Type
         this.type = args.type || 'actor';
 
+        // References
+        this.level = null;
+        this.view = null;
+
         // Properties
         this.properties = { ...args.properties };
 
