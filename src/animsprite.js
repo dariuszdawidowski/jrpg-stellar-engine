@@ -40,12 +40,12 @@ class AnimSprite extends Sprite {
             },
 
             // Play forward a little bit
-            advance: function(deltaTime) {
+            advance: function(deltaTime, loop = true) {
                 this.time += deltaTime;
                 if (this.time * 1000 >= this.frames[this.index].duration) {
                     this.time = 0;
-                    this.index ++;
-                    if (this.index == this.frames.length) this.index = 0;
+                    if (this.index < this.frames.length - 1) this.index ++;
+                    else if (loop) this.index = 0;
                 }
             },
 
@@ -61,15 +61,16 @@ class AnimSprite extends Sprite {
      * Update animation
      * @param name: string - name of the animation
      * @param deltaTime: Number - time passed since last frame
+     * @param loop: bool - should be looped
      */
 
-    animate(name, deltaTime = 0) {
+    animate(name, deltaTime = 0, loop = true) {
         if (this.anim.name != name) {
             if (name in this.animations) this.anim.start(name, this.animations[name]);
             else console.error(`Can't find animation '${name}' in the ${this.name}!`)
         }
         else {
-            this.anim.advance(deltaTime);
+            this.anim.advance(deltaTime, loop);
         }
     }
 
