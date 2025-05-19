@@ -140,7 +140,7 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Transfrom to the up side
+     * Transform to the up side
      * @param pixels Number - how many pixels to move (constant or calculated by collideUp)
      */
 
@@ -207,7 +207,7 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Transfrom to the down side
+     * Transform to the down side
      * @param pixels Number - how many pixels to move (constant or calculated by collideDown)
      */
 
@@ -270,33 +270,58 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Right stairs/slope checking
+     * Right stairs/slope checking with smoother angle-based movement
      * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
-     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
+     * @param args.with: [Array] - collision array of stairs
      */
 
     stairsRight(args) {
-
         // Move by pixels
         const pixels = this.properties.spd * args.deltaTime;
 
         // My collider
         const my = this.getCollider(args.view);
+        
+        // Calculate current actor center point
+        const actorCenterX = (my.left + my.right) / 2;
+        const actorFeetY = my.bottom;
+        
+        // Calculate PREDICTED actor center point (after moving right)
+        const predictedCenterX = actorCenterX + pixels;
+
+        // Define a maximum reasonable angle for stairs for calculation purposes
+        const MAX_CALCULATION_ANGLE_RAD = Math.PI / 6;
 
         // Check intersections
         for (const other of args.with) {
-            if (my.right - (this.collider.width / 2) + pixels > other.left && my.right - (this.collider.width / 2) + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
-                return [0, other.angle > 0 ? -(pixels * this.diagonalNormalizer) : (pixels * this.diagonalNormalizer)];
+            // Check if predicted center position will be on stairs
+            if (predictedCenterX > other.left && 
+                predictedCenterX < other.right && 
+                actorFeetY > other.top && 
+                actorFeetY < other.bottom) {
+                
+                // Clamp the actual stair angle to our defined maximum for calculation
+                const clampedAngle = Math.max(-MAX_CALCULATION_ANGLE_RAD, Math.min(MAX_CALCULATION_ANGLE_RAD, other.angle));
+                
+                // Calculate vertical adjustment using tangent of the CLAMPED angle
+                const verticalAdjustment = Math.tan(clampedAngle) * pixels;
+                
+                // Attraction to stairs center
+                const stairsCenterY = (other.top + other.bottom) / 2;
+                const centerOffset = stairsCenterY - actorFeetY;
+                const attractionStrength = 0.8;
+                const centerCorrection = centerOffset * attractionStrength * args.deltaTime;
+
+                return [0, -verticalAdjustment + centerCorrection];
             }
         }
-
-        // None
+        
         return [0, 0];
     }
 
     /**
-     * Transfrom to the right side
+     * Transform to the right side
      * @param pixels Number - how many pixels to move (constant or calculated by collideRight)
      */
 
@@ -372,19 +397,46 @@ class Actor extends AnimSprite {
         // My collider
         const my = this.getCollider(args.view);
 
+        // Calculate current actor center point
+        const actorCenterX = (my.left + my.right) / 2;
+        const actorFeetY = my.bottom;
+
+        // Calculate PREDICTED actor center point (after moving left)
+        const predictedCenterX = actorCenterX - pixels;
+
+        // Define a maximum reasonable angle for stairs for calculation purposes
+        const MAX_CALCULATION_ANGLE_RAD = Math.PI / 6; 
+
         // Check intersections
         for (const other of args.with) {
-            if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
-                return [0, other.angle < 0 ? -(pixels * this.diagonalNormalizer) : (pixels * this.diagonalNormalizer)];
+            // Check if predicted center position will be on stairs
+            if (
+                predictedCenterX < other.right &&
+                predictedCenterX > other.left &&
+                actorFeetY > other.top &&
+                actorFeetY < other.bottom
+            ) {
+                // Clamp the actual stair angle to our defined maximum for calculation
+                const clampedAngle = Math.max(-MAX_CALCULATION_ANGLE_RAD, Math.min(MAX_CALCULATION_ANGLE_RAD, other.angle));
+                
+                // Calculate vertical adjustment using tangent of the CLAMPED angle
+                const verticalAdjustment = Math.tan(clampedAngle) * pixels;
+
+                // Attraction to stairs center
+                const stairsCenterY = (other.top + other.bottom) / 2;
+                const centerOffset = stairsCenterY - actorFeetY;
+                const attractionStrength = 0.8;
+                const centerCorrection = centerOffset * attractionStrength * args.deltaTime;
+
+                return [0, verticalAdjustment + centerCorrection];
             }
         }
-
-        // None
+        
         return [0, 0];
     }
 
     /**
-     * Transfrom to the left side
+     * Transform to the left side
      * @param pixels Number - how many pixels to move (constant or calculated by collideLeft)
      */
 

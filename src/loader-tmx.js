@@ -95,9 +95,6 @@ class LoaderTMX {
             }
         }
 
-        // Bake precalculations
-        level.precalcStairs();
-
         return level;
     }
 
@@ -411,7 +408,7 @@ class LoaderTMX {
         const [x2, y2] = points[1].split(',');
         const [x3, y3] = points[2].split(',');
         const [x4, y4] = points[3].split(',');
-        level.stairs.push({
+        level.stairs.push(new Stairs({
             x1: x + (parseFloat(x1) * level.scale),
             y1: y + (parseFloat(y1) * level.scale),
             x2: x + (parseFloat(x2) * level.scale),
@@ -420,7 +417,7 @@ class LoaderTMX {
             y3: y + (parseFloat(y3) * level.scale),
             x4: x + (parseFloat(x4) * level.scale),
             y4: y + (parseFloat(y4) * level.scale)
-        });
+        }));
     }
 
     /**
