@@ -25,6 +25,9 @@ class Actor extends AnimSprite {
         // Properties
         this.properties = { ...args.properties };
 
+        // Diagonal nomalizer ~0.7071
+        this.diagonalNormalizer = 1 / Math.sqrt(2);
+
         /**
          * Movement direction
          * v: vertical action (n=north,s=south)
@@ -115,13 +118,13 @@ class Actor extends AnimSprite {
 
                 // Slide right
                 if (my.right > other.right) {
-                    sidePixels = this.properties.spd * 0.7 * args.deltaTime;
+                    sidePixels = this.properties.spd * this.diagonalNormalizer * args.deltaTime;
                     collided ++;
                 }
 
                 // Slide left
                 else if (my.left < other.left) {
-                    sidePixels = -(this.properties.spd * 0.7 * args.deltaTime);
+                    sidePixels = -(this.properties.spd * this.diagonalNormalizer * args.deltaTime);
                     collided ++;
                 }
 
@@ -182,13 +185,13 @@ class Actor extends AnimSprite {
 
                 // Slide to right
                 if (my.right > other.right) {
-                    sidePixels = this.properties.spd * 0.7 * args.deltaTime;
+                    sidePixels = this.properties.spd * this.diagonalNormalizer * args.deltaTime;
                     collided ++;
                 }
 
                 // Slide to left
                 else if (my.left < other.left) {
-                    sidePixels = -(this.properties.spd * 0.7 * args.deltaTime);
+                    sidePixels = -(this.properties.spd * this.diagonalNormalizer * args.deltaTime);
                     collided ++;
                 }
 
@@ -245,13 +248,13 @@ class Actor extends AnimSprite {
 
                 // Slide to up
                 if (my.top < other.top) {
-                    sidePixels = -(this.properties.spd * 0.7 * args.deltaTime);
+                    sidePixels = -(this.properties.spd * this.diagonalNormalizer * args.deltaTime);
                     collided ++;
                 }
 
                 // Slide to down
                 else if (my.bottom > other.bottom) {
-                    sidePixels = this.properties.spd * 0.7 * args.deltaTime;
+                    sidePixels = this.properties.spd * this.diagonalNormalizer * args.deltaTime;
                     collided ++;
                 }
 
@@ -284,7 +287,7 @@ class Actor extends AnimSprite {
         // Check intersections
         for (const other of args.with) {
             if (my.right - (this.collider.width / 2) + pixels > other.left && my.right - (this.collider.width / 2) + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
-                return [0, other.angle > 0 ? -(pixels * 0.7) : (pixels * 0.7)];
+                return [0, other.angle > 0 ? -(pixels * this.diagonalNormalizer) : (pixels * this.diagonalNormalizer)];
             }
         }
 
@@ -334,13 +337,13 @@ class Actor extends AnimSprite {
 
                 // Slide to up
                 if (my.top < other.top) {
-                    sidePixels = -(this.properties.spd * 0.7 * args.deltaTime);
+                    sidePixels = -(this.properties.spd * this.diagonalNormalizer * args.deltaTime);
                     collided ++;
                 }
 
                 // Slide to down
                 else if (my.bottom > other.bottom) {
-                    sidePixels = this.properties.spd * 0.7 * args.deltaTime;
+                    sidePixels = this.properties.spd * this.diagonalNormalizer * args.deltaTime;
                     collided ++;
                 }
 
@@ -372,7 +375,7 @@ class Actor extends AnimSprite {
         // Check intersections
         for (const other of args.with) {
             if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
-                return [0, other.angle < 0 ? -(pixels * 0.7) : (pixels * 0.7)];
+                return [0, other.angle < 0 ? -(pixels * this.diagonalNormalizer) : (pixels * this.diagonalNormalizer)];
             }
         }
 
