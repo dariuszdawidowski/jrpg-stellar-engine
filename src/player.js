@@ -29,7 +29,7 @@ class Player extends Actor {
         // Advance scroll
         if (this.transform.y + view.offset.y < this.bounds.top) view.offset.y += pixels;
 
-        // Actor movement        
+        // Actor movement
         return super.moveUp(pixels);
     }
 
@@ -45,7 +45,7 @@ class Player extends Actor {
         // Advance scroll
         if (this.transform.y + view.offset.y > this.bounds.bottom) view.offset.y -= pixels;
 
-        // Actor movement        
+        // Actor movement
         return super.moveDown(pixels);
     }
 
@@ -61,7 +61,7 @@ class Player extends Actor {
         // Advance scroll
         if (this.transform.x + view.offset.x > this.bounds.right) view.offset.x -= pixels;
 
-        // Actor movement        
+        // Actor movement
         return super.moveRight(pixels);
     }
 
@@ -77,7 +77,7 @@ class Player extends Actor {
         // Advance scroll
         if (this.transform.x + view.offset.x < this.bounds.left) view.offset.x += pixels;
 
-        // Actor movement        
+        // Actor movement
         return super.moveLeft(pixels);
     }
 
