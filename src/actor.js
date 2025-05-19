@@ -273,7 +273,7 @@ class Actor extends AnimSprite {
      * Right stairs/slope checking with smoother angle-based movement
      * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
-     * @param args.with: [Array] - collision array of stairs
+     * @param args.with: [Stairs, ...] - collision array
      */
 
     stairsRight(args) {
@@ -387,7 +387,7 @@ class Actor extends AnimSprite {
      * Left stairs/slope checking
      * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
-     * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
+     * @param args.with: [Stairs, ...] - collision array
      */
 
     stairsLeft(args) {
