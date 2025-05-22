@@ -243,6 +243,7 @@ class Level {
         Object.values(this.actors).forEach(actors => {
             Object.values(actors).forEach(actor => {
                 actor.update({
+                    level: this,
                     view,
                     deltaTime,
                     colliders

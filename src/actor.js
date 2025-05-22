@@ -463,15 +463,13 @@ class Actor extends AnimSprite {
         // That collider
         const that = args.with.getCollider(args.view);
 
-        // Check crossections for all corners
-        // Left-top
-        if (my.left > that.left && my.left < that.right && my.top > that.top && my.top < that.bottom) return true;
-        // Right-top
-        else if (my.right > that.left && my.right < that.right && my.top > that.top && my.top < that.bottom) return true;
-        // Left-bottom
-        else if (my.left > that.left && my.left < that.right && my.bottom > that.top && my.bottom < that.bottom) return true;
-        // Right-bottom
-        else if (my.right > that.left && my.right < that.right && my.bottom > that.top && my.bottom < that.bottom) return true;
+        // Check for AABB overlap
+        if (my.right > that.left && 
+            my.left < that.right && 
+            my.bottom > that.top && 
+            my.top < that.bottom) {
+            return true;
+        }
 
         return false;
     }
@@ -487,15 +485,13 @@ class Actor extends AnimSprite {
         // My collider
         const my = this.getCollider(args.view);
 
-        // Check crossections for all corners
-        // Left-top
-        if (my.left > args.with.left && my.left < args.with.right && my.top > args.with.top && my.top < args.with.bottom) return true;
-        // Right-top
-        else if (my.right > args.with.left && my.right < args.with.right && my.top > args.with.top && my.top < args.with.bottom) return true;
-        // Left-bottom
-        else if (my.left > args.with.left && my.left < args.with.right && my.bottom > args.with.top && my.bottom < args.with.bottom) return true;
-        // Right-bottom
-        else if (my.right > args.with.left && my.right < args.with.right && my.bottom > args.with.top && my.bottom < args.with.bottom) return true;
+        // Check for AABB overlap
+        if (my.right > args.with.left && 
+            my.left < args.with.right && 
+            my.bottom > args.with.top && 
+            my.top < args.with.bottom) {
+            return true;
+        }
 
         return false;
     }

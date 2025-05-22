@@ -146,6 +146,15 @@ class LoaderACX {
                     }
                 }
 
+                // Precalculate values
+                if ('spd' in params['properties']) params['properties']['spd'] *= params.scale;
+                if ('collider' in params) params['collider'] = {
+                    x: params['collider'].x * params.scale,
+                    y: params['collider'].y * params.scale,
+                    width: params['collider'].width * params.scale,
+                    height: params['collider'].height * params.scale
+                };
+
                 // Animations
                 const animations = actor.querySelectorAll('animation');
                 if (animations) {
@@ -176,16 +185,6 @@ class LoaderACX {
      */
 
     createActor(params) {
-        // Precalculate values
-        if ('spd' in params['properties']) params['properties']['spd'] *= params.scale;
-        if ('collider' in params) params['collider'] = {
-            x: params['collider'].x * params.scale,
-            y: params['collider'].y * params.scale,
-            width: params['collider'].width * params.scale,
-            height: params['collider'].height * params.scale
-        };
-
-        // Create instance
         const classReference = new Function(`return ${params.className}`)();
         if (classReference) return new classReference(params);
         return new window[params.className];
