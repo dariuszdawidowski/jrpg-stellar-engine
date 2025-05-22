@@ -49,7 +49,8 @@ class LoaderACX {
 
     /**
      * Parse xml
-     * @param args.id: string - optional unique id for an actor
+     * @param args.id: string - unique id for an actor [optional]
+     * @param args.type: string - group type for an actor [optional]
      * @param args.xml: string - xml to parse
      * @param args.scale: float - scale to multiply (default 1)
      * @param args.transform: {x, y} - where to spawn (default 0,0)
@@ -57,8 +58,7 @@ class LoaderACX {
      */
 
     parseActor(args) {
-
-        const { scale = 1, transform = {x: 0, y: 0} } = args;
+        const { id = null, type = null, scale = 1, transform = {x: 0, y: 0}, properties = {} } = args;
 
         if ('xml' in args) {
             const parser = new DOMParser();
@@ -66,7 +66,14 @@ class LoaderACX {
             const actor = doc.querySelector('actor');
             if (actor) {
                 // Parse all data
-                const params = this.parseData({actor, scale, transform});
+                const params = this.parseData({
+                    id,
+                    type,
+                    actor,
+                    scale,
+                    transform,
+                    properties
+                });
                 // Create and return object
                 if (params) return this.createActor(params);
             }
@@ -106,9 +113,9 @@ class LoaderACX {
                 };
 
                 // Optional ID
-                if ('id' in args) params['id'] = args.id;
+                if (args.id) params['id'] = args.id;
                 // Optional type
-                if ('type' in args) params['type'] = args.type;
+                if (args.type) params['type'] = args.type;
 
                 // Properties (v0.3)
                 const acxProperties = parseProperties(actor.querySelector('properties'));
