@@ -155,8 +155,8 @@ class LoaderACX {
                         anim[animName] = [];
                         const frames = animation.querySelectorAll('frame');
                         frames.forEach(frame => {
-                            const tileId = frame.getAttribute('tileid');
-                            const duration = frame.getAttribute('duration');
+                            const tileId = parseInt(frame.getAttribute('tileid'));
+                            const duration = parseInt(frame.getAttribute('duration'));
                             anim[animName].push({frame: tileId, duration});
                         });
                     });
