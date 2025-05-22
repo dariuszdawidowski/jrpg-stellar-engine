@@ -524,4 +524,63 @@ class Actor extends AnimSprite {
         );
     }
 
+    /**
+     * Serialize to clean object compatible with ACX
+     * 
+        'className': 'MOB',
+        'name': 'mob',
+        'resource': '/sprites/mob.png',
+        'width': 256,
+        'height': 16,
+        'cols': 16,
+        'rows': 1,
+        'scale': 3,
+        'transform': {
+            'x': 0,
+            'y': 0
+        },
+        'properties': {
+            'spd': '50',
+        },
+        'collider': {
+            'x': 0,
+            'y': 0,
+            'width': 16,
+            'height': 16
+        },
+        'animations': {
+            'idle': [
+                {
+                    'frame': 0,
+                    'duration': 100
+                }
+            ]
+        }
+    */
+
+    serialize() {
+        const serialized = {
+            className: this.constructor.name,
+            name: this.name || 'unknown',
+            resource: this.resource || '',
+            width: this.tile?.width || 0,
+            height: this.tile?.height || 0,
+            cols: this.cols || 1,
+            rows: this.rows || 1,
+            scale: this.scale || 1,
+            transform: {
+            x: this.transform?.x ?? 0,
+            y: this.transform?.y ?? 0
+            },
+            properties: { ...this.properties },
+            collider: {
+            x: this.collider?.x ?? 0,
+            y: this.collider?.y ?? 0,
+            width: this.collider?.width ?? (this.tile?.scaled?.width || 0),
+            height: this.collider?.height ?? (this.tile?.scaled?.height || 0)
+            },
+            animations: { ...this.animations }
+        };
+        return serialized;
+    }
 }

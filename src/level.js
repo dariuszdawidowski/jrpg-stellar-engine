@@ -126,7 +126,10 @@ class Level {
     /**
      * Spawn an actor directly
      * @param args.type: string - actor group 'mob', 'vehicle' etc.
-     * @param args.actor: Object {properties: {}, scale: Number, xml: string} - actor's properties for creating instance
+     * @param args.actor: Object - actor's data for creating instance
+     * @param args.actor.properties: Object - actor properties
+     * @param args.actor.scale: Number - scale
+     * @param args.actor.xml: string - acx as a xml string [optional] | @param args.actor.data: string - use actor.serialize() data [optional]
      * @param args.layer: string - layer name of the level in which to spawn
      * @param args.x: Number - x coordinate
      * @param args.y: Number - y coordinate
@@ -143,7 +146,9 @@ class Level {
         };
 
         // Crerate instance
-        const actorInstance = this.loader.acx.parseActor({ ...args.actor, type: args.type, transform });
+        const actorInstance = ('xml' in args.actor) ?
+            this.loader.acx.parseActor({ ...args.actor, type: args.type, transform }) :
+            this.loader.acx.createActor({ ...args.actor.data, type: args.type, transform });
         if ('point' in args) actorInstance.spawn = args.point;
 
         // Assign references
@@ -173,12 +178,22 @@ class Level {
      */
 
     despawn(id) {
-        // Find the actor's type by traversing all actor groups
+        // Remove from layer
+        for (const layer of this.layers) {
+            if (('actors' in layer) && Array.isArray(layer.actors)) {
+                const idx = layer.actors.indexOf(id);
+                if (idx !== -1) {
+                    layer.actors.splice(idx, 1);
+                    break;
+                }
+            }
+        }
+        // Remove from actor types
         for (const type in this.actors) {
             if (id in this.actors[type]) {
                 if ('spawn' in this.actors[type][id]) this.actors[type][id].spawn.decrease();
                 delete this.actors[type][id];
-                return;
+                break;
             }
         }
     }

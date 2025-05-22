@@ -68,12 +68,7 @@ class LoaderACX {
                 // Parse all data
                 const params = this.parseData({actor, scale, transform});
                 // Create and return object
-                if (params) {
-                    console.log(params)
-                    const classReference = new Function(`return ${params.className}`)();
-                    if (classReference) return new classReference(params);
-                    return new window[params.className];
-                }
+                if (params) return this.createActor(params);
             }
         }
 
@@ -81,7 +76,7 @@ class LoaderACX {
     }
 
     /**
-     * Change xml string to data
+     * Change xml string to serialized actor data
      */
 
     parseData(args) {
@@ -127,9 +122,6 @@ class LoaderACX {
                     if (speed) params['properties']['spd'] = parseInt(speed);
                 }
 
-                // Precalculate speed
-                if ('spd' in params['properties']) params['properties']['spd'] *= scale;
-
                 // Collider
                 const collider = actor.querySelector('collider');
                 if (collider) {
@@ -139,10 +131,10 @@ class LoaderACX {
                     const colliderHeight = collider.getAttribute('height');
                     if (colliderX && colliderY && colliderWidth && colliderHeight) {
                         params['collider'] = {
-                            x: parseInt(colliderX) * scale,
-                            y: parseInt(colliderY) * scale,
-                            width: parseInt(colliderWidth) * scale,
-                            height: parseInt(colliderHeight) * scale
+                            x: parseInt(colliderX),
+                            y: parseInt(colliderY),
+                            width: parseInt(colliderWidth),
+                            height: parseInt(colliderHeight)
                         };
                     }
                 }
@@ -171,5 +163,26 @@ class LoaderACX {
             console.error('Unreckognized ACX format')
         }
     }
+
+    /**
+     * Create an actor from serialized data
+     */
+
+    createActor(params) {
+        // Precalculate values
+        if ('spd' in params['properties']) params['properties']['spd'] *= params.scale;
+        if ('collider' in params) params['collider'] = {
+            x: params['collider'].x * params.scale,
+            y: params['collider'].y * params.scale,
+            width: params['collider'].width * params.scale,
+            height: params['collider'].height * params.scale
+        };
+
+        // Create instance
+        const classReference = new Function(`return ${params.className}`)();
+        if (classReference) return new classReference(params);
+        return new window[params.className];
+    }
+
 
 }
