@@ -65,97 +65,111 @@ class LoaderACX {
             const doc = parser.parseFromString(args.xml, 'application/xml');
             const actor = doc.querySelector('actor');
             if (actor) {
-                const version = actor.getAttribute('version');
-                if (version && (version == '0.2' || version == '0.3' || version == '0.4')) {
-                    const name = actor.getAttribute('name');
-                    const className = (version == '0.4') ? actor.getAttribute('class') : actor.getAttribute('type');
-                    const resource = actor.getAttribute('resource');
-                    const width = actor.getAttribute('width');
-                    const height = actor.getAttribute('height');
-                    const cols = actor.getAttribute('cols');
-                    const rows = actor.getAttribute('rows');
-                    if (name && className && resource && width && height && cols && rows) {
-
-                        // Base params
-                        const params = {
-                            name,
-                            resource,
-                            width: parseInt(width),
-                            height: parseInt(height),
-                            cols: parseInt(cols),
-                            rows: parseInt(rows),
-                            scale,
-                            transform,
-                        };
-
-                        // Optional ID
-                        if ('id' in args) params['id'] = args.id;
-                        // Optional type
-                        if ('type' in args) params['type'] = args.type;
-
-                        // Properties (v0.3)
-                        const acxProperties = parseProperties(actor.querySelector('properties'));
-                        const tmxProperties = ('properties' in args) ? args.properties : {};
-                        params['properties'] = {...acxProperties, ...tmxProperties};
-
-                        // Movement (v0.2)
-                        const movement = actor.querySelector('movement');
-                        if (movement) {
-                            const speed = movement.getAttribute('speed');
-                            if (speed) params['properties']['spd'] = parseInt(speed);
-                        }
-
-                        // Precalculate speed
-                        if ('spd' in params['properties']) params['properties']['spd'] *= scale;
-
-                        // Collider
-                        const collider = actor.querySelector('collider');
-                        if (collider) {
-                            const colliderX = collider.getAttribute('x');
-                            const colliderY = collider.getAttribute('y');
-                            const colliderWidth = collider.getAttribute('width');
-                            const colliderHeight = collider.getAttribute('height');
-                            if (colliderX && colliderY && colliderWidth && colliderHeight) {
-                                params['collider'] = {
-                                    x: parseInt(colliderX) * scale,
-                                    y: parseInt(colliderY) * scale,
-                                    width: parseInt(colliderWidth) * scale,
-                                    height: parseInt(colliderHeight) * scale
-                                };
-                            }
-                        }
-
-                        // Animations
-                        const animations = actor.querySelectorAll('animation');
-                        if (animations) {
-                            const anim = {};
-                            animations.forEach(animation => {
-                                const animName = animation.getAttribute('name');
-                                anim[animName] = [];
-                                const frames = animation.querySelectorAll('frame');
-                                frames.forEach(frame => {
-                                    const tileId = frame.getAttribute('tileid');
-                                    const duration = frame.getAttribute('duration');
-                                    anim[animName].push({frame: tileId, duration});
-                                });
-                            });
-                            params['animations'] = anim;
-                        }
-
-                        // Create and return object
-                        const classReference = new Function(`return ${className}`)();
-                        if (classReference) return new classReference(params);
-                        return new window[className];
-                    }
-                }
-                else {
-                    console.error('Unreckognized ACX format')
+                // Parse all data
+                const params = this.parseData({actor, scale, transform});
+                // Create and return object
+                if (params) {
+                    console.log(params)
+                    const classReference = new Function(`return ${params.className}`)();
+                    if (classReference) return new classReference(params);
+                    return new window[params.className];
                 }
             }
-
         }
 
         return null;
+    }
+
+    /**
+     * Change xml string to data
+     */
+
+    parseData(args) {
+        const { actor, scale, transform } = args;
+        const version = actor.getAttribute('version');
+        if (version && (version == '0.2' || version == '0.3' || version == '0.4')) {
+            const name = actor.getAttribute('name');
+            const className = (version == '0.4') ? actor.getAttribute('class') : actor.getAttribute('type');
+            const resource = actor.getAttribute('resource');
+            const width = actor.getAttribute('width');
+            const height = actor.getAttribute('height');
+            const cols = actor.getAttribute('cols');
+            const rows = actor.getAttribute('rows');
+            if (name && className && resource && width && height && cols && rows) {
+
+                // Base params
+                const params = {
+                    className,
+                    name,
+                    resource,
+                    width: parseInt(width),
+                    height: parseInt(height),
+                    cols: parseInt(cols),
+                    rows: parseInt(rows),
+                    scale,
+                    transform,
+                };
+
+                // Optional ID
+                if ('id' in args) params['id'] = args.id;
+                // Optional type
+                if ('type' in args) params['type'] = args.type;
+
+                // Properties (v0.3)
+                const acxProperties = parseProperties(actor.querySelector('properties'));
+                const tmxProperties = ('properties' in args) ? args.properties : {};
+                params['properties'] = {...acxProperties, ...tmxProperties};
+
+                // Movement (v0.2)
+                const movement = actor.querySelector('movement');
+                if (movement) {
+                    const speed = movement.getAttribute('speed');
+                    if (speed) params['properties']['spd'] = parseInt(speed);
+                }
+
+                // Precalculate speed
+                if ('spd' in params['properties']) params['properties']['spd'] *= scale;
+
+                // Collider
+                const collider = actor.querySelector('collider');
+                if (collider) {
+                    const colliderX = collider.getAttribute('x');
+                    const colliderY = collider.getAttribute('y');
+                    const colliderWidth = collider.getAttribute('width');
+                    const colliderHeight = collider.getAttribute('height');
+                    if (colliderX && colliderY && colliderWidth && colliderHeight) {
+                        params['collider'] = {
+                            x: parseInt(colliderX) * scale,
+                            y: parseInt(colliderY) * scale,
+                            width: parseInt(colliderWidth) * scale,
+                            height: parseInt(colliderHeight) * scale
+                        };
+                    }
+                }
+
+                // Animations
+                const animations = actor.querySelectorAll('animation');
+                if (animations) {
+                    const anim = {};
+                    animations.forEach(animation => {
+                        const animName = animation.getAttribute('name');
+                        anim[animName] = [];
+                        const frames = animation.querySelectorAll('frame');
+                        frames.forEach(frame => {
+                            const tileId = frame.getAttribute('tileid');
+                            const duration = frame.getAttribute('duration');
+                            anim[animName].push({frame: tileId, duration});
+                        });
+                    });
+                    params['animations'] = anim;
+                }
+
+                return params;
+            }
+        }
+        else {
+            console.error('Unreckognized ACX format')
+        }
     }
 
 }

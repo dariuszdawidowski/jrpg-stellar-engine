@@ -55,6 +55,15 @@ class Level {
     }
 
     /**
+     * Generate unique id
+     */
+
+    genId() {
+        this.idGen++;
+        return this.idGen;
+    }
+
+    /**
      * Returns list of all colliders
      */
 
@@ -116,10 +125,14 @@ class Level {
 
     /**
      * Spawn an actor directly
-     * @param args.type: string - actor group 'mobs', 'vehicles' etc.
-     * @param args.actor: Object - actor's properties for creating instance
+     * @param args.type: string - actor group 'mob', 'vehicle' etc.
+     * @param args.actor: Object {properties: {}, scale: Number, xml: string} - actor's properties for creating instance
      * @param args.layer: string - layer name of the level in which to spawn
-     * @param args.point: Object - optional point reference
+     * @param args.x: Number - x coordinate
+     * @param args.y: Number - y coordinate
+     * @param args.w: Number - width
+     * @param args.h: Number - height
+     * @param args.point: RespawnPoint - optional point reference to know where to respawn again
      */
 
     spawn(args) {
@@ -138,7 +151,7 @@ class Level {
         actorInstance.view = this.view;
 
         // Generate unique actor's id if none
-        if (!actorInstance.id) actorInstance.id = `${args.layer}.${actorInstance.name}.${this.idGen++}`;
+        if (!actorInstance.id) actorInstance.id = `${args.layer}.${actorInstance.name}.${this.genId()}`;
 
         // Add to layer registry
         const objectLayer = this.layers.find(layer => layer.name === args.layer);
