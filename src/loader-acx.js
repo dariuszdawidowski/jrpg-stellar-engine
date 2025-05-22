@@ -165,7 +165,7 @@ class LoaderACX {
     }
 
     /**
-     * Create an actor from serialized data
+     * Create an actor from serialized data (see actor.js:serialize())
      */
 
     createActor(params) {

@@ -562,22 +562,22 @@ class Actor extends AnimSprite {
         const serialized = {
             className: this.constructor.name,
             name: this.name || 'unknown',
-            resource: this.resource || '',
-            width: this.tile?.width || 0,
-            height: this.tile?.height || 0,
-            cols: this.cols || 1,
-            rows: this.rows || 1,
-            scale: this.scale || 1,
+            resource: this.atlas.image.currentSrc,
+            width: this.atlas.width,
+            height: this.atlas.height,
+            cols: this.atlas.cols,
+            rows: this.atlas.rows,
+            scale: this.level.scale,
             transform: {
-            x: this.transform?.x ?? 0,
-            y: this.transform?.y ?? 0
+                x: this.transform.x,
+                y: this.transform.y,
             },
             properties: { ...this.properties },
             collider: {
-            x: this.collider?.x ?? 0,
-            y: this.collider?.y ?? 0,
-            width: this.collider?.width ?? (this.tile?.scaled?.width || 0),
-            height: this.collider?.height ?? (this.tile?.scaled?.height || 0)
+                x: this.collider.x,
+                y: this.collider.y,
+                width: this.collider.width,
+                height: this.collider.height
             },
             animations: { ...this.animations }
         };
