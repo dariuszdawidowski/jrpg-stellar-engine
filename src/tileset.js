@@ -23,14 +23,14 @@ class TileSet extends Sprite {
 
     /**
      * Returns array of screen colliders
-     * @param view: View context
      * @param tiles: array [[nr, nr, ...], ...]
      * @param sx: Number - start x
      * @param sy: Number - start y
      * @param first: Number - numbering offset
+     * @param margin: Number - optional margin to make collider bigger
      */
 
-    getColliders(view, tiles, sx = 0, sy = 0, first = 0) {
+    getColliders(tiles, sx = 0, sy = 0, first = 0, margin = 0) {
         const colliders = [];
         let x = -sx * this.tile.scaled.factor;
         let y = -sy * this.tile.scaled.factor;
@@ -39,10 +39,10 @@ class TileSet extends Sprite {
                 const index = nr - first;
                 if (index > -1) {
                     colliders.push({
-                        left: x,
-                        top: y,
-                        right: x + this.tile.scaled.width,
-                        bottom: y + this.tile.scaled.height
+                        left: x - margin,
+                        top: y - margin,
+                        right: x + this.tile.scaled.width + margin,
+                        bottom: y + this.tile.scaled.height + margin
                     });
                 }
                 x += this.tile.scaled.width;

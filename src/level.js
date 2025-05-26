@@ -67,13 +67,13 @@ class Level {
      * Returns list of all colliders
      */
 
-    getColliders(view) {
+    getColliders(margin = 0) {
         const colliders = [];
         const tileset = Object.values(this.tilesets).length ? Object.values(this.tilesets)[0] : null;
         if (tileset) {
             this.layers.forEach(layer => {
                 if (layer.class == 'colliders') {
-                    colliders.push(...tileset.ref.getColliders(view, layer.map, this.offset.x, this.offset.y, tileset.first));
+                    colliders.push(...tileset.ref.getColliders(layer.map, this.offset.x, this.offset.y, tileset.first, margin));
                 }
             });
         }
@@ -237,7 +237,7 @@ class Level {
         }
 
         // Gather level colliders
-        const colliders = this.getColliders(view);
+        const colliders = this.getColliders();
 
         // Update all actors
         Object.values(this.actors).forEach(actors => {

@@ -102,6 +102,22 @@ function distancePoints(point1, point2) {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
+/**
+ * Check if two rectangles intersect
+ * @param {object} a - First rectangle {left, top, right, bottom}
+ * @param {object} b - Second rectangle {left, top, right, bottom}
+ * @returns {boolean} - True if rectangles intersect
+ */
+
+function rectIntersect(a, b) {
+    return !(
+        a.right < b.left || 
+        a.left > b.right || 
+        a.bottom < b.top || 
+        a.top > b.bottom
+    );
+}
+
 /****** PARSE UTILS ******/
 
 /**

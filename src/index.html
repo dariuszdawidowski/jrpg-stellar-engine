@@ -865,7 +865,7 @@
                 const [x, y] = player.collideUp({
                     view,
                     deltaTime,
-                    with: level.getColliders(view)
+                    with: level.getColliders()
                 });
 
                 // Slide
@@ -883,7 +883,7 @@
                 const [x, y] = player.collideDown({
                     view,
                     deltaTime,
-                    with: level.getColliders(view)
+                    with: level.getColliders()
                 });
 
                 // Slide
@@ -901,7 +901,7 @@
                 let [x, y] = player.collideLeft({
                     view,
                     deltaTime,
-                    with: level.getColliders(view)
+                    with: level.getColliders()
                 });
 
                 // Stairs
@@ -930,7 +930,7 @@
                 let [x, y] = player.collideRight({
                     view,
                     deltaTime,
-                    with: level.getColliders(view)
+                    with: level.getColliders()
                 });
 
                 // Stairs

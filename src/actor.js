@@ -81,7 +81,7 @@ class Actor extends AnimSprite {
      * @param view: View context
      */
 
-    getCollider(view) {
+    getCollider() {
         return {
             left: this.transform.x - this.tile.scaled.halfWidth + this.collider.x,
             top: this.transform.y - this.tile.scaled.halfHeight + this.collider.y,
@@ -107,7 +107,7 @@ class Actor extends AnimSprite {
         let sidePixels = 0;
 
         // My collider
-        const my = this.getCollider(args.view);
+        const my = this.getCollider();
 
         // Check intersections
         for (const other of args.with) {
@@ -174,7 +174,7 @@ class Actor extends AnimSprite {
         let sidePixels = 0;
 
         // My collider
-        const my = this.getCollider(args.view);
+        const my = this.getCollider();
 
         // Check intersections
         for (const other of args.with) {
@@ -237,7 +237,7 @@ class Actor extends AnimSprite {
         let sidePixels = 0;
 
         // My collider
-        const my = this.getCollider(args.view);
+        const my = this.getCollider();
 
         // Check intersections
         for (const other of args.with) {
@@ -281,7 +281,7 @@ class Actor extends AnimSprite {
         const pixels = this.properties.spd * args.deltaTime;
 
         // My collider
-        const my = this.getCollider(args.view);
+        const my = this.getCollider();
         
         // Calculate current actor center point
         const actorCenterX = (my.left + my.right) / 2;
@@ -351,7 +351,7 @@ class Actor extends AnimSprite {
         let sidePixels = 0;
 
         // My collider
-        const my = this.getCollider(args.view);
+        const my = this.getCollider();
 
         // Check intersections
         for (const other of args.with) {
@@ -395,7 +395,7 @@ class Actor extends AnimSprite {
         const pixels = this.properties.spd * args.deltaTime;
 
         // My collider
-        const my = this.getCollider(args.view);
+        const my = this.getCollider();
 
         // Calculate current actor center point
         const actorCenterX = (my.left + my.right) / 2;
@@ -458,20 +458,13 @@ class Actor extends AnimSprite {
     collideWithSprite(args) {
 
         // My collider
-        const my = this.getCollider(args.view);
+        const my = this.getCollider();
 
         // That collider
-        const that = args.with.getCollider(args.view);
+        const that = args.with.getCollider();
 
         // Check for AABB overlap
-        if (my.right > that.left && 
-            my.left < that.right && 
-            my.bottom > that.top && 
-            my.top < that.bottom) {
-            return true;
-        }
-
-        return false;
+        return rectIntersect(my, that);
     }
 
     /**
@@ -483,17 +476,10 @@ class Actor extends AnimSprite {
     collideWithBox(args) {
 
         // My collider
-        const my = this.getCollider(args.view);
+        const my = this.getCollider();
 
         // Check for AABB overlap
-        if (my.right > args.with.left && 
-            my.left < args.with.right && 
-            my.bottom > args.with.top && 
-            my.top < args.with.bottom) {
-            return true;
-        }
-
-        return false;
+        return rectIntersect(my, args.with);
     }
 
     /**
@@ -511,7 +497,7 @@ class Actor extends AnimSprite {
 
     debug(view) {
         view.ctx.fillStyle = 'rgba(225,225,0,0.5)';
-        const my = this.getCollider(view);
+        const my = this.getCollider();
         view.ctx.fillRect(
             my.left + view.center.x + view.offset.x,
             my.top + view.center.y + view.offset.y,
