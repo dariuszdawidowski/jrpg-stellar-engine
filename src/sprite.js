@@ -180,7 +180,7 @@ class Sprite {
 
     debug(view) {
         view.ctx.fillStyle = 'rgba(225,0,0,0.5)';
-        const my = this.getCollider(view);
+        const my = this.getCollider();
         view.ctx.fillRect(
             my.left + view.center.x + view.offset.x,
             my.top + view.center.y + view.offset.y,
