@@ -39,6 +39,9 @@ class Actor extends AnimSprite {
         // Collider
         this.collider = 'collider' in args ? args.collider : {x: 0, y: 0, width: this.tile.scaled.width, height: this.tile.scaled.height};
 
+        // Origin in the center of the collider
+        this.origin.x = this.collider.x + (this.collider.width / 2);
+        this.origin.y = this.collider.y + (this.collider.height / 2);
     }
 
     /**
@@ -83,10 +86,10 @@ class Actor extends AnimSprite {
 
     getCollider() {
         return {
-            left: this.transform.x - this.tile.scaled.halfWidth + this.collider.x,
-            top: this.transform.y - this.tile.scaled.halfHeight + this.collider.y,
-            right: this.transform.x - this.tile.scaled.halfWidth + this.collider.x + this.collider.width,
-            bottom: this.transform.y - this.tile.scaled.halfHeight + this.collider.y + this.collider.height
+            left: this.transform.x - this.origin.x + this.collider.x,
+            top: this.transform.y - this.origin.y + this.collider.y,
+            right: this.transform.x - this.origin.x + this.collider.x + this.collider.width,
+            bottom: this.transform.y - this.origin.y + this.collider.y + this.collider.height
         };
     }
 
@@ -491,11 +494,23 @@ class Actor extends AnimSprite {
     }
 
     /**
+     * Render Actor
+     */
+
+    render(view) {
+        super.position(this.transform.x, this.transform.y);
+        super.cell(this.anim.frame());
+        super.render(view);
+    }
+
+    /**
      * Debug render
      * @param view: View context
      */
 
     debug(view) {
+
+        // Collider
         view.ctx.fillStyle = 'rgba(225,225,0,0.5)';
         const my = this.getCollider();
         view.ctx.fillRect(
@@ -504,6 +519,17 @@ class Actor extends AnimSprite {
             (my.right + view.center.x + view.offset.x) - (my.left + view.center.x + view.offset.x),
             (my.bottom + view.center.y + view.offset.y) - (my.top + view.center.y + view.offset.y)
         );
+
+        // Origin
+        view.ctx.fillStyle = 'rgba(231, 112, 0, 0.9)';
+        view.ctx.beginPath();
+        const center = view.world2Screen(this.transform);
+        view.ctx.arc(
+            center.x,
+            center.y,
+            3, 0, Math.PI * 2
+        );
+        view.ctx.fill();
     }
 
     /**

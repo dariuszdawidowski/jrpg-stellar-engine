@@ -76,6 +76,12 @@ class Sprite {
             }
         };
 
+        // Origin (scaled center related to top-left corner)
+        this.origin = {
+            x: this.tile.scaled.halfWidth,
+            y: this.tile.scaled.halfHeight            
+        };
+
     }
 
     /**
@@ -113,10 +119,10 @@ class Sprite {
 
     getCollider() {
         return {
-            left: this.transform.x - this.tile.scaled.halfWidth,
-            top: this.transform.y - this.tile.scaled.halfHeight,
-            right: this.transform.x + this.tile.scaled.halfWidth,
-            bottom: this.transform.y + this.tile.scaled.halfHeight
+            left: this.transform.x - this.origin.x,
+            top: this.transform.y - this.origin.y,
+            right: this.transform.x + this.origin.x,
+            bottom: this.transform.y + this.origin.y
         };
     }
 
@@ -124,12 +130,13 @@ class Sprite {
      * Draw single tile
      * @param view: View context
      */
+
     render(view) {
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
         const d = view.world2Screen({
-            x: this.transform.x - this.tile.scaled.halfWidth,
-            y: this.transform.y - this.tile.scaled.halfHeight,
+            x: this.transform.x - this.origin.x,
+            y: this.transform.y - this.origin.y,
         });
         
         if (d.x > -this.tile.scaled.width && d.x < view.canvas.width && 
