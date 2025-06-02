@@ -81,7 +81,6 @@ class MOB extends Actor {
 
                     // Collision detection
                     const [x, y] = this.collideUp({
-                        view: args.view,
                         deltaTime: args.deltaTime,
                         with: args.colliders
                     });
@@ -102,7 +101,6 @@ class MOB extends Actor {
 
                     // Collision detection
                     const [x, y] = this.collideDown({
-                        view: args.view,
                         deltaTime: args.deltaTime,
                         with: args.colliders
                     });
@@ -123,7 +121,6 @@ class MOB extends Actor {
 
                     // Collision detection
                     const [x, y] = this.collideLeft({
-                        view: args.view,
                         deltaTime: args.deltaTime,
                         with: args.colliders
                     });
@@ -144,7 +141,6 @@ class MOB extends Actor {
 
                     // Collision detection
                     const [x, y] = this.collideRight({
-                        view: args.view,
                         deltaTime: args.deltaTime,
                         with: args.colliders
                     });

@@ -24,6 +24,8 @@ class View {
 
         // Debug info posted by other classes
         this.debugEnabled = 'debug' in args ? args.debug : false;
+
+        // [{x, y, w, h}, ...]
         this.debugBox = [];
 
         // Resize window
@@ -227,12 +229,12 @@ class View {
         const txtc = this.ctx.measureText('0,0').width / 2;
         this.ctx.fillText('0,0', this.center.x + this.offset.x - txtc, this.center.y + this.offset.y + 16);
 
-        // Draw other classes boxes
-        this.ctx.fillStyle = 'rgba(255,255,0,0.3)';
+        // Draw collided boxes
+        this.ctx.fillStyle = 'rgba(255, 0, 98, 0.5)';
         this.debugBox.forEach(box => {
             this.ctx.fillRect(
-                box.x + view.center.x + view.offset.x,
-                box.y + view.center.y + view.offset.y,
+                box.x + this.center.x + this.offset.x,
+                box.y + this.center.y + this.offset.y,
                 box.w,
                 box.h
             );
@@ -240,17 +242,6 @@ class View {
 
         // Clear debug info
         if (this.debugBox.length) this.debugBox = [];
-
-        // Helper dot
-        /*this.ctx.beginPath();
-        this.ctx.arc(...Object.values(this.world2Screen({x: 961.09, y: 865.10})), 4, 0, 2 * Math.PI);
-        this.ctx.fillStyle = 'rgba(0,255,0,0.9)';
-        this.ctx.fill();
-
-        this.ctx.beginPath();
-        this.ctx.arc(...Object.values(this.world2Screen({x: 1090.37, y: 920.1})), 4, 0, 2 * Math.PI);
-        this.ctx.fillStyle = 'rgba(255,0,255,0.9)';
-        this.ctx.fill();*/
 
     }
 

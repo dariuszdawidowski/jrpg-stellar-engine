@@ -109,7 +109,7 @@ function distancePoints(point1, point2) {
  * @returns {boolean} - True if rectangles intersect
  */
 
-function rectIntersect(a, b) {
+function box4box(a, b) {
     return !(
         a.right < b.left || 
         a.left > b.right || 

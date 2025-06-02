@@ -80,8 +80,8 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Returns world collider
-     * @param view: View context
+     * Returns actor's collider in world coords
+     * @param args: {left, top, right, bottom}: Direction vector
      */
 
     getCollider() {
@@ -95,7 +95,6 @@ class Actor extends AnimSprite {
 
     /**
      * Up collision checking
-     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
      * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
@@ -117,7 +116,7 @@ class Actor extends AnimSprite {
             if (my.top - pixels < other.bottom && my.top - pixels > other.top && my.right >= other.left && my.left <= other.right) {
 
                 // Debug info
-                if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+                if (this.view.debugEnabled) this.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
                 // Slide right
                 if (my.right > other.right) {
@@ -162,7 +161,6 @@ class Actor extends AnimSprite {
 
     /**
      * Down collision checking
-     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
      * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
@@ -184,7 +182,7 @@ class Actor extends AnimSprite {
             if (my.bottom + pixels > other.top && my.bottom + pixels < other.bottom && my.right >= other.left && my.left <= other.right) {
 
                 // Debug info
-                if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+                if (this.view.debugEnabled) this.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
                 // Slide to right
                 if (my.right > other.right) {
@@ -225,7 +223,6 @@ class Actor extends AnimSprite {
 
     /**
      * Right collision checking
-     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
      * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
@@ -247,7 +244,7 @@ class Actor extends AnimSprite {
             if (my.right + pixels > other.left && my.right + pixels < other.right && my.top <= other.bottom && my.bottom >= other.top) {
 
                 // Debug info
-                if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+                if (this.view.debugEnabled) this.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
                 // Slide to up
                 if (my.top < other.top) {
@@ -274,7 +271,6 @@ class Actor extends AnimSprite {
 
     /**
      * Right stairs/slope checking with smoother angle-based movement
-     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
      * @param args.with: [Stairs, ...] - collision array
      */
@@ -339,7 +335,6 @@ class Actor extends AnimSprite {
 
     /**
      * Left collision checking
-     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
      * @param args.with: [Array] - collision array [{left: Number, top: Number, right: Number, bottom: Number}, ...]
      */
@@ -361,7 +356,7 @@ class Actor extends AnimSprite {
             if (my.left - pixels < other.right && my.left - pixels > other.left && my.top <= other.bottom && my.bottom >= other.top) {
 
                 // Debug info
-                if (args.view.debugEnabled) args.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
+                if (this.view.debugEnabled) this.view.debugBox.push({x: other.left, y: other.top, w: other.right - other.left, h: other.bottom - other.top});
 
                 // Slide to up
                 if (my.top < other.top) {
@@ -388,7 +383,6 @@ class Actor extends AnimSprite {
 
     /**
      * Left stairs/slope checking
-     * @param args.view View object - view context
      * @param args.deltaTime Number - time passed since last frame
      * @param args.with: [Stairs, ...] - collision array
      */
@@ -454,7 +448,6 @@ class Actor extends AnimSprite {
 
     /**
      * Collision checking with other sprite
-     * @param args.view View object - view context
      * @param args.with: Sprite object - other
      */
 
@@ -467,12 +460,11 @@ class Actor extends AnimSprite {
         const that = args.with.getCollider();
 
         // Check for AABB overlap
-        return rectIntersect(my, that);
+        return box4box(my, that);
     }
 
     /**
      * Generic collision checking
-     * @param args.view View object - view context
      * @param args.with: object - collision {left: Number, top: Number, right: Number, bottom: Number}
      */
 
@@ -482,7 +474,7 @@ class Actor extends AnimSprite {
         const my = this.getCollider();
 
         // Check for AABB overlap
-        return rectIntersect(my, args.with);
+        return box4box(my, args.with);
     }
 
     /**
