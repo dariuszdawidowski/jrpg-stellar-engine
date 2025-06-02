@@ -84,7 +84,7 @@ class Level {
      * Returns list of all stairs/slopes
      */
 
-    getStairs(view) {
+    getStairs() {
         return this.stairs;
     }
 
