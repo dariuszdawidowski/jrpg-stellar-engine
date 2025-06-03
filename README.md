@@ -5,7 +5,7 @@ JRPG Stellar Engine
 Retro JRPG browser game engine.
 </p>
 <p align="center">
-v0.5.3
+v0.5.4
 </p>
 
 [![build](https://github.com/dariuszdawidowski/jrpg-stellar-engine/actions/workflows/build.yml/badge.svg)](https://github.com/dariuszdawidowski/jrpg-stellar-engine/actions/workflows/build.yml)
