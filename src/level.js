@@ -150,6 +150,10 @@ class Level {
             this.loader.acx.parseActor({ ...args.actor, type: args.type, transform }) :
             this.loader.acx.createActor({ ...args.actor.data, type: args.type, transform });
         if ('point' in args) actorInstance.spawn = args.point;
+        if (!actorInstance) {
+            console.error('Error spawning ACX', args);
+            return;
+        }
 
         // Assign references
         actorInstance.level = this;

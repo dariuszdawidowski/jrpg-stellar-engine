@@ -21,10 +21,13 @@ class Sprite {
     constructor(args = {}) {
 
         // Sprite ID
-        this.id = 'id' in args ? args.id : null;
+        this.id = ('id' in args) ? args.id : null;
 
         // Sprite name
-        this.name = 'name' in args ? args.name : null;
+        this.name = ('name' in args) ? args.name : null;
+
+        // Sprite slug
+        this.slug = ('slug' in args) ? args.slug : null;
 
         // Current position in space - x, y, {angle, offsetX, offsetY}: screen
         this.transform = {

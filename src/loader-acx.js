@@ -6,13 +6,13 @@
 
 Example #1:
 
-<actor version="0.4" name="chest" class="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
+<actor version="0.5" slug="chest" name="chest" class="Actor" resource="#chest" width="32" height="16" cols="2" rows="1">
     <collider x="-4" y="-4" width="24" height="24" />
 </actor>
 
 Example #2:
 
-<actor version="0.4" name="penguin1" class="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
+<actor version="0.5" slug="penguin-1" name="Penguin 1" class="MOB" resource="#mob1" width="88" height="88" cols="4" rows="4">
     <properties>
         <property name="spd" value="80"/>
         <property name="foo" value="bar"/>
@@ -89,9 +89,10 @@ class LoaderACX {
     parseData(args) {
         const { actor, scale, transform } = args;
         const version = actor.getAttribute('version');
-        if (version && (version == '0.2' || version == '0.3' || version == '0.4')) {
+        if (version && (version == '0.2' || version == '0.3' || version == '0.4' || version == '0.5')) {
             const name = actor.getAttribute('name');
-            const className = (version == '0.4') ? actor.getAttribute('class') : actor.getAttribute('type');
+            const slug = actor.hasAttribute('slug') ? actor.getAttribute('slug') : parseSlug(name);
+            const className = actor.hasAttribute('class') ? actor.getAttribute('class') : actor.getAttribute('type');
             const resource = actor.getAttribute('resource');
             const width = actor.getAttribute('width');
             const height = actor.getAttribute('height');
@@ -103,6 +104,7 @@ class LoaderACX {
                 const params = {
                     className,
                     name,
+                    slug,
                     resource,
                     width: parseInt(width),
                     height: parseInt(height),
@@ -117,12 +119,12 @@ class LoaderACX {
                 // Optional type
                 if (args.type) params['type'] = args.type;
 
-                // Properties (v0.3)
+                // Properties (v0.3+)
                 const acxProperties = parseProperties(actor.querySelector('properties'));
                 const tmxProperties = ('properties' in args) ? args.properties : {};
                 params['properties'] = {...acxProperties, ...tmxProperties};
 
-                // Movement (v0.2)
+                // Movement (v0.2+)
                 const movement = actor.querySelector('movement');
                 if (movement) {
                     const speed = movement.getAttribute('speed');

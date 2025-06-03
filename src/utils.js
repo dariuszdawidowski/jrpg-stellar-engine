@@ -241,3 +241,21 @@ function parseIntRange(value) {
     }
     return valueCalc;
 }
+
+/**
+ * Util to make-a-slug
+ * @returns string
+ */
+
+function parseSlug(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/--+/g, '-')
+    .trim()
+    .replace(/^-+|-+$/g, '');
+}
