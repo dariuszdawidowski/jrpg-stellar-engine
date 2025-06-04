@@ -56,9 +56,7 @@ class Sprite {
         }
         // Load image from URL
         else if (typeof(args.resource) == 'string') {
-            const img = new Image();
-            img.src = args.resource;
-            this.atlas.image = img;
+            this.atlas.image = Cache.getImage(args.resource);
         }
         // Preloaded image
         else if (typeof(args.resource) == 'object') {
