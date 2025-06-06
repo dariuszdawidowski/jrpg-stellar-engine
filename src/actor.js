@@ -529,6 +529,7 @@ class Actor extends AnimSprite {
      * 
         'className': 'MOB',
         'name': 'mob',
+        'slug': 'mob',
         'resource': '/sprites/mob.png',
         'width': 256,
         'height': 16,
@@ -562,6 +563,7 @@ class Actor extends AnimSprite {
         const serialized = {
             className: this.constructor.name,
             name: this.name || 'unknown',
+            slug: this.slug,
             resource: this.atlas.image.currentSrc,
             width: this.atlas.width,
             height: this.atlas.height,
