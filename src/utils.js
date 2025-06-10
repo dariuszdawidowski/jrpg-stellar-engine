@@ -65,7 +65,7 @@ function resolvePath(basePath, relativePath) {
  * @param rect {left: Number, right: Number, top: Number, bottom: Number}
  */
 
-function pointInRect(point, rect) {
+function point4Box(point, rect) {
     return point.x >= rect.left && 
         point.x <= rect.right && 
         point.y >= rect.top && 
@@ -109,7 +109,7 @@ function distancePoints(point1, point2) {
  * @returns {boolean} - True if rectangles intersect
  */
 
-function box4box(a, b) {
+function box4Box(a, b) {
     return !(
         a.right < b.left || 
         a.left > b.right || 
@@ -126,7 +126,7 @@ function box4box(a, b) {
  * @returns {object} - Adjusted movement vector {x, y}
  */
 
-function box4boxV(a, b, v) {
+function box4BoxV(a, b, v) {
 
     const futureA = {
         left: a.left + v.x,
@@ -136,7 +136,7 @@ function box4boxV(a, b, v) {
     };
     
     // No collisions
-    if (!box4box(futureA, b)) {
+    if (!box4Box(futureA, b)) {
         return {x: v.x, y: v.y};
     }
     
@@ -154,8 +154,8 @@ function box4boxV(a, b, v) {
         bottom: a.bottom + v.y
     };
     
-    const horizontalCollision = box4box(horizontalA, b);
-    const verticalCollision = box4box(verticalA, b);
+    const horizontalCollision = box4Box(horizontalA, b);
+    const verticalCollision = box4Box(verticalA, b);
     
     const result = {x: v.x, y: v.y};
     

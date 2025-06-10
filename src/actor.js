@@ -460,7 +460,7 @@ class Actor extends AnimSprite {
         const that = args.with.getCollider();
 
         // Check for AABB overlap
-        return box4box(my, that);
+        return box4Box(my, that);
     }
 
     /**
@@ -474,7 +474,7 @@ class Actor extends AnimSprite {
         const my = this.getCollider();
 
         // Check for AABB overlap
-        return box4box(my, args.with);
+        return box4Box(my, args.with);
     }
 
     /**

@@ -38,6 +38,9 @@ class Level {
         // Portals to other maps [{map, spawn, left, top, right, bottom}, ...]
         this.portals = [];
 
+        // Generic masks [{name, left, top, right, bottom}, ...]
+        this.masks = [];
+
         // Map global properties
         this.properties = {};
 
@@ -211,6 +214,14 @@ class Level {
     }
 
     /**
+     * Returns list of all objects with class 'mask'
+     */
+
+    getMasks() {
+        return this.masks;
+    }
+
+    /**
      * Find layer
      */
 
@@ -380,6 +391,17 @@ class Level {
         // Portals
         view.ctx.fillStyle = 'rgba(50,0,50,0.5)';
         this.portals.forEach(shape => {
+            view.ctx.fillRect(
+                shape.left + ox,
+                shape.top + oy,
+                shape.right - shape.left,
+                shape.bottom - shape.top
+            );
+        });
+
+        // Masks
+        view.ctx.fillStyle = 'rgba(3, 131, 61, 0.5)';
+        this.masks.forEach(shape => {
             view.ctx.fillRect(
                 shape.left + ox,
                 shape.top + oy,

@@ -314,6 +314,12 @@ class LoaderTMX {
                 else if (type == 'portal') {
                     this.parseObjectPortal(level, obj);
                 }
+
+                // MAsks
+                else if (type == 'mask') {
+                    this.parseObjectMask(level, obj);
+                }
+
             }
 
         });
@@ -444,6 +450,25 @@ class LoaderTMX {
         else {
             console.error('Bad name formatting for portal! Use: map.spawn');
         }
+    }
+
+    /**
+     * Parse <object id="1" name="foo" type="Mask" x="10" y="20">
+     */
+
+    parseObjectMask(level, node) {
+        const name = node.getAttribute('name');
+        const x = parseFloat(node.getAttribute('x')) * level.scale;
+        const y = parseFloat(node.getAttribute('y')) * level.scale;
+        const w = parseFloat(node.getAttribute('width')) * level.scale;
+        const h = parseFloat(node.getAttribute('height')) * level.scale;
+        level.masks.push({
+            name: name.trim(),
+            left: x,
+            top: y,
+            right: x + w,
+            bottom: y + h
+        });
     }
 
 }
