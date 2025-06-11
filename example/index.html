@@ -512,7 +512,7 @@
 
         <!-- ACX -->
         <script id="player-acx" type="text/xml">
-            <actor version="0.2" name="player" type="Player" resource="#char1" width="48" height="80" cols="3" rows="4">
+            <actor version="0.2" name="player" type="Actor" resource="#char1" width="48" height="80" cols="3" rows="4">
                 <movement speed="80" />
                 <collider x="4" y="16" width="8" height="4"/>
                 <animation name="idleUp">
@@ -827,7 +827,11 @@
             window.addEventListener('load', () => {
 
                 // Initialize view context
-                view = new View({ canvas: document.getElementById('main'), debug: true });
+                view = new View({
+                    canvas: document.getElementById('main'),
+                    bounds: {top: -150, bottom: 150, left: -150, right: 150},
+                    debug: true
+                });
 
                 // Loaders
                 loaderACX = new LoaderACX();
@@ -850,7 +854,6 @@
                                 xml: document.getElementById('player-acx').innerText,
                                 scale
                             });
-                            player.bounds = {top: -150, bottom: 150, left: -150, right: 150};
                             player.view = view;
 
                             // Load Level
@@ -865,90 +868,94 @@
             // Player movement
             const playerMoveUp = (deltaTime) => {
 
+                // Direction
+                player.transform.vec.y = -1;
+
                 // Collide
-                const [x, y] = player.collideUp({
-                    deltaTime,
-                    with: level.getColliders()
-                });
+                const [x, y] = player.collide(level.getColliders(), deltaTime);
 
-                // Slide
-                if (x < -0.1) player.moveLeft(-x, view);
-                else if (x > 0.1) player.moveRight(x, view);
+                // Move
+                player.move(x, y);
 
-                // Anim & Move
+                // Animate
                 player.animate('moveUp', deltaTime);
-                player.moveUp(y, view);
+                
+                // Scrol view
+                if (player.transform.y + view.offset.y < view.bounds.top) view.offset.y -= y;
             };
 
             const playerMoveDown = (deltaTime) => {
 
+                // Direction
+                player.transform.vec.y = 1;
+
                 // Collide
-                const [x, y] = player.collideDown({
-                    deltaTime,
-                    with: level.getColliders()
-                });
+                const [x, y] = player.collide(level.getColliders(), deltaTime);
 
-                // Slide
-                if (x < -0.1) player.moveLeft(-x, view);
-                else if (x > 0.1) player.moveRight(x, view);
+                // Move
+                player.move(x, y);
 
-                // Anim & Move
+                // Animate
                 player.animate('moveDown', deltaTime);
-                player.moveDown(y, view);
+
+                // Scrol view
+                if (player.transform.y + view.offset.y > view.bounds.bottom) view.offset.y -= y;
             };
 
             const playerMoveLeft = (deltaTime) => {
 
+                // Direction
+                player.transform.vec.x = -1;
+
                 // Collide
-                let [x, y] = player.collideLeft({
-                    deltaTime,
-                    with: level.getColliders()
-                });
+                const [x, y] = player.collide(level.getColliders(), deltaTime);
 
                 // Stairs
-                const [stx, sty] = player.stairsLeft({
-                    deltaTime,
-                    with: level.getStairs()
-                });
+                // const [stx, sty] = player.stairsLeft({
+                //     deltaTime,
+                //     with: level.getStairs()
+                // });
 
                 // Update
-                x += stx;
-                y += sty;
+                // x += stx;
+                // y += sty;
 
-                // Slide
-                if (y < -0.1) player.moveUp(-y, view);
-                else if (y > 0.1) player.moveDown(y, view);
+                // Move
+                player.move(x, y);
 
-                // Anim & Move
+                // Animate
                 player.animate('moveLeft', deltaTime);
-                player.moveLeft(x, view);
+
+                // Scrol view
+                if (player.transform.x + view.offset.x < view.bounds.left) view.offset.x -= x;
             };
 
             const playerMoveRight = (deltaTime) => {
 
+                // Direction
+                player.transform.vec.x = 1;
+
                 // Collide
-                let [x, y] = player.collideRight({
-                    deltaTime,
-                    with: level.getColliders()
-                });
+                const [x, y] = player.collide(level.getColliders(), deltaTime);
 
                 // Stairs
-                const [stx, sty] = player.stairsRight({
-                    deltaTime,
-                    with: level.getStairs()
-                });
+                // const [stx, sty] = player.stairsRight({
+                //     deltaTime,
+                //     with: level.getStairs()
+                // });
 
                 // Update
-                x += stx;
-                y += sty;
+                // x += stx;
+                // y += sty;
 
-                // Slide
-                if (y < -0.1) player.moveUp(-y, view);
-                else if (y > 0.1) player.moveDown(y, view);
+                // Move
+                player.move(x, y);
 
-                // Anim & Move
+                // Animate
                 player.animate('moveRight', deltaTime);
-                player.moveRight(x, view);
+
+                // Scrol view
+                if (player.transform.x + view.offset.x > view.bounds.right) view.offset.x -= x;
             };
 
             // Start loop

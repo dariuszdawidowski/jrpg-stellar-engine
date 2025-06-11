@@ -53,8 +53,6 @@ class Actor extends AnimSprite {
                 this.x = this.y = 0;
             }
         };
-        // this.transform['v'] = '';
-        // this.transform['h'] = '';
 
         // Collider
         this.collider = 'collider' in args ? args.collider : {x: 0, y: 0, width: this.tile.scaled.width, height: this.tile.scaled.height};
@@ -76,31 +74,25 @@ class Actor extends AnimSprite {
         }
 
         // Directional idle left
-        // else if (('idleLeft' in this.animations) && this.transform.h == 'w') {
         else if (('idleLeft' in this.animations) && this.transform.vec.isLeft) {
             this.animate('idleLeft');
         }
 
         // Directional idle right
-        // else if (('idleRight' in this.animations) && this.transform.h == 'e') {
         else if (('idleRight' in this.animations) && this.transform.vec.isRight) {
             this.animate('idleRight');
         }
 
         // Directional idle top
-        // else if (('idleUp' in this.animations) && this.transform.v == 'n') {
         else if (('idleUp' in this.animations) && this.transform.vec.isUp) {
             this.animate('idleUp');
         }
 
         // Directional idle bottom
-        // else if (('idleDown' in this.animations) && (this.transform.v == 's' || this.transform.v == '')) {
         else if (('idleDown' in this.animations) && (this.transform.vec.isDown || this.transform.vec.isZero)) {
             this.animate('idleDown');
         }
 
-        // this.transform.v = '';
-        // this.transform.h = '';
         this.transform.vec.clear();
     }
 
@@ -116,6 +108,128 @@ class Actor extends AnimSprite {
             right: this.transform.x - this.origin.x + this.collider.x + this.collider.width,
             bottom: this.transform.y - this.origin.y + this.collider.y + this.collider.height
         };
+    }
+
+    /**
+     * Vector collision checking
+     * @param others: [Array] - collision array [{left, top, right, bottom}, ...]
+     * @param deltaTime Number - time passed since last frame
+     * @returns [horizontal_movement, vertical_movement] - pixels to move in each direction
+     */
+
+    collide(others, deltaTime) {
+
+        // If the vector is zero, there is no need to check for collisions
+        if (this.transform.vec.isZero) {
+            return [0, 0];
+        }
+        
+        // Bazowa wartość ruchu
+        const basePixels = this.properties.spd * deltaTime;
+        
+        // Normalizacja wektora ruchu (aby ruch po przekątnej nie był szybszy)
+        let vecX = this.transform.vec.x;
+        let vecY = this.transform.vec.y;
+        
+        if (Math.abs(vecX) > EPSILON || Math.abs(vecY) > EPSILON) {
+            const vecLength = Math.sqrt(vecX * vecX + vecY * vecY);
+            vecX /= vecLength;
+            vecY /= vecLength;
+        }
+        
+        // Obliczenie potencjalnego ruchu
+        const horizontalPixels = basePixels * vecX;
+        const verticalPixels = basePixels * vecY;
+        
+        // Mój collider
+        const my = this.getCollider();
+        
+        // Liczniki kolizji i ślizgania
+        let horizontalCollisions = 0;
+        let verticalCollisions = 0;
+        let slideHorizontal = 0;
+        let slideVertical = 0;
+        
+        // Przewidywana pozycja po ruchu
+        const predictLeft = my.left + (horizontalPixels < 0 ? horizontalPixels : 0);
+        const predictRight = my.right + (horizontalPixels > 0 ? horizontalPixels : 0);
+        const predictTop = my.top + (verticalPixels < 0 ? verticalPixels : 0);
+        const predictBottom = my.bottom + (verticalPixels > 0 ? verticalPixels : 0);
+        
+        // Sprawdzenie wszystkich potencjalnych kolizji
+        for (const other of others) {
+            // Debug info
+            if (this.view && this.view.debugEnabled) {
+                this.view.debugBox.push({
+                    x: other.left, y: other.top, 
+                    w: other.right - other.left, 
+                    h: other.bottom - other.top
+                });
+            }
+            
+            // Sprawdzenie kolizji poziomej
+            if (Math.abs(horizontalPixels) > EPSILON) {
+                if ((horizontalPixels > 0 && predictRight > other.left && predictRight < other.right) || 
+                    (horizontalPixels < 0 && predictLeft < other.right && predictLeft > other.left)) {
+                    
+                    if (my.top < other.bottom && my.bottom > other.top) {
+                        // Obsługa ślizgania pionowego
+                        if (my.top < other.top) {
+                            slideVertical = -basePixels * this.diagonalNormalizer;
+                        } else if (my.bottom > other.bottom) {
+                            slideVertical = basePixels * this.diagonalNormalizer;
+                        } else {
+                            slideVertical = 0;
+                        }
+                        
+                        horizontalCollisions++;
+                    }
+                }
+            }
+            
+            // Sprawdzenie kolizji pionowej (pamiętając, że oś Y rośnie w dół)
+            if (Math.abs(verticalPixels) > EPSILON) {
+                if ((verticalPixels > 0 && predictBottom > other.top && predictBottom < other.bottom) ||
+                    (verticalPixels < 0 && predictTop < other.bottom && predictTop > other.top)) {
+                    
+                    if (my.left < other.right && my.right > other.left) {
+                        // Obsługa ślizgania poziomego
+                        if (my.right > other.right) {
+                            slideHorizontal = basePixels * this.diagonalNormalizer;
+                        } else if (my.left < other.left) {
+                            slideHorizontal = -basePixels * this.diagonalNormalizer;
+                        } else {
+                            slideHorizontal = 0;
+                        }
+                        
+                        verticalCollisions++;
+                    }
+                }
+            }
+        }
+        
+        // Obliczenie końcowego ruchu
+        const finalHorizontal = horizontalCollisions > 0 ? 0 : horizontalPixels;
+        const finalVertical = verticalCollisions > 0 ? 0 : verticalPixels;
+        
+        // Zastosowanie ślizgania tylko jeśli nie ma blokady w kierunku ślizgania
+        const finalSlideH = verticalCollisions > 1 ? 0 : slideHorizontal;
+        const finalSlideV = horizontalCollisions > 1 ? 0 : slideVertical;
+        
+        return [finalHorizontal + finalSlideH, finalVertical + finalSlideV];
+    }
+
+    /**
+     * Transform
+     * @param x Number - how many pixels to move in X axis
+     * @param y Number - how many pixels to move in Y axis
+     */
+
+    move(x, y) {
+
+        // Move
+        this.transform.x += x;
+        this.transform.y += y;
     }
 
     /**
@@ -174,7 +288,6 @@ class Actor extends AnimSprite {
     moveUp(pixels) {
 
         // Vertical action
-        // this.transform.v = 'n';
         this.transform.vec.y = -1;
 
         // Move

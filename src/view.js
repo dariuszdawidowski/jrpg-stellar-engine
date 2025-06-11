@@ -7,6 +7,7 @@ class View {
     /**
      * Constructor
      * @param args.canvas: DOM object - Canvas element
+     * @param args.bounds: Object - range for scroll { top: Number, bottom: Number, left: Number, right: Number }
      * @param args.debug: bool - Debug enabled
      */
 
@@ -21,6 +22,9 @@ class View {
 
         // Offset for scroll
         this.offset = {x: 0, y: 0};
+
+        // Scroll range
+        this.bounds = 'bounds' in args ? args.bounds : {top: 0, bottom: 0, left: 0, right: 0};
 
         // Debug info posted by other classes
         this.debugEnabled = 'debug' in args ? args.debug : false;
