@@ -24,7 +24,8 @@ class Player extends Actor {
     moveUp(pixels, view) {
 
         // Vertical action
-        this.transform.v = 'n';
+        // this.transform.v = 'n';
+        this.transform.vec.y = -1;
 
         // Advance scroll
         if (this.transform.y + view.offset.y < this.bounds.top) view.offset.y += pixels;
@@ -40,7 +41,8 @@ class Player extends Actor {
     moveDown(pixels, view) {
 
         // Vertical action
-        this.transform.v = 's';
+        // this.transform.v = 's';
+        this.transform.vec.y = 1;
 
         // Advance scroll
         if (this.transform.y + view.offset.y > this.bounds.bottom) view.offset.y -= pixels;
@@ -56,7 +58,8 @@ class Player extends Actor {
     moveRight(pixels, view) {
 
         // Horizontal action
-        this.transform.h = 'e';
+        // this.transform.h = 'e';
+        this.transform.vec.x = 1;
 
         // Advance scroll
         if (this.transform.x + view.offset.x > this.bounds.right) view.offset.x -= pixels;
@@ -72,7 +75,8 @@ class Player extends Actor {
     moveLeft(pixels, view) {
 
         // Horizontal action
-        this.transform.h = 'w';
+        // this.transform.h = 'w';
+        this.transform.vec.x = -1;
 
         // Advance scroll
         if (this.transform.x + view.offset.x < this.bounds.left) view.offset.x += pixels;

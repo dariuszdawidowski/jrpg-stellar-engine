@@ -1,5 +1,8 @@
 /****** MATH UTILS ******/
 
+// Global epsilon (bigger than Number.EPSILON)
+const EPSILON = 0.00001;
+
 /**
  * Random int number in range min-max
  */

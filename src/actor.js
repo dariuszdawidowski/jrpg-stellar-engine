@@ -29,12 +29,32 @@ class Actor extends AnimSprite {
         this.diagonalNormalizer = 1 / Math.sqrt(2);
 
         /**
-         * Movement direction
-         * v: vertical action (n=north,s=south)
-         * h: horizontal action (w=west,e=east)
+         * Movement direction vector
          */
-        this.transform['v'] = '';
-        this.transform['h'] = '';
+        this.transform.vec = {
+            x: 0,
+            y: 0,
+            get isUp() {
+               return this.y < -EPSILON;
+            },
+            get isDown() {
+               return this.y > EPSILON;
+            },
+            get isLeft() {
+               return this.x < -EPSILON;
+            },
+            get isRight() {
+               return this.x > EPSILON;
+            },
+            get isZero() {
+                return Math.abs(this.x) < EPSILON && Math.abs(this.y) < EPSILON;
+            },
+            clear() {
+                this.x = this.y = 0;
+            }
+        };
+        // this.transform['v'] = '';
+        // this.transform['h'] = '';
 
         // Collider
         this.collider = 'collider' in args ? args.collider : {x: 0, y: 0, width: this.tile.scaled.width, height: this.tile.scaled.height};
@@ -56,27 +76,32 @@ class Actor extends AnimSprite {
         }
 
         // Directional idle left
-        else if (('idleLeft' in this.animations) && this.transform.h == 'w') {
+        // else if (('idleLeft' in this.animations) && this.transform.h == 'w') {
+        else if (('idleLeft' in this.animations) && this.transform.vec.isLeft) {
             this.animate('idleLeft');
         }
 
         // Directional idle right
-        else if (('idleRight' in this.animations) && this.transform.h == 'e') {
+        // else if (('idleRight' in this.animations) && this.transform.h == 'e') {
+        else if (('idleRight' in this.animations) && this.transform.vec.isRight) {
             this.animate('idleRight');
         }
 
         // Directional idle top
-        else if (('idleUp' in this.animations) && this.transform.v == 'n') {
+        // else if (('idleUp' in this.animations) && this.transform.v == 'n') {
+        else if (('idleUp' in this.animations) && this.transform.vec.isUp) {
             this.animate('idleUp');
         }
 
         // Directional idle bottom
-        else if (('idleDown' in this.animations) && (this.transform.v == 's' || this.transform.v == '')) {
+        // else if (('idleDown' in this.animations) && (this.transform.v == 's' || this.transform.v == '')) {
+        else if (('idleDown' in this.animations) && (this.transform.vec.isDown || this.transform.vec.isZero)) {
             this.animate('idleDown');
         }
 
-        this.transform.v = '';
-        this.transform.h = '';
+        // this.transform.v = '';
+        // this.transform.h = '';
+        this.transform.vec.clear();
     }
 
     /**
@@ -149,7 +174,8 @@ class Actor extends AnimSprite {
     moveUp(pixels) {
 
         // Vertical action
-        this.transform.v = 'n';
+        // this.transform.v = 'n';
+        this.transform.vec.y = -1;
 
         // Move
         this.transform.y -= pixels;
@@ -215,7 +241,8 @@ class Actor extends AnimSprite {
     moveDown(pixels) {
 
         // Vertical action
-        this.transform.v = 's';
+        //this.transform.v = 's';
+        this.transform.vec.y = 1;
 
         // Move
         this.transform.y += pixels;
@@ -327,7 +354,8 @@ class Actor extends AnimSprite {
     moveRight(pixels) {
 
         // Horizontal action
-        this.transform.h = 'e';
+        // this.transform.h = 'e';
+        this.transform.vec.x = 1;
 
         // Move
         this.transform.x += pixels;
@@ -440,7 +468,8 @@ class Actor extends AnimSprite {
     moveLeft(pixels) {
 
         // Horizontal action
-        this.transform.h = 'w';
+        // this.transform.h = 'w';
+        this.transform.vec.x = -1;
 
         // Move
         this.transform.x -= pixels;

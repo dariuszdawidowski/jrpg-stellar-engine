@@ -67,8 +67,9 @@ class MOB extends Actor {
                 if (this.direction == 'I') {
                     this.action = 'idle';
                     this.animate('idle', args.deltaTime);
-                    this.transform.v = '';
-                    this.transform.h = '';
+                    this.transform.vec.clear();
+                    // this.transform.v = '';
+                    // this.transform.h = '';
                 }
 
             }
