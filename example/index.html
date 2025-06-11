@@ -55,21 +55,22 @@
     <body>
 
         <!-- Scripts -->
-        <script src="cache.js"></script>
-        <script src="spawnpoint.js"></script>
-        <script src="respawnpoint.js"></script>
-        <script src="stairs.js"></script>
-        <script src="sprite.js"></script>
-        <script src="tileset.js"></script>
-        <script src="actor.js"></script>
-        <script src="mob.js"></script>
-        <script src="player.js"></script>
-        <script src="level.js"></script>
-        <script src="loader-acx.js"></script>
-        <script src="loader-tsx.js"></script>
-        <script src="loader-tmx.js"></script>
-        <script src="utils.js"></script>
-        <script src="view.js"></script>
+        <script src="../src/cache.js"></script>
+        <script src="../src/spawnpoint.js"></script>
+        <script src="../src/respawnpoint.js"></script>
+        <script src="../src/stairs.js"></script>
+        <script src="../src/sprite.js"></script>
+        <script src="../src/animsprite.js"></script>
+        <script src="../src/tileset.js"></script>
+        <script src="../src/actor.js"></script>
+        <script src="../src/mob.js"></script>
+        <script src="../src/player.js"></script>
+        <script src="../src/level.js"></script>
+        <script src="../src/loader-acx.js"></script>
+        <script src="../src/loader-tsx.js"></script>
+        <script src="../src/loader-tmx.js"></script>
+        <script src="../src/utils.js"></script>
+        <script src="../src/view.js"></script>
 
         <!-- Resources -->
         <div style="display: none;">
@@ -813,6 +814,7 @@
 
                 // Move player to spawn point
                 const {x, y} = level.getSpawnPoint(spawn.toLowerCase(), {x: 0, y: 0});
+                player.level = level;
                 player.position(x, y);
                 player.idle();
 
@@ -849,6 +851,7 @@
                                 scale
                             });
                             player.bounds = {top: -150, bottom: 150, left: -150, right: 150};
+                            player.view = view;
 
                             // Load Level
                             loadLevel('test-tmx', 'player').then(() => start());
@@ -864,7 +867,6 @@
 
                 // Collide
                 const [x, y] = player.collideUp({
-                    view,
                     deltaTime,
                     with: level.getColliders()
                 });
@@ -882,7 +884,6 @@
 
                 // Collide
                 const [x, y] = player.collideDown({
-                    view,
                     deltaTime,
                     with: level.getColliders()
                 });
@@ -900,14 +901,12 @@
 
                 // Collide
                 let [x, y] = player.collideLeft({
-                    view,
                     deltaTime,
                     with: level.getColliders()
                 });
 
                 // Stairs
                 const [stx, sty] = player.stairsLeft({
-                    view,
                     deltaTime,
                     with: level.getStairs()
                 });
@@ -929,14 +928,12 @@
 
                 // Collide
                 let [x, y] = player.collideRight({
-                    view,
                     deltaTime,
                     with: level.getColliders()
                 });
 
                 // Stairs
                 const [stx, sty] = player.stairsRight({
-                    view,
                     deltaTime,
                     with: level.getStairs()
                 });
@@ -998,7 +995,7 @@
 
                 // Enter into portal
                 level.getPortals().forEach(portal => {
-                    if (player.collideWithBox({with: portal, view})) {
+                    if (player.collideWithBox(portal)) {
                         stop();
                         loadLevel(portal.map, portal.spawn).then(() => start());
                     }
@@ -1006,9 +1003,9 @@
 
                 // Player actions
                 if (input.action) {
-                    if (player.collideWithSprite({with: level.actors.item['chest-acx.1'], view})) {
-                        level.actors.item['chest-acx.1'].animate('open');
-                        level.actors.item['chest-acx.1'].render(view);
+                    if (player.collideWithSprite(level.actors.item['objects.chest.2'])) {
+                        level.actors.item['objects.chest.2'].animate('open');
+                        level.actors.item['objects.chest.2'].render(view);
                     }
                 }
 

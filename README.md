@@ -5,7 +5,7 @@ JRPG Stellar Engine
 Retro JRPG browser game engine.
 </p>
 <p align="center">
-v0.5.4
+v0.5.4 (2025)
 </p>
 
 [![build](https://github.com/dariuszdawidowski/jrpg-stellar-engine/actions/workflows/build.yml/badge.svg)](https://github.com/dariuszdawidowski/jrpg-stellar-engine/actions/workflows/build.yml)
@@ -18,7 +18,7 @@ JRPG Stellar Engine is a powerful and flexible framework designed to help develo
 Whether you are an indie developer working on your first game or an experienced programmer looking to streamline your development process, our engine provides the tools and features you need to bring your ideas to life.
 
 # Quick start
-Open src/index.html in the browser.
+Open example/index.html in the browser.
 
 # Levels
 Compatible with "Tiled" map editor format (tsx+tmx) https://www.mapeditor.org/.
@@ -29,7 +29,7 @@ https://unpkg.com/jrpg-stellar-engine@latest/dist/jrpg-stellar-engine.js
 # Deploy
 This is a Vanilla-JS project, NodeJS is used only as a build system.
 
-# Release
+# Release (for developers)
 * Bump version in the package.json
 * Bump version in the README.md
 * Bump version in the jrpg-stellar-engine.js.ejs and build number `git rev-list --count HEAD`

@@ -477,16 +477,16 @@ class Actor extends AnimSprite {
 
     /**
      * Collision checking with other sprite
-     * @param args.with: Sprite object - other
+     * @param other: Sprite object - other
      */
 
-    collideWithSprite(args) {
+    collideWithSprite(other) {
 
         // My collider
         const my = this.getCollider();
 
         // That collider
-        const that = args.with.getCollider();
+        const that = other.getCollider();
 
         // Check for AABB overlap
         return box4Box(my, that);
@@ -494,16 +494,16 @@ class Actor extends AnimSprite {
 
     /**
      * Generic collision checking
-     * @param args.with: object - collision {left: Number, top: Number, right: Number, bottom: Number}
+     * @param other: object - collision {left: Number, top: Number, right: Number, bottom: Number}
      */
 
-    collideWithBox(args) {
+    collideWithBox(other) {
 
         // My collider
         const my = this.getCollider();
 
         // Check for AABB overlap
-        return box4Box(my, args.with);
+        return box4Box(my, other);
     }
 
     /**
