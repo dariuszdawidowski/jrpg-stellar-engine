@@ -908,17 +908,12 @@
                 player.transform.vec.x = -1;
 
                 // Collide
-                const [x, y] = player.collide(level.getColliders(), deltaTime);
+                let [x, y] = player.collide(level.getColliders(), deltaTime);
 
                 // Stairs
-                // const [stx, sty] = player.stairsLeft({
-                //     deltaTime,
-                //     with: level.getStairs()
-                // });
-
-                // Update
-                // x += stx;
-                // y += sty;
+                const [stx, sty] = player.stairsLeft(level.getStairs(), deltaTime);
+                x += stx;
+                y += sty;
 
                 // Move
                 player.move(x, y);
@@ -936,17 +931,12 @@
                 player.transform.vec.x = 1;
 
                 // Collide
-                const [x, y] = player.collide(level.getColliders(), deltaTime);
+                let [x, y] = player.collide(level.getColliders(), deltaTime);
 
                 // Stairs
-                // const [stx, sty] = player.stairsRight({
-                //     deltaTime,
-                //     with: level.getStairs()
-                // });
-
-                // Update
-                // x += stx;
-                // y += sty;
+                const [stx, sty] = player.stairsRight(level.getStairs(), deltaTime);
+                x += stx;
+                y += sty;
 
                 // Move
                 player.move(x, y);

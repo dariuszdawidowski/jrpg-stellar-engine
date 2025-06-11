@@ -411,13 +411,14 @@ class Actor extends AnimSprite {
 
     /**
      * Right stairs/slope checking with smoother angle-based movement
-     * @param args.deltaTime Number - time passed since last frame
-     * @param args.with: [Stairs, ...] - collision array
+     * @param others: [Stairs, ...] - collision array
+     * @param deltaTime Number - time passed since last frame
      */
 
-    stairsRight(args) {
+    stairsRight(others, deltaTime) {
+
         // Move by pixels
-        const pixels = this.properties.spd * args.deltaTime;
+        const pixels = this.properties.spd * deltaTime;
 
         // My collider
         const my = this.getCollider();
@@ -433,7 +434,7 @@ class Actor extends AnimSprite {
         const MAX_CALCULATION_ANGLE_RAD = Math.PI / 6;
 
         // Check intersections
-        for (const other of args.with) {
+        for (const other of others) {
             // Check if predicted center position will be on stairs
             if (predictedCenterX > other.left && 
                 predictedCenterX < other.right && 
@@ -450,7 +451,7 @@ class Actor extends AnimSprite {
                 const stairsCenterY = (other.top + other.bottom) / 2;
                 const centerOffset = stairsCenterY - actorFeetY;
                 const attractionStrength = 0.8;
-                const centerCorrection = centerOffset * attractionStrength * args.deltaTime;
+                const centerCorrection = centerOffset * attractionStrength * deltaTime;
 
                 return [0, -verticalAdjustment + centerCorrection];
             }
@@ -524,13 +525,14 @@ class Actor extends AnimSprite {
 
     /**
      * Left stairs/slope checking
-     * @param args.deltaTime Number - time passed since last frame
-     * @param args.with: [Stairs, ...] - collision array
+     * @param others: [Stairs, ...] - collision array
+     * @param deltaTime Number - time passed since last frame
      */
 
-    stairsLeft(args) {
+    stairsLeft(others, deltaTime) {
+
         // Move by pixels
-        const pixels = this.properties.spd * args.deltaTime;
+        const pixels = this.properties.spd * deltaTime;
 
         // My collider
         const my = this.getCollider();
@@ -546,7 +548,7 @@ class Actor extends AnimSprite {
         const MAX_CALCULATION_ANGLE_RAD = Math.PI / 6; 
 
         // Check intersections
-        for (const other of args.with) {
+        for (const other of others) {
             // Check if predicted center position will be on stairs
             if (
                 predictedCenterX < other.right &&
@@ -564,7 +566,7 @@ class Actor extends AnimSprite {
                 const stairsCenterY = (other.top + other.bottom) / 2;
                 const centerOffset = stairsCenterY - actorFeetY;
                 const attractionStrength = 0.8;
-                const centerCorrection = centerOffset * attractionStrength * args.deltaTime;
+                const centerCorrection = centerOffset * attractionStrength * deltaTime;
 
                 return [0, verticalAdjustment + centerCorrection];
             }
