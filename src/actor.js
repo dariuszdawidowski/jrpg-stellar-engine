@@ -97,6 +97,25 @@ class Actor extends AnimSprite {
     }
 
     /**
+     * Animate based on movement
+     */
+
+    animate(name = null, deltaTime = 0, loop = true) {
+        // Pass named animation
+        if (name) {
+            super.animate(name, deltaTime, loop);
+        }
+        // Calculate animation name based on angle
+        else {
+            const angle = Math.atan2(this.transform.vec.y, this.transform.vec.x);
+            if (angle > -1.4 && angle < 1.4) super.animate('moveRight', deltaTime, loop);
+            else if (angle < -2.2 || angle > 2.2) super.animate('moveLeft', deltaTime, loop);
+            else if (angle <= -1.4) super.animate('moveUp', deltaTime, loop);
+            else if (angle >= 1.4) super.animate('moveDown', deltaTime, loop);
+        }
+    }
+
+    /**
      * Returns actor's collider in world coords
      * @param args: {left, top, right, bottom}: Direction vector
      */
