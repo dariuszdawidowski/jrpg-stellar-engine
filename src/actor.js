@@ -295,11 +295,11 @@ class Actor extends AnimSprite {
                 const attractionStrength = 0.8;
                 const centerCorrection = centerOffset * attractionStrength * deltaTime;
 
-                return [0, -verticalAdjustment + centerCorrection];
+                return -verticalAdjustment + centerCorrection;
             }
         }
         
-        return [0, 0];
+        return null;
     }
 
     /**
@@ -347,11 +347,11 @@ class Actor extends AnimSprite {
                 const attractionStrength = 0.8;
                 const centerCorrection = centerOffset * attractionStrength * deltaTime;
 
-                return [0, verticalAdjustment + centerCorrection];
+                return verticalAdjustment + centerCorrection;
             }
         }
         
-        return [0, 0];
+        return null;
     }
 
     /**
