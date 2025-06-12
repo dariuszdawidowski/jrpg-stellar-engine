@@ -22,7 +22,7 @@ class MOB extends Actor {
         this.last = [0, 0];
 
         // Start wander
-        this.randomDirection();
+        this.wander();
     }
 
 
@@ -30,7 +30,7 @@ class MOB extends Actor {
      * Start new wandering
      */
 
-    randomDirection() {
+    wander() {
         // Duration of movement (sec)
         this.duration = randomRangeFloat(0.5, 2.5);
         // Available directions without last one
@@ -63,8 +63,8 @@ class MOB extends Actor {
             }
         }
         else {
-            // Random new wander
-            this.randomDirection();
+            // Random new direction
+            this.wander();
         }
     }
 
