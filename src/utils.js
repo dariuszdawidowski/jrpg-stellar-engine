@@ -121,53 +121,6 @@ function box4Box(a, b) {
     );
 }
 
-/**
- * Check if two rectangles intersect with directional vector
- * @param {object} a - First rectangle {left, top, right, bottom}
- * @param {object} b - Second rectangle {left, top, right, bottom}
- * @param {object} v - Desired movement vector {x, y}
- * @returns {object} - Adjusted movement vector {x, y}
- */
-
-function box4BoxV(a, b, v) {
-
-    const futureA = {
-        left: a.left + v.x,
-        right: a.right + v.x,
-        top: a.top + v.y,
-        bottom: a.bottom + v.y
-    };
-    
-    // No collisions
-    if (!box4Box(futureA, b)) {
-        return {x: v.x, y: v.y};
-    }
-    
-    const horizontalA = {
-        left: a.left + v.x,
-        right: a.right + v.x,
-        top: a.top,
-        bottom: a.bottom
-    };
-    
-    const verticalA = {
-        left: a.left,
-        right: a.right,
-        top: a.top + v.y,
-        bottom: a.bottom + v.y
-    };
-    
-    const horizontalCollision = box4Box(horizontalA, b);
-    const verticalCollision = box4Box(verticalA, b);
-    
-    const result = {x: v.x, y: v.y};
-    
-    if (horizontalCollision) result.x = 0;
-    if (verticalCollision) result.y = 0;
-    
-    return result;
-}
-
 /****** PARSE UTILS ******/
 
 /**
