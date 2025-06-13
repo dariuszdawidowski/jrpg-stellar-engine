@@ -314,7 +314,7 @@ class Level {
 
                 // Sort actors
                 actors.sort(function(a, b) {
-                    return (a.transform.y + a.tile.scaled.halfHeight) - (b.transform.y + b.tile.scaled.halfHeight);
+                    return (a.transform.y - a.origin.y + a.tile.scaled.halfHeight) - (b.transform.y - b.origin.y + b.tile.scaled.halfHeight);
                 });
 
                 // Render actors
