@@ -164,11 +164,33 @@ class View {
      * Centre screen on given point
      * @param args.x: Number - x coordinate
      * @param args.y: Number - y coordinate
+     * @param args.lerp: Boolean - enable smooth transition (optional)
+     * @param args.deltaTime: Number - time delta for smooth transition (optional)
+     * @param args.speed: Number - transition speed (optional, default: 5)
+     * @returns Boolean - true if target point is reached
      */
 
     centre(args) {
-        this.offset.x = -args.x;
-        this.offset.y = -args.y;
+        const targetX = -args.x;
+        const targetY = -args.y;
+        
+        if (args.lerp && args.deltaTime) {
+            const speed = args.speed || 5;
+            const factor = Math.min(1, speed * args.deltaTime);
+            
+            this.offset.x = this.offset.x + (targetX - this.offset.x) * factor;
+            this.offset.y = this.offset.y + (targetY - this.offset.y) * factor;
+            const distanceX = Math.abs(this.offset.x - targetX);
+            const distanceY = Math.abs(this.offset.y - targetY);
+            
+            return distanceX < EPSILON && distanceY < EPSILON;
+        }
+        else {
+            this.offset.x = targetX;
+            this.offset.y = targetY;
+            return true;
+        }
+        
     }
 
     /**
