@@ -438,14 +438,14 @@ class LoaderTMX {
             const y = parseFloat(node.getAttribute('y')) * level.scale;
             const w = parseFloat(node.getAttribute('width')) * level.scale;
             const h = parseFloat(node.getAttribute('height')) * level.scale;
-            level.portals.push({
+            level.portals.push(new Portal({
                 map: map.trim(),
                 spawn: spawn.trim(),
                 left: x,
                 top: y,
                 right: x + w,
                 bottom: y + h
-            });
+            }));
         }
         else {
             console.error('Bad name formatting for portal! Use: map.spawn');

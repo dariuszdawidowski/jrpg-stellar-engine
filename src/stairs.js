@@ -1,5 +1,5 @@
 /**
- * Stair for auto moving
+ * Stairs for auto moving
  */
 
 class Stairs {
@@ -9,6 +9,10 @@ class Stairs {
      */
 
     constructor(args) {
+
+        // Type
+        this.type = args.type || 'stairs';
+
         // Coords
         this.x1 = args.x1;
         this.y1 = args.y1;
@@ -18,11 +22,13 @@ class Stairs {
         this.y3 = args.y3;
         this.x4 = args.x4;
         this.y4 = args.y4;
+
         // Dimensions
         this.left = 0;
         this.top = 0;
         this.right = 0;
         this.bottom = 0;
+
         // Precalculated angle (radians)
         this.angle = 0;
         this.precalc();
@@ -80,6 +86,5 @@ class Stairs {
 
         return Math.atan2(deltaY, deltaX);
     }
-
 
 }
