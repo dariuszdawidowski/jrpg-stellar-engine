@@ -255,15 +255,22 @@ class LoaderTMX {
         const offsetY = node.hasAttribute('offsety') ? node.getAttribute('offsety').toLowerCase() : null;
         if (data && !name.trim().startsWith('.')) {
             const arrayContent = data.textContent.split(',').map(Number);
+            const indexes = create2DArray(arrayContent, parseInt(node.getAttribute('width')));
             const layer = {
                 'name': name,
                 'class': cl,
                 'offset': {x: 0, y: 0},
-                'map': create2DArray(arrayContent, parseInt(node.getAttribute('width')))
+                'map': indexes
             };
             if (offsetX !== null) layer.offset.x = offsetX;
             if (offsetY !== null) layer.offset.y = offsetY;
             level.layers.push(layer);
+            // Update map boundaries
+            const layerBounds = this.calculateBounds(indexes, 32 * 3, layer.offset.x, layer.offset.y);
+            if (level.bounds.left > layerBounds.left) level.bounds.left = layerBounds.left;
+            if (level.bounds.right < layerBounds.right) level.bounds.right = layerBounds.right;
+            if (level.bounds.top > layerBounds.top) level.bounds.top = layerBounds.top;
+            if (level.bounds.bottom < layerBounds.bottom) level.bounds.bottom = layerBounds.bottom;
         }
     }
 
@@ -471,4 +478,54 @@ class LoaderTMX {
         });
     }
 
+    /**
+     * Calculates tile bounds in world coordinates
+     * @param {number[][]} indexes - 2D array with tile indexes (0 means no tile)
+     * @param {number} tileSize - Size of a tile in world units
+     * @param {number} offsetX - X-axis offset
+     * @param {number} offsetY - Y-axis offset
+     * @returns {Object} Object containing tile bounds: left, right, top, bottom
+     */
+
+    calculateBounds(indexes, tileSize, offsetX, offsetY) {
+        // Initialize boundary values
+        let minRow = Infinity;
+        let maxRow = -Infinity;
+        let minColumn = Infinity;
+        let maxColumn = -Infinity;
+
+        // Check if the array is empty
+        if (!indexes || indexes.length === 0 || indexes[0].length === 0) {
+            return { left: offsetX, right: offsetX, top: offsetY, bottom: offsetY };
+        }
+
+        // Search the array for tiles (values different from 0)
+        for (let row = 0; row < indexes.length; row++) {
+        for (let column = 0; column < indexes[row].length; column++) {
+            if (indexes[row][column] !== 0) {
+                minRow = Math.min(minRow, row);
+                maxRow = Math.max(maxRow, row);
+                minColumn = Math.min(minColumn, column);
+                maxColumn = Math.max(maxColumn, column);
+            }
+        }
+        }
+
+        // If no tiles found
+        if (minRow === Infinity) {
+            return { left: offsetX, right: offsetX, top: offsetY, bottom: offsetY };
+        }
+
+        // Convert to world coordinates
+        const left = minColumn * tileSize + offsetX;
+        const right = (maxColumn + 1) * tileSize + offsetX;
+
+        // Y coordinates (where Y grows downward)
+        const top = minRow * tileSize + offsetY;
+        const bottom = (maxRow + 1) * tileSize + offsetY;
+
+        return { left, right, top, bottom };
+    }
+
 }
+

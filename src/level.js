@@ -14,6 +14,9 @@ class Level {
         // Center of the coordinate system correction (this is constant not scroll)
         this.offset = {x: 0, y: 0};
 
+        // The furthest tiles in world coordinates (counted automatically)
+        this.bounds = {left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity};
+
         // Scale
         this.scale = 1;
 
@@ -417,6 +420,18 @@ class Level {
                 actor.debug(view);
             });
         });
+
+        // Bounds
+        if (this.bounds.left !== Infinity) {
+            view.ctx.strokeStyle = 'rgba(255, 255, 0, 0.8)';
+            view.ctx.lineWidth = 2;
+            view.ctx.strokeRect(
+                this.bounds.left + ox,
+                this.bounds.top + oy,
+                this.bounds.right - this.bounds.left,
+                this.bounds.bottom - this.bounds.top
+            );
+        }
 
         // View
         if (view.debugEnabled) view.debug();
