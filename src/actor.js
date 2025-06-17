@@ -130,6 +130,20 @@ class Actor extends AnimSprite {
     }
 
     /**
+     * Returns actor's mask (whole sprite size not depend on collider) in world coords
+     * @param args: {left, top, right, bottom}: Direction vector
+     */
+
+    getMask() {
+        return {
+            left: this.transform.x - this.tile.scaled.halfWidth,
+            top: this.transform.y - this.tile.scaled.halfHeight,
+            right: this.transform.x + this.tile.scaled.halfWidth,
+            bottom: this.transform.y + this.tile.scaled.halfHeight,
+        };
+    }
+
+    /**
      * Vector collision checking
      * @param others: [Array] - collision array [{left, top, right, bottom}, ...]
      * @param deltaTime Number - time passed since last frame
