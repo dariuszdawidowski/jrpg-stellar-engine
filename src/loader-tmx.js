@@ -65,11 +65,18 @@ class LoaderTMX {
         // Parse global level properties
         level.properties = parseProperties(doc.querySelector('map > properties'));
 
+        // Root <map>
+        const root = doc.querySelector('map');
+
+        // Tiles size
+        level.tile.w = parseInt(root.getAttribute('tilewidth'));
+        level.tile.h = parseInt(root.getAttribute('tileheight'));
+
         // Resources list 
-        const resources = await this.fetchResources(doc.querySelector('map'), url, scale, prefetch);
+        const resources = await this.fetchResources(root, url, scale, prefetch);
 
         // Parse
-        for (const node of doc.querySelector('map').childNodes) {
+        for (const node of root.childNodes) {
              if (node.nodeType === Node.ELEMENT_NODE) {
                 switch (node.nodeName) {
                     // Tileset
@@ -266,7 +273,7 @@ class LoaderTMX {
             if (offsetY !== null) layer.offset.y = offsetY;
             level.layers.push(layer);
             // Update map boundaries
-            const layerBounds = this.calculateBounds(indexes, 32 * 3, layer.offset.x, layer.offset.y);
+            const layerBounds = this.calculateBounds(indexes, level.tile.w * level.scale, layer.offset.x, layer.offset.y);
             if (level.bounds.left > layerBounds.left) level.bounds.left = layerBounds.left;
             if (level.bounds.right < layerBounds.right) level.bounds.right = layerBounds.right;
             if (level.bounds.top > layerBounds.top) level.bounds.top = layerBounds.top;

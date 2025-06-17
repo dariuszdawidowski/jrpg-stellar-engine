@@ -23,6 +23,9 @@ class Level {
         // Tileset definitions {'tileset id': {ref: TileSet object reference, first: Number of index offset}, ...}
         this.tilesets = {};
 
+        // Tile size
+        this.tile = { w: 0, h: 0 };
+
         // Environment layers [{name: 'string', class: 'colliders|empty', map: [[]]}, ...]
         this.layers = []; // [class Layer]
 
