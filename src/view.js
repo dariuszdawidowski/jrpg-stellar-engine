@@ -171,6 +171,7 @@ class View {
      */
 
     centre(args) {
+        const BIGEPSILON = 0.01;
         const targetX = -args.x;
         const targetY = -args.y;
         
@@ -183,7 +184,7 @@ class View {
             const distanceX = Math.abs(this.offset.x - targetX);
             const distanceY = Math.abs(this.offset.y - targetY);
             
-            return distanceX < EPSILON && distanceY < EPSILON;
+            return distanceX < BIGEPSILON && distanceY < BIGEPSILON;
         }
         else {
             this.offset.x = targetX;
