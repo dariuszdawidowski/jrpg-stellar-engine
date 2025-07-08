@@ -326,7 +326,7 @@ class LoaderTMX {
 
                 // Portals
                 else if (type == 'portal') {
-                    this.parseObjectPortal(level, obj);
+                    this.parseObjectPortal(level, obj, properties);
                 }
 
                 // MAsks
@@ -444,26 +444,23 @@ class LoaderTMX {
      * Parse <object id="1" name="foo" type="Portal" x="10" y="20">
      */
 
-    parseObjectPortal(level, node) {
+    parseObjectPortal(level, node, properties) {
         const name = node.getAttribute('name');
-        if (name.search(':') != -1) {
-            const [map, spawn] = name.split(':');
-            const x = parseFloat(node.getAttribute('x')) * level.scale;
-            const y = parseFloat(node.getAttribute('y')) * level.scale;
-            const w = parseFloat(node.getAttribute('width')) * level.scale;
-            const h = parseFloat(node.getAttribute('height')) * level.scale;
-            level.portals.push(new Portal({
-                map: map.trim(),
-                spawn: spawn.trim(),
-                left: x,
-                top: y,
-                right: x + w,
-                bottom: y + h
-            }));
-        }
-        else {
-            console.error('Bad name formatting for portal! Use: map.spawn');
-        }
+        const [mapOld, spawnOld] = name.split(':');
+        let map = ('map' in properties) ? properties.map : mapOld;
+        let spawn = ('spawn' in properties) ? properties.spawn : spawnOld;
+        const x = parseFloat(node.getAttribute('x')) * level.scale;
+        const y = parseFloat(node.getAttribute('y')) * level.scale;
+        const w = parseFloat(node.getAttribute('width')) * level.scale;
+        const h = parseFloat(node.getAttribute('height')) * level.scale;
+        level.portals.push(new Portal({
+            map: map.trim(),
+            spawn: spawn.trim(),
+            left: x,
+            top: y,
+            right: x + w,
+            bottom: y + h
+        }));
     }
 
     /**
