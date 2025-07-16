@@ -329,9 +329,14 @@ class LoaderTMX {
                     this.parseObjectPortal(level, obj, properties);
                 }
 
-                // MAsks
+                // Masks
                 else if (type == 'mask') {
                     this.parseObjectMask(level, obj);
+                }
+
+                // Shapes
+                else if (type == 'shape') {
+                    this.parseObjectShape(level, obj, properties);
                 }
 
             }
@@ -479,6 +484,27 @@ class LoaderTMX {
             top: y,
             right: x + w,
             bottom: y + h
+        });
+    }
+
+    /**
+     * Parse <object id="1" name="foo" type="Shape" x="10" y="20"> <polyline points="1.0,2.0 3.0,4.0"/> </object>
+     */
+
+    parseObjectShape(level, node, properties) {
+        const name = node.getAttribute('name');
+        const x = parseFloat(node.getAttribute('x')) * level.scale;
+        const y = parseFloat(node.getAttribute('y')) * level.scale;
+        const points = node.querySelector('polyline')?.getAttribute('points')?.split(' ').map(pair => {
+            const [x, y] = pair.split(',');
+            return {x: parseFloat(x), y: parseFloat(y)};
+        });
+        level.shapes.push({
+            name: name.trim(),
+            x,
+            y,
+            points,
+            properties
         });
     }
 
