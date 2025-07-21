@@ -339,6 +339,11 @@ class LoaderTMX {
                     this.parseObjectShape(level, obj, properties);
                 }
 
+                // Texts
+                else if (type == 'text') {
+                    this.parseObjectText(level, obj);
+                }
+
             }
 
         });
@@ -505,6 +510,30 @@ class LoaderTMX {
             y,
             points,
             properties
+        });
+    }
+
+    /**
+     * Parse <object id="1" name="foo" type="Text" x="10" y="20"> <text wrap="1" halign="center">Bar</text> </object>
+     */
+
+    parseObjectText(level, node) {
+        const name = node.getAttribute('name');
+        const x = parseFloat(node.getAttribute('x')) * level.scale;
+        const y = parseFloat(node.getAttribute('y')) * level.scale;
+        const w = parseFloat(node.getAttribute('width')) * level.scale;
+        const h = parseFloat(node.getAttribute('height')) * level.scale;
+        const cx = x + (w / 2);
+        const cy = y + (h / 2);
+        const textNode = node.querySelector('text');
+        const text = textNode.textContent.trim();
+        const align = textNode.getAttribute('halign');
+        level.texts.push({
+            name: name.trim(),
+            x: cx,
+            y: cy,
+            align,
+            text
         });
     }
 

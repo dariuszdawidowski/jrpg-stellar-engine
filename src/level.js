@@ -50,6 +50,9 @@ class Level {
         // Generic shapes [{name, x, y, points: [{x, y}, ...], properties: {}}, ...]
         this.shapes = [];
 
+        // Texts [{name, x, y, align, text}, ...]
+        this.texts = [];
+
         // Map global properties
         this.properties = {};
 
