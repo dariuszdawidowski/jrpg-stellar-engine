@@ -485,6 +485,9 @@ class LoaderTMX {
         const h = parseFloat(node.getAttribute('height')) * level.scale;
         level.masks.push({
             name: name.trim(),
+            x: x + (w / 2),
+            y: y + (h / 2),
+            radius: w / 2,
             left: x,
             top: y,
             right: x + w,
