@@ -131,8 +131,8 @@ class LoaderTMX {
                     // Objects layer
                     else if (node.nodeName == 'objectgroup') {
                         node.querySelectorAll('object').forEach(obj => {
-                            const name = obj.getAttribute('name').toLowerCase();
-                            const type = obj.getAttribute('type').toLowerCase();
+                            const name = obj.getAttribute('name')?.toLowerCase();
+                            const type = obj.getAttribute('type')?.toLowerCase();
                             const properties = parseProperties(obj.querySelector('properties'));
 
                             // ACX from spawn/respawn points
@@ -296,8 +296,8 @@ class LoaderTMX {
         node.querySelectorAll('object').forEach(obj => {
 
             // Parse attributes
-            const name = obj.getAttribute('name').toLowerCase();
-            const type = obj.getAttribute('type').toLowerCase();
+            const name = obj.getAttribute('name')?.toLowerCase();
+            const type = obj.getAttribute('type')?.toLowerCase();
             const x = parseFloat(obj.getAttribute('x')) * level.scale;
             const y = parseFloat(obj.getAttribute('y')) * level.scale;
             const w = obj.hasAttribute('width') ? parseFloat(obj.getAttribute('width')) * level.scale : 0;
