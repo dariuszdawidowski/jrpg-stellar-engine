@@ -553,13 +553,35 @@ class LoaderTMX {
         const name = node.getAttribute('name');
         const x = parseFloat(node.getAttribute('x')) * level.scale;
         const y = parseFloat(node.getAttribute('y')) * level.scale;
+        const w = node.hasAttribute('width') ? parseFloat(node.getAttribute('width')) * level.scale : null;
+        const h = node.hasAttribute('height') ? parseFloat(node.getAttribute('height')) * level.scale : null;
+        const cx = w ? x + (w / 2) : x;
+        const cy = h ? y + (h / 2) : y;
+
+        // Point
         const childPoint = node.querySelector('point');
-        return {
-            type: childPoint ? 'point' : null,
+        if (childPoint) return {
+            type: 'point',
             name,
             x,
             y,
         };
+
+        // Ellipse
+        const childEllipse = node.querySelector('ellipse');
+        if (childEllipse) return {
+            type: 'ellipse',
+            name,
+            x,
+            y,
+            w,
+            h,
+            cx,
+            cy
+        };
+
+        // Unknown
+        return {};
     }
 
     /**
