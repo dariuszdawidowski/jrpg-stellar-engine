@@ -29,6 +29,9 @@ class Level {
         // Environment layers [{name: 'string', class: 'colliders|empty', map: [[]]}, ...]
         this.layers = []; // [class Layer]
 
+        // Custom renderers
+        this.renderers = {};
+
         // Actors {type: {'name': object, ...}, ...} for items, chars, npcs, mobs, mounts, vehicles, etc.
         this.actors = {};
 
@@ -74,8 +77,7 @@ class Level {
      */
 
     genId() {
-        this.idGen++;
-        return this.idGen;
+        return ++this.idGen;
     }
 
     /**
@@ -253,6 +255,14 @@ class Level {
     }
 
     /**
+     * Register custom layers with actor loaders and renderers
+     */
+
+    addCustomRenderLayer(name, actors) {
+        this.renderers[name] = actors;
+    }
+
+    /**
      * Update all actors
      */
 
@@ -290,62 +300,94 @@ class Level {
         this.layers.forEach(layer => {
 
             // Render backgrounds/foregrounds
-            if (layer.class == 'image') {
-                view.background(
-                    layer.src,
-                    {x: layer.x * this.scale, y: layer.y * this.scale},
-                    {w: layer.w * this.scale, h: layer.h * this.scale},
-                    layer.repeat,
-                    layer.parallax,
-                    layer.coordinates
-                );
-            }
+            if (layer.class == 'image') this.renderImageLayer(view, layer);
 
             // Render actors
-            else if (layer.class == 'objects') {
-
-                // Visible actors
-                const actors = [];
-
-                // Collect culled actors
-                Object.values(this.actors).forEach(actorsGroup => {
-                    // Iterate actors in group
-                    Object.entries(actorsGroup).forEach(([actorId, actor]) => {
-                        // Iterate actor IDs in the current layer
-                        layer.actors.forEach(actorIdOnLayer => {
-                            if (actorIdOnLayer == actorId) {
-                                const pos = view.world2Screen({
-                                    x: actor.transform.x - actor.tile.scaled.halfWidth,
-                                    y: actor.transform.y - actor.tile.scaled.halfHeight
-                                });
-                                if (pos.x > -actor.tile.scaled.width && pos.x < view.canvas.width + actor.tile.scaled.width && pos.y > -actor.tile.scaled.height && pos.y < view.canvas.height + actor.tile.scaled.height) actors.push(actor);
-                            }
-                        });
-                    });
-                });
-
-                // Sort actors
-                actors.sort(function(a, b) {
-                    return (a.transform.y - a.origin.y + a.tile.scaled.halfHeight) - (b.transform.y - b.origin.y + b.tile.scaled.halfHeight);
-                });
-
-                // Render actors
-                actors.forEach(actor => {
-                    actor.render(view);
-                });
-
-            }
+            else if (layer.class == 'objects') this.renderObjectsLayer(view, layer);
 
             // Render tiles
-            else {
-                for (const tileset of Object.values(this.tilesets)) {
-                    tileset.ref.render(view, layer.map, this.offset.x - layer.offset.x, this.offset.y - layer.offset.y, tileset.first);
-                }
+            else if (layer.class == 'tiles' || layer.class == 'colliders') this.renderTilesLayer(view, layer);
 
-            }
+            // Render custom
+            else this.renderCustomLayer(view, layer);
 
         });
 
+    }
+
+    /**
+     * Render image layer
+     */
+
+    renderImageLayer(view, layer) {
+        view.background(
+            layer.src,
+            {x: layer.x * this.scale, y: layer.y * this.scale},
+            {w: layer.w * this.scale, h: layer.h * this.scale},
+            layer.repeat,
+            layer.parallax,
+            layer.coordinates
+        );
+    }
+
+    /**
+     * Render objects layer
+     */
+
+    renderObjectsLayer(view, layer) {
+
+        // Visible actors
+        const actors = [];
+
+        // Collect culled actors
+        Object.values(this.actors).forEach(actorsGroup => {
+            // Iterate actors in group
+            Object.entries(actorsGroup).forEach(([actorId, actor]) => {
+                // Iterate actor IDs in the current layer
+                layer.actors.forEach(actorIdOnLayer => {
+                    if (actorIdOnLayer == actorId) {
+                        const pos = view.world2Screen({
+                            x: actor.transform.x - actor.tile.scaled.halfWidth,
+                            y: actor.transform.y - actor.tile.scaled.halfHeight
+                        });
+                        if (pos.x > -actor.tile.scaled.width && pos.x < view.canvas.width + actor.tile.scaled.width && pos.y > -actor.tile.scaled.height && pos.y < view.canvas.height + actor.tile.scaled.height) actors.push(actor);
+                    }
+                });
+            });
+        });
+
+        // Sort actors
+        actors.sort(function(a, b) {
+            return (a.transform.y - a.origin.y + a.tile.scaled.halfHeight) - (b.transform.y - b.origin.y + b.tile.scaled.halfHeight);
+        });
+
+        // Render actors
+        actors.forEach(actor => {
+            actor.render(view);
+        });
+
+    }
+
+    /**
+     * Render tiles layer
+     */
+
+    renderTilesLayer(view, layer) {
+        for (const tileset of Object.values(this.tilesets)) {
+            tileset.ref.render(view, layer.map, this.offset.x - layer.offset.x, this.offset.y - layer.offset.y, tileset.first);
+        }
+    }
+
+    /**
+     * Render custom layer
+     */
+
+    renderCustomLayer(view, layer) {
+        if (layer.class in this.renderers) {
+            layer.actors.forEach(actor => {
+                if (actor.type in this.renderers[layer.class]) this.renderers[layer.class][actor.type](actor);
+            });
+        }
     }
 
     /**

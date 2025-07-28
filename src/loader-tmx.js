@@ -31,7 +31,6 @@ class LoaderTMX {
      */
 
     async loadLevel(args) {
-
         const { url = null, scale = 1, prefetch = true } = args;
         const file = await fetch(url);
         const text = await file.text();
@@ -256,7 +255,7 @@ class LoaderTMX {
 
     parseLayer(level, node) {
         const name = node.getAttribute('name').toLowerCase();
-        const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : '';
+        const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : 'tiles';
         const data = node.querySelector('data');
         const offsetX = node.hasAttribute('offsetx') ? node.getAttribute('offsetx').toLowerCase() : null;
         const offsetY = node.hasAttribute('offsety') ? node.getAttribute('offsety').toLowerCase() : null;
@@ -282,14 +281,15 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <objectgroup id="1" name="Objects" locked="1">
+     * Parse <objectgroup id="1" name="Objects" class="objects" locked="1">
      */
 
     parseObjectGroup(level, resources, node) {
-        const layerName = node.getAttribute('name').toLowerCase();
+        const layerName = node.getAttribute('name').toLowerCase().trim();
+        const layerClass = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase().trim() : 'objects';
         const layer = {
             'name': layerName,
-            'class': 'objects',
+            'class': layerClass === '' ? 'objects' : layerClass,
             'actors': []
         }
         level.layers.push(layer);
@@ -342,6 +342,11 @@ class LoaderTMX {
                 // Texts
                 else if (type == 'text') {
                     this.parseObjectText(level, obj);
+                }
+
+                // Custom
+                else {
+                    layer.actors.push(this.parseObjectCustom(level, obj));
                 }
 
             }
@@ -538,6 +543,23 @@ class LoaderTMX {
             align,
             text
         });
+    }
+
+    /**
+     * Parse <object id="1" name="foo" type="" x="10" y="20"> <point/> </object>
+     */
+
+    parseObjectCustom(level, node) {
+        const name = node.getAttribute('name');
+        const x = parseFloat(node.getAttribute('x')) * level.scale;
+        const y = parseFloat(node.getAttribute('y')) * level.scale;
+        const childPoint = node.querySelector('point');
+        return {
+            type: childPoint ? 'point' : null,
+            name,
+            x,
+            y,
+        };
     }
 
     /**
