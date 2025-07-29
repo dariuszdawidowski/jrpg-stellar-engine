@@ -346,7 +346,7 @@ class LoaderTMX {
 
                 // Custom
                 else {
-                    layer.actors.push(this.parseObjectCustom(level, obj));
+                    layer.actors.push(this.parseObjectCustom(level, obj, properties));
                 }
 
             }
@@ -549,7 +549,7 @@ class LoaderTMX {
      * Parse <object id="1" name="foo" type="" x="10" y="20"> <point/> </object>
      */
 
-    parseObjectCustom(level, node) {
+    parseObjectCustom(level, node, properties) {
         const name = node.getAttribute('name');
         const x = parseFloat(node.getAttribute('x')) * level.scale;
         const y = parseFloat(node.getAttribute('y')) * level.scale;
@@ -565,6 +565,7 @@ class LoaderTMX {
             name,
             x,
             y,
+            properties
         };
 
         // Ellipse
@@ -577,7 +578,8 @@ class LoaderTMX {
             w,
             h,
             cx,
-            cy
+            cy,
+            properties
         };
 
         // Unknown
