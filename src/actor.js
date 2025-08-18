@@ -80,7 +80,6 @@ class Actor extends AnimSprite {
      */
 
     idle() {
-
         this.transform.vec.clear();
     }
 
