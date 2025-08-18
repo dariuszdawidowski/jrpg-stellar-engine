@@ -34,6 +34,19 @@ class Actor extends AnimSprite {
         this.transform.vec = {
             x: 0,
             y: 0,
+            dir: {x: 0, y: 0}, // direction (face direction, not cleared)
+            set: function(x, y) {
+                // Normalize vector
+                const length = Math.sqrt(x * x + y * y);
+                if (length > 0) {
+                    x /= length;
+                    y /= length;
+                }
+                this.x = x;
+                this.y = y;
+                this.dir.x = x;
+                this.dir.y = y;
+            },
             get isUp() {
                return this.y < -EPSILON;
             },
@@ -68,31 +81,6 @@ class Actor extends AnimSprite {
 
     idle() {
 
-        // Single idle
-        if ('idle' in this.animations) {
-            this.animate('idle');
-        }
-
-        // Directional idle left
-        else if (('idleLeft' in this.animations) && this.transform.vec.isLeft) {
-            this.animate('idleLeft');
-        }
-
-        // Directional idle right
-        else if (('idleRight' in this.animations) && this.transform.vec.isRight) {
-            this.animate('idleRight');
-        }
-
-        // Directional idle top
-        else if (('idleUp' in this.animations) && this.transform.vec.isUp) {
-            this.animate('idleUp');
-        }
-
-        // Directional idle bottom
-        else if (('idleDown' in this.animations) && (this.transform.vec.isDown || this.transform.vec.isZero)) {
-            this.animate('idleDown');
-        }
-
         this.transform.vec.clear();
     }
 
@@ -107,11 +95,31 @@ class Actor extends AnimSprite {
         }
         // Calculate animation name based on angle
         else {
-            const angle = Math.atan2(this.transform.vec.y, this.transform.vec.x);
-            if (angle > -1.4 && angle < 1.4) super.animate('moveRight', deltaTime, loop);
-            else if (angle < -2.2 || angle > 2.2) super.animate('moveLeft', deltaTime, loop);
-            else if (angle <= -1.4) super.animate('moveUp', deltaTime, loop);
-            else if (angle >= 1.4) super.animate('moveDown', deltaTime, loop);
+            const angle = Math.atan2(this.transform.vec.dir.y, this.transform.vec.dir.x);
+            // Right
+            if (angle > -1.4 && angle < 1.4) {
+                if (!this.transform.vec.isZero) super.animate('moveRight', deltaTime, loop);
+                else if ('idleRight' in this.animations) super.animate('idleRight', deltaTime, loop);
+                else super.animate('idle', deltaTime, loop);
+            }
+            // Left
+            else if (angle < -2.2 || angle > 2.2) {
+                if (!this.transform.vec.isZero) super.animate('moveLeft', deltaTime, loop);
+                else if ('idleLeft' in this.animations) super.animate('idleLeft', deltaTime, loop);
+                else super.animate('idle', deltaTime, loop);
+            }
+            // Up
+            else if (angle <= -1.4) {
+                if (!this.transform.vec.isZero) super.animate('moveUp', deltaTime, loop);
+                else if ('idleUp' in this.animations) super.animate('idleUp', deltaTime, loop);
+                else super.animate('idle', deltaTime, loop);
+            }
+            // Down
+            else if (angle >= 1.4) {
+                if (!this.transform.vec.isZero) super.animate('moveDown', deltaTime, loop);
+                else if ('idleDown' in this.animations) super.animate('idleDown', deltaTime, loop);
+                else super.animate('idle', deltaTime, loop);
+            }
         }
     }
 
