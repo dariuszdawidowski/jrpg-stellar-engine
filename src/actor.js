@@ -164,10 +164,10 @@ class Actor extends AnimSprite {
             return [0, 0];
         }
         
-        // Bazowa wartość ruchu
+        // Base movement value
         const basePixels = this.properties.spd * deltaTime;
         
-        // Normalizacja wektora ruchu (aby ruch po przekątnej nie był szybszy)
+        // Normalize movement vector (to prevent diagonal movement from being faster)
         let vecX = this.transform.vec.x;
         let vecY = this.transform.vec.y;
         
@@ -177,26 +177,26 @@ class Actor extends AnimSprite {
             vecY /= vecLength;
         }
         
-        // Obliczenie potencjalnego ruchu
+        // Calculate potential movement
         const horizontalPixels = basePixels * vecX;
         const verticalPixels = basePixels * vecY;
         
-        // Mój collider
+        // My collider
         const my = this.getCollider();
         
-        // Liczniki kolizji i ślizgania
+        // Collision and sliding counters
         let horizontalCollisions = 0;
         let verticalCollisions = 0;
         let slideHorizontal = 0;
         let slideVertical = 0;
         
-        // Przewidywana pozycja po ruchu
+        // Predicted position after movement
         const predictLeft = my.left + (horizontalPixels < 0 ? horizontalPixels : 0);
         const predictRight = my.right + (horizontalPixels > 0 ? horizontalPixels : 0);
         const predictTop = my.top + (verticalPixels < 0 ? verticalPixels : 0);
         const predictBottom = my.bottom + (verticalPixels > 0 ? verticalPixels : 0);
         
-        // Sprawdzenie wszystkich potencjalnych kolizji
+        // Check all potential collisions
         for (const other of others) {
             // Debug info
             if (this.view && this.view.debugEnabled) {
@@ -207,13 +207,13 @@ class Actor extends AnimSprite {
                 });
             }
             
-            // Sprawdzenie kolizji poziomej
+            // Horizontal collision check
             if (Math.abs(horizontalPixels) > EPSILON) {
                 if ((horizontalPixels > 0 && predictRight > other.left && predictRight < other.right) || 
                     (horizontalPixels < 0 && predictLeft < other.right && predictLeft > other.left)) {
                     
                     if (my.top < other.bottom && my.bottom > other.top) {
-                        // Obsługa ślizgania pionowego
+                        // Handle vertical sliding
                         if (my.top < other.top) {
                             slideVertical = -basePixels * this.diagonalNormalizer;
                         } else if (my.bottom > other.bottom) {
@@ -227,13 +227,13 @@ class Actor extends AnimSprite {
                 }
             }
             
-            // Sprawdzenie kolizji pionowej (pamiętając, że oś Y rośnie w dół)
+            // Vertical collision check (remember that the Y axis increases downward)
             if (Math.abs(verticalPixels) > EPSILON) {
                 if ((verticalPixels > 0 && predictBottom > other.top && predictBottom < other.bottom) ||
                     (verticalPixels < 0 && predictTop < other.bottom && predictTop > other.top)) {
                     
                     if (my.left < other.right && my.right > other.left) {
-                        // Obsługa ślizgania poziomego
+                        // Handle horizontal sliding
                         if (my.right > other.right) {
                             slideHorizontal = basePixels * this.diagonalNormalizer;
                         } else if (my.left < other.left) {
@@ -248,11 +248,11 @@ class Actor extends AnimSprite {
             }
         }
         
-        // Obliczenie końcowego ruchu
+        // Calculate final movement
         const finalHorizontal = horizontalCollisions > 0 ? 0 : horizontalPixels;
         const finalVertical = verticalCollisions > 0 ? 0 : verticalPixels;
         
-        // Zastosowanie ślizgania tylko jeśli nie ma blokady w kierunku ślizgania
+        // Apply sliding only if there is no blockage in the sliding direction
         const finalSlideH = verticalCollisions > 1 ? 0 : slideHorizontal;
         const finalSlideV = horizontalCollisions > 1 ? 0 : slideVertical;
         

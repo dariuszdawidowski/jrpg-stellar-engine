@@ -37,8 +37,9 @@ class MOB extends Actor {
         const directions = [[-1, 0], [0, -1], [1, 0], [0, 1], [0, 0], [0, 0], [0, 0], [0, 0]].filter(d => !(d[0] == this.last[0] && d[1] == this.last[1]));
         // Random direction
         const direction = directions[randomRangeInt(0, directions.length - 1)];
-        this.transform.vec.x = this.last[0] = direction[0];
-        this.transform.vec.y = this.last[1] = direction[1];
+        this.last[0] = direction[0];
+        this.last[1] = direction[1];
+        this.transform.vec.set(direction[0], direction[1]);
     }
 
     /**
