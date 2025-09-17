@@ -151,8 +151,8 @@ class View {
      */
 
     fitCanvas() {
-        this.canvas.width = roundToNearestEven(window.innerWidth);
-        this.canvas.height = roundToNearestEven(window.innerHeight);
+        this.canvas.width = roundToNearestEven(document.body.clientWidth);
+        this.canvas.height = roundToNearestEven(document.body.clientHeight);
         this.center.x = this.canvas.width / 2;
         this.center.y = this.canvas.height / 2;
         this.ctx.imageSmoothingEnabled = false;
