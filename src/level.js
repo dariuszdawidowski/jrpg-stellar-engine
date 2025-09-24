@@ -291,13 +291,15 @@ class Level {
     }
 
     /**
-     * Render all layers
+     * Render layers (from list or just all of them)
      */
 
-    render(view) {
+    render(view, layers = null) {
 
         // Iterate layers
         this.layers.forEach(layer => {
+
+            if (layers && !layers.includes(layer.name)) return;
 
             // Render backgrounds/foregrounds
             if (layer.class == 'image') this.renderImageLayer(view, layer);
