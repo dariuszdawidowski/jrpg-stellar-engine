@@ -142,10 +142,11 @@ class Level {
 
     /**
      * Spawn an actor directly
+     * @param args.id: string - (optional) custom id
      * @param args.type: string - actor group 'mob', 'vehicle' etc.
-     * @param args.actor: Object - actor's data for creating instance
-     * @param args.actor.properties: Object - actor properties
      * @param args.actor.xml: string - acx as an xml string [optional] | @param args.actor.data: string - use actor.serialize() data [optional]
+     * @param args.actor.scale: Number - sprite scale
+     * @param args.actor.properties: Object - actor properties
      * @param args.layer: string - layer name of the level in which to spawn
      * @param args.x: Number - x coordinate to spawn
      * @param args.y: Number - y coordinate to spawn
@@ -175,7 +176,8 @@ class Level {
         actorInstance.level = this;
         actorInstance.view = this.view;
 
-        // Generate unique actor's id if none
+        // Actor's id
+        if ('id' in args) actorInstance.id = args.id;
         if (!actorInstance.id) actorInstance.id = `${args.layer}.${actorInstance.name}.${this.genId()}`;
 
         // Add to layer registry
