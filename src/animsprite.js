@@ -85,11 +85,11 @@ class AnimSprite extends Sprite {
     }
 
     /**
-     * Update actor
+     * Update animated sprite with default animation
      */
 
-    update() {
-        /*** Overload ***/
+    update(args) {
+        this.animate('default', args.deltaTime);
     }
 
 }
