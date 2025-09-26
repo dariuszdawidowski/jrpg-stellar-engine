@@ -128,6 +128,14 @@ class Sprite {
     }
 
     /**
+     * Update sprite
+     */
+
+    update() {
+        /*** Overload ***/
+    }
+
+    /**
      * Draw single tile
      * @param view: View context
      */
