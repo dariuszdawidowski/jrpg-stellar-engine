@@ -84,4 +84,12 @@ class AnimSprite extends Sprite {
         super.render(view);
     }
 
+    /**
+     * Update actor
+     */
+
+    update() {
+        /*** Overload ***/
+    }
+
 }

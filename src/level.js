@@ -145,14 +145,13 @@ class Level {
      * @param args.type: string - actor group 'mob', 'vehicle' etc.
      * @param args.actor: Object - actor's data for creating instance
      * @param args.actor.properties: Object - actor properties
-     * @param args.actor.scale: Number - scale
-     * @param args.actor.xml: string - acx as a xml string [optional] | @param args.actor.data: string - use actor.serialize() data [optional]
+     * @param args.actor.xml: string - acx as an xml string [optional] | @param args.actor.data: string - use actor.serialize() data [optional]
      * @param args.layer: string - layer name of the level in which to spawn
-     * @param args.x: Number - x coordinate
-     * @param args.y: Number - y coordinate
-     * @param args.w: Number - width
-     * @param args.h: Number - height
-     * @param args.point: RespawnPoint - optional point reference to know where to respawn again
+     * @param args.x: Number - x coordinate to spawn
+     * @param args.y: Number - y coordinate to spawn
+     * @param args.w: Number - width of the random spawn area
+     * @param args.h: Number - height of the random spawn area
+     * @param args.point: RespawnPoint - (optional) point reference to know where to respawn again
      */
 
     spawn(args) {
