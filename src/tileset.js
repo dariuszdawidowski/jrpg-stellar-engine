@@ -62,7 +62,6 @@ class TileSet extends Sprite {
         return nr;
     }
 
-
     /**
      * Update tiles animations
      */
