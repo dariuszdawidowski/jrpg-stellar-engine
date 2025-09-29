@@ -192,6 +192,9 @@ class Level {
 
         // Add an actor
         this.actors[args.type][actorInstance.id] = actorInstance;
+
+        // Returns new actor instance
+        return actorInstance;
     }
 
     /**

@@ -89,7 +89,7 @@ class AnimSprite extends Sprite {
      */
 
     update(args) {
-        this.animate('default', args.deltaTime);
+        if (this.anim.name) this.animate(this.anim.name, args.deltaTime);
     }
 
 }
