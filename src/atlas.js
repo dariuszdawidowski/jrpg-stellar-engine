@@ -21,7 +21,7 @@ class Atlas {
         this.rows = 'cell' in args ? args.height / args.cell : args.rows || 1;
         this.cell = 'cell' in args ? args.cell : args.width / args.cols;
         this.image = null;
-        thisresource = args.resource;
+        this.resource = args.resource;
 
     }
 
