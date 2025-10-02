@@ -57,7 +57,7 @@ class LoaderACX {
      * @param args.properties: custom properties
      */
 
-    parseActor(args) {
+    async parseActor(args) {
         const { id = null, type = null, scale = 1, transform = {x: 0, y: 0}, properties = {} } = args;
 
         if ('xml' in args) {
@@ -75,7 +75,10 @@ class LoaderACX {
                     properties
                 });
                 // Create and return object
-                if (params) return this.createActor(params);
+                if (params) {
+                    const newActor = await this.createActor(params);
+                    return newActor;
+                }
             }
         }
 
@@ -186,10 +189,17 @@ class LoaderACX {
      * Create an actor from serialized data (see actor.js:serialize())
      */
 
-    createActor(params) {
+    async createActor(params) {
+        let newActor = null;
         const classReference = new Function(`return ${params.className}`)();
-        if (classReference) return new classReference(params);
-        return new window[params.className];
+        if (classReference) {
+            newActor = new classReference(params);
+        }
+        else {
+            newActor = new window[params.className];
+        }
+        if (newActor) await newActor.load();
+        return newActor;
     }
 
 

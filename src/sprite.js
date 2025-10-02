@@ -29,6 +29,9 @@ class Sprite {
         // Sprite slug
         this.slug = ('slug' in args) ? args.slug : null;
 
+        // Store resource
+        this.resource = args.resource;
+
         // Current position in space - x, y, {angle, offsetX, offsetY}: screen
         this.transform = {
             x: ('transform' in args) && ('x' in args.transform) ? args.transform.x : 0,
@@ -50,19 +53,6 @@ class Sprite {
             image: null
         };
 
-        // Load image from HTML
-        if (typeof(args.resource) == 'string' && args.resource.startsWith('#')) {
-            this.atlas.image = document.querySelector(args.resource);
-        }
-        // Load image from URL
-        else if (typeof(args.resource) == 'string') {
-            this.atlas.image = Cache.getImage(args.resource);
-        }
-        // Preloaded image
-        else if (typeof(args.resource) == 'object') {
-            this.atlas.image = args.resource;
-        }
-
         // Dimensions of one tile
         this.tile = {
             current: 0, // current frame
@@ -83,6 +73,25 @@ class Sprite {
             y: this.tile.scaled.halfHeight            
         };
 
+    }
+
+    /**
+     * Load image
+     */
+
+    async load() {
+        // Load image from HTML
+        if (typeof(this.resource) == 'string' && this.resource.startsWith('#')) {
+            this.atlas.image = document.querySelector(this.resource);
+        }
+        // Load image from URL
+        else if (typeof(this.resource) == 'string') {
+            this.atlas.image = await Cache.getImage(this.resource);
+        }
+        // Preloaded image
+        else if (typeof(this.resource) == 'object') {
+            this.atlas.image = this.resource;
+        }
     }
 
     /**

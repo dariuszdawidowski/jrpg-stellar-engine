@@ -132,11 +132,11 @@ class Level {
      * Check respawn points and spawn if necessary
      */
 
-    respawn() {
+    async respawn() {
         // Iterate through all respawn types
         for (const point of this.respawnpoints) {
-            const spawnArgs = point.respawn();
-            if (spawnArgs) this.spawn({ ...spawnArgs, point });
+            const spawnArgs = point.spawnArgs();
+            if (spawnArgs) await this.spawn({ ...spawnArgs, point });
         }
     }
 
@@ -153,23 +153,29 @@ class Level {
      * @param args.w: Number - width of the random spawn area
      * @param args.h: Number - height of the random spawn area
      * @param args.point: RespawnPoint - (optional) point reference to know where to respawn again
+     * @returns {Promise<ActorInstance>} Promise resolving to the spawned actor
      */
 
-    spawn(args) {
+    async spawn(args) {
         // Position in the area range
         const transform = {
             x: args.x + (args.w / 2) + Math.floor(Math.random() * (args.w + 1) - (args.w / 2)),
             y: args.y + (args.h / 2) + Math.floor(Math.random() * (args.h + 1) - (args.h / 2))
         };
 
-        // Crerate instance
-        const actorInstance = ('xml' in args.actor) ?
-            this.loader.acx.parseActor({ ...args.actor, type: args.type, transform }) :
-            this.loader.acx.createActor({ ...args.actor.data, type: args.type, transform });
+        // Create instance (use await!)
+        let actorInstance;
+        if ('xml' in args.actor) {
+            actorInstance = await this.loader.acx.parseActor({ ...args.actor, type: args.type, transform });
+        } else {
+            // Sprawdź czy createActor też jest async
+            actorInstance = await this.loader.acx.createActor({ ...args.actor.data, type: args.type, transform });
+        }
+        
         if ('point' in args) actorInstance.spawn = args.point;
         if (!actorInstance) {
             console.error('Error spawning ACX', args);
-            return;
+            return null;
         }
 
         // Assign references
@@ -270,7 +276,7 @@ class Level {
      * Update all actors
      */
 
-    update(view, deltaTime) {
+    update(deltaTime) {
 
         // Update tilesets
         for (const tileset of Object.values(this.tilesets)) {
@@ -284,8 +290,6 @@ class Level {
         Object.values(this.actors).forEach(actors => {
             Object.values(actors).forEach(actor => {
                 actor.update({
-                    // level: this,
-                    // view,
                     deltaTime,
                     colliders
                 });

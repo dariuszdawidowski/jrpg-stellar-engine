@@ -358,7 +358,7 @@ class LoaderTMX {
      * Parse <object id="1" name="foo" type="Spawn" x="10" y="20">
      */
 
-    parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties) {
+    async parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties) {
         // Add point to list of spawnpoints
         if (!(name in level.spawnpoints)) level.spawnpoints[name] = [];
         level.spawnpoints[name].push(new SpawnPoint({x, y, w, h}));
@@ -380,7 +380,7 @@ class LoaderTMX {
         // Actual spawn
         if (uri) {
             for (let n = 0; n < (properties.number || 1); n++) {
-                level.spawn({
+                await level.spawn({
                     x, y, w, h,
                     type: kindName,
                     layer: layer.name,

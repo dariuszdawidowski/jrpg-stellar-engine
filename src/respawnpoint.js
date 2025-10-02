@@ -33,19 +33,21 @@ class RespawnPoint extends SpawnPoint {
      * Check if there is time for a new spawn - if so, spawn
      */
 
-    respawn() {
+    async respawn() {
         // Spawn immediately
         if (this.lastSpawn == null) {
-            return this.spawn();
+            const spawn = await this.spawn();
+            return spawn;
         }
         // Spawn at least minimum amount
         else if (this.count < this.range[0]) {
-            return this.spawn();
+            const spawn = await this.spawn();
+            return spawn;
         }
-        // Optionally spawn if max not reached
-        else if (this.count < this.range[1]) {
-            // Check if 10 seconds have passed since last spawn
-            if (Date.now() - this.lastSpawn >= this.next) return this.spawn();
+        // Optionally spawn if max not reached (Check if 10 seconds have passed since last spawn)
+        else if (this.count < this.range[1] && Date.now() - this.lastSpawn >= this.next) {
+            const spawn = await this.spawn();
+            return spawn;
         }
         return null;
     }
@@ -54,7 +56,7 @@ class RespawnPoint extends SpawnPoint {
      * Generate spawn args ready for level.spawn(args)
      */
 
-    spawn() {
+    spawnArgs() {
         this.count ++;
         this.lastSpawn = Date.now();
         this.next = randomRangeInt(this.delay[0] * 1000, this.delay[1] * 1000);

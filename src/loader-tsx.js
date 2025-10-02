@@ -66,7 +66,9 @@ class LoaderTSX {
                     }
                 });
                 if (Object.keys(anim).length > 0) params['anim'] = anim;
-                return new TileSet(params);
+                const newTileset = new TileSet(params);
+                await newTileset.load();
+                return newTileset;
             }
         }
         return null;
