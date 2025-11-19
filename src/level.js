@@ -135,7 +135,7 @@ class Level {
     async respawn() {
         // Iterate through all respawn types
         for (const point of this.respawnpoints) {
-            const spawnArgs = point.spawnArgs();
+            const spawnArgs = point.respawnCheck();
             if (spawnArgs) await this.spawn({ ...spawnArgs, point });
         }
     }

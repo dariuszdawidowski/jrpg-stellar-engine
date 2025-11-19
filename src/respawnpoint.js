@@ -33,20 +33,20 @@ class RespawnPoint extends SpawnPoint {
      * Check if there is time for a new spawn - if so, spawn
      */
 
-    async respawn() {
+    respawnCheck() {
         // Spawn immediately
         if (this.lastSpawn == null) {
-            const spawn = await this.spawn();
+            const spawn = this.spawnArgs();
             return spawn;
         }
         // Spawn at least minimum amount
         else if (this.count < this.range[0]) {
-            const spawn = await this.spawn();
+            const spawn = this.spawnArgs();
             return spawn;
         }
         // Optionally spawn if max not reached (Check if 10 seconds have passed since last spawn)
         else if (this.count < this.range[1] && Date.now() - this.lastSpawn >= this.next) {
-            const spawn = await this.spawn();
+            const spawn = this.spawnArgs();
             return spawn;
         }
         return null;
