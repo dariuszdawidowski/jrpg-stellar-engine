@@ -850,14 +850,15 @@
                             loaderTMX = new LoaderTMX({tilesets});
 
                             // Load Player
-                            player = loaderACX.parseActor({
+                            loaderACX.parseActor({
                                 xml: document.getElementById('player-acx').innerText,
                                 scale
-                            });
-                            player.view = view;
-
-                            // Load Level
-                            loadLevel('test-tmx', 'player').then(() => start());
+                            }).then(result => {
+                                player = result;
+                                player.view = view;
+                                // Load Level
+                                loadLevel('test-tmx', 'player').then(() => start());
+                            })
 
                         });
                     });
@@ -911,9 +912,11 @@
                 let [x, y] = player.collide(level.getColliders(), deltaTime);
 
                 // Stairs
-                const [stx, sty] = player.stairsLeft(level.getStairs(), deltaTime);
-                x += stx;
-                y += sty;
+                const st = player.stairsLeft(level.getStairs(), deltaTime);
+                if (st) {
+                    x += st[0];
+                    y += st[1];
+                }
 
                 // Move
                 player.move(x, y);
@@ -934,9 +937,11 @@
                 let [x, y] = player.collide(level.getColliders(), deltaTime);
 
                 // Stairs
-                const [stx, sty] = player.stairsRight(level.getStairs(), deltaTime);
-                x += stx;
-                y += sty;
+                const st = player.stairsRight(level.getStairs(), deltaTime);
+                if (st) {
+                    x += st[0];
+                    y += st[1];
+                }
 
                 // Move
                 player.move(x, y);
