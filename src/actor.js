@@ -124,7 +124,7 @@ class Actor extends AnimSprite {
 
     /**
      * Returns actor's collider in world coords
-     * @param args: {left, top, right, bottom}: Direction vector
+     * @returns: {left, top, right, bottom}: Direction vector
      */
 
     getCollider() {
@@ -138,15 +138,16 @@ class Actor extends AnimSprite {
 
     /**
      * Returns actor's mask (whole sprite size not depend on collider) in world coords
-     * @param args: {left, top, right, bottom}: Direction vector
+     * @param extend: Number - how many pixels to extend the mask in all directions
+     * @returns {left, top, right, bottom}: Direction vector
      */
 
-    getMask() {
+    getMask(extend = 0) {
         return {
-            left: this.transform.x - this.tile.scaled.halfWidth,
-            top: this.transform.y - this.tile.scaled.halfHeight,
-            right: this.transform.x + this.tile.scaled.halfWidth,
-            bottom: this.transform.y + this.tile.scaled.halfHeight,
+            left: this.transform.x - this.tile.scaled.halfWidth - extend,
+            top: this.transform.y - this.tile.scaled.halfHeight - extend,
+            right: this.transform.x + this.tile.scaled.halfWidth + extend,
+            bottom: this.transform.y + this.tile.scaled.halfHeight + extend,
         };
     }
 
@@ -266,8 +267,6 @@ class Actor extends AnimSprite {
      */
 
     move(x, y) {
-
-        // Move
         this.transform.x += x;
         this.transform.y += y;
     }
@@ -378,6 +377,7 @@ class Actor extends AnimSprite {
     /**
      * Collision checking with other sprite
      * @param other: Sprite object - other
+     * @returns {boolean} - true if colliding, false otherwise
      */
 
     collideWithSprite(other) {
@@ -393,8 +393,28 @@ class Actor extends AnimSprite {
     }
 
     /**
+     * Collision with mask checking with other sprite
+     * @param other: Sprite object - other
+     * @param extend: Number - how many pixels to extend the mask in all directions
+     * @returns {boolean} - true if colliding, false otherwise
+     */
+
+    maskWithSprite(other, extend = 0) {
+
+        // My collider
+        const my = this.getMask(extend);
+
+        // That collider
+        const that = other.getMask(extend);
+
+        // Check for AABB overlap
+        return box4Box(my, that);
+    }
+
+    /**
      * Generic collision checking
      * @param other: object - collision {left: Number, top: Number, right: Number, bottom: Number}
+     * @returns {boolean} - true if colliding, false otherwise
      */
 
     collideWithBox(other) {
