@@ -199,14 +199,6 @@ class Actor extends AnimSprite {
         
         // Check all potential collisions
         for (const other of others) {
-            // Debug info
-            if (this.view && this.view.debugEnabled) {
-                this.view.debugBox.push({
-                    x: other.left, y: other.top, 
-                    w: other.right - other.left, 
-                    h: other.bottom - other.top
-                });
-            }
             
             // Horizontal collision check
             if (Math.abs(horizontalPixels) > EPSILON) {
@@ -224,6 +216,16 @@ class Actor extends AnimSprite {
                         }
                         
                         horizontalCollisions++;
+
+                        // Debug info
+                        if (this.view && this.view.debugEnabled) {
+                            this.view.debugBox.push({
+                                x: other.left, y: other.top, 
+                                w: other.right - other.left, 
+                                h: other.bottom - other.top
+                            });
+                        }
+
                     }
                 }
             }
@@ -244,6 +246,16 @@ class Actor extends AnimSprite {
                         }
                         
                         verticalCollisions++;
+
+                        // Debug info
+                        if (this.view && this.view.debugEnabled) {
+                            this.view.debugBox.push({
+                                x: other.left, y: other.top, 
+                                w: other.right - other.left, 
+                                h: other.bottom - other.top
+                            });
+                        }
+
                     }
                 }
             }
