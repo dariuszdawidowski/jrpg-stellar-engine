@@ -143,11 +143,14 @@ class Actor extends AnimSprite {
      */
 
     getMask(extend = 0) {
+        const left = this.transform.x - this.origin.x;
+        const top = this.transform.y - this.origin.y;
+
         return {
-            left: this.transform.x - this.tile.scaled.halfWidth - extend,
-            top: this.transform.y - this.tile.scaled.halfHeight - extend,
-            right: this.transform.x + this.tile.scaled.halfWidth + extend,
-            bottom: this.transform.y + this.tile.scaled.halfHeight + extend,
+            left: left - extend,
+            top: top - extend,
+            right: left + this.tile.scaled.width + extend,
+            bottom: top + this.tile.scaled.height + extend
         };
     }
 
@@ -219,7 +222,7 @@ class Actor extends AnimSprite {
 
                         // Debug info
                         if (this.view && this.view.debugEnabled) {
-                            this.view.debugBox.push({
+                            this.view.addDebugBox({
                                 x: other.left, y: other.top, 
                                 w: other.right - other.left, 
                                 h: other.bottom - other.top
@@ -249,7 +252,7 @@ class Actor extends AnimSprite {
 
                         // Debug info
                         if (this.view && this.view.debugEnabled) {
-                            this.view.debugBox.push({
+                            this.view.addDebugBox({
                                 x: other.left, y: other.top, 
                                 w: other.right - other.left, 
                                 h: other.bottom - other.top

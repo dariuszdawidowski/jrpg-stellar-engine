@@ -235,6 +235,21 @@ class View {
     }
 
     /**
+     * Debug: Add box to be drawn on the screen
+     * @param box: {x, y, w, h, color (optional)}
+     */
+
+    addDebugBox(box) {
+        if ('left' in box && 'top' in box && 'right' in box && 'bottom' in box) {
+            box.x = box.left;
+            box.y = box.top;
+            box.w = box.right - box.left;
+            box.h = box.bottom - box.top;
+        }
+        this.debugBox.push(box);
+    }
+
+    /**
      * Debug render
      * @param args.center: bool - display 0,0 of the world coordinates
      * @param args.sprite: Sprite object - sprite to display it's bounds
@@ -256,8 +271,9 @@ class View {
         this.ctx.fillText('0,0', this.center.x + this.offset.x - txtc, this.center.y + this.offset.y + 16);
 
         // Draw collided boxes
-        this.ctx.fillStyle = 'rgba(255, 0, 98, 0.5)';
         this.debugBox.forEach(box => {
+            if (!('color' in box)) this.ctx.fillStyle = 'rgba(255, 0, 98, 0.5)';
+            else this.ctx.fillStyle = box.color;
             this.ctx.fillRect(
                 box.x + this.center.x + this.offset.x,
                 box.y + this.center.y + this.offset.y,
