@@ -411,7 +411,7 @@ class Actor extends AnimSprite {
      * @returns {boolean} - true if colliding, false otherwise
      */
 
-    maskWithSprite(other, extend = 0) {
+    collideWithMask(other, extend = 0) {
 
         // My collider
         const my = this.getMask(extend);
