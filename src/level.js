@@ -65,6 +65,8 @@ class Level {
             ambient: null,
             // Point lights {'id': {x, y, radius, color: {r, g, b}, intensity}, ...}, brightening only
             points: {},
+            // Spot lights {'id': {x, y, radius, angle, cone, color: {r, g, b}, intensity}, ...}, brightening only
+            spots: {},
         };
 
         // Id generation counter
@@ -317,6 +319,7 @@ class Level {
 
         const ambient = this.light.ambient;
         const hasPoints = Object.keys(this.light.points).length > 0;
+        const hasSpots = Object.keys(this.light.spots).length > 0;
         let lighting = false;
 
         // Ends the current batch of tinted layers, if any
@@ -333,7 +336,7 @@ class Level {
             if (layers && !layers.includes(layer.name)) return;
 
             // Group consecutive tiles/colliders/objects layers into a single tint pass
-            const tintable = (ambient || hasPoints) && (layer.class == 'tiles' || layer.class == 'colliders' || layer.class == 'objects');
+            const tintable = (ambient || hasPoints || hasSpots) && (layer.class == 'tiles' || layer.class == 'colliders' || layer.class == 'objects');
             if (tintable && !lighting) {
                 this.lighting.begin(view);
                 lighting = true;
