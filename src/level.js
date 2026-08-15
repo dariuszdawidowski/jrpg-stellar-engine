@@ -86,6 +86,59 @@ class Level {
     }
 
     /**
+     * Permanently bake a signed per-channel tint into the atlas images currently in use (tilesets
+     * and currently-spawned actors), with zero ongoing per-frame cost - unlike light.ambient/points/spots
+     * this doesn't affect actors spawned afterwards using the same shared image resource
+     * @param args.r/g/b: Number - signed offset per channel (-255..255, 0 neutral), same as light.ambient
+     */
+
+    async precalculateAmbient({ r, g, b }) {
+
+        // Collect every atlas currently referenced by this level's tilesets and actors
+        const atlases = [
+            ...Object.values(this.tilesets).map(tileset => tileset.ref.atlas),
+            ...Object.values(this.actors).flatMap(group => Object.values(group).map(actor => actor.atlas))
+        ];
+
+        // Tint each unique underlying image once, even if several atlases share it
+        const tinted = new Map();
+        for (const atlas of atlases) {
+            if (!tinted.has(atlas.image)) {
+                const source = atlas.image;
+                const canvas = document.createElement('canvas');
+                canvas.width = source.naturalWidth || source.width;
+                canvas.height = source.naturalHeight || source.height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(source, 0, 0);
+
+                const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = image.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i + 3] === 0) continue; // skip fully transparent pixels
+                    data[i] += r; // Uint8ClampedArray clamps to 0-255 automatically
+                    data[i + 1] += g;
+                    data[i + 2] += b;
+                }
+                ctx.putImageData(image, 0, 0);
+
+                // Bake into a plain <img> instead of leaving the raw canvas as the draw source - reading
+                // pixels back from a canvas disables its GPU texture caching, tanking FPS once it's
+                // drawn many times per frame (once per tile)
+                const baked = new Image();
+                await new Promise(resolve => {
+                    baked.onload = resolve;
+                    baked.src = canvas.toDataURL();
+                });
+
+                tinted.set(source, baked);
+            }
+            atlas.image = tinted.get(atlas.image);
+        }
+
+    }
+
+    /**
      * Generate unique id
      */
 
