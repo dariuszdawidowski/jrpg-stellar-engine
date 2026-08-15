@@ -59,6 +59,12 @@ class Level {
         // Map global properties
         this.properties = {};
 
+        // Lighting
+        this.light = {
+            // Ambient light color {r: 0, g: 0, b: 0} (from -255 to 255, 0 is neutral, null for no ambient light calculations)
+            ambient: null,
+        };
+
         // Id generation counter
         this.idGen = 0;
 
@@ -66,6 +72,9 @@ class Level {
         this.loader = {
             acx: new LoaderACX()
         };
+
+        // Ambient light compositor for tiles/colliders/objects layers
+        this.lighting = new Lighting();
 
         // View reference
         this.view = args.view;
@@ -304,10 +313,28 @@ class Level {
 
     render(view, layers = null) {
 
+        const ambient = this.light.ambient;
+        let lighting = false;
+
+        // Ends the current batch of tinted layers, if any
+        const flushLighting = () => {
+            if (lighting) {
+                this.lighting.end(view, ambient);
+                lighting = false;
+            }
+        };
+
         // Iterate layers
         this.layers.forEach(layer => {
 
             if (layers && !layers.includes(layer.name)) return;
+
+            // Group consecutive tiles/colliders/objects layers into a single tint pass
+            const tintable = ambient && (layer.class == 'tiles' || layer.class == 'colliders' || layer.class == 'objects');
+            if (tintable && !lighting) {
+                this.lighting.begin(view);
+                lighting = true;
+            } else if (!tintable) flushLighting();
 
             // Render backgrounds/foregrounds
             if (layer.class == 'image') this.renderImageLayer(view, layer);
@@ -322,6 +349,8 @@ class Level {
             else this.renderCustomLayer(view, layer);
 
         });
+
+        flushLighting();
 
     }
 
