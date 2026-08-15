@@ -92,7 +92,6 @@ class Lighting {
             image = this.sceneCtx.getImageData(0, 0, width, this.scene.height);
         } catch (error) {
             // Canvas tainted by cross-origin/file:// images - pixel readback is impossible, skip lighting
-            console.warn('Lighting disabled: canvas is tainted (serve the page over http(s), not file://)', error);
             return;
         }
         const data = image.data;

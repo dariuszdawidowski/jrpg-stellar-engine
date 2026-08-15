@@ -73,6 +73,9 @@ class Actor extends AnimSprite {
         // Origin in the center of the collider
         this.origin.x = this.collider.x + (this.collider.width / 2);
         this.origin.y = this.collider.y + (this.collider.height / 2);
+
+        // Shadow
+        this.shadow = args.shadow || false;
     }
 
     /**

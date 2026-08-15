@@ -466,11 +466,35 @@ class Level {
             return (a.transform.y - a.origin.y + a.tile.scaled.halfHeight) - (b.transform.y - b.origin.y + b.tile.scaled.halfHeight);
         });
 
-        // Render actors
+        // Render actors (with an optional flat retro shadow beneath ones that opted in)
         actors.forEach(actor => {
+            if (actor.shadow) this.renderActorShadow(view, actor);
             actor.render(view);
         });
 
+    }
+
+    /**
+     * Render a flat ellipse shadow at an actor's feet
+     * @param actor.shadow: true (defaults) | {rx, ry, offsetY, alpha} - enables/configures the shadow
+     */
+
+    renderActorShadow(view, actor) {
+        const shadow = actor.shadow === true ? {} : actor.shadow;
+        const rx = shadow.rx ?? actor.tile.scaled.halfWidth * 0.6;
+        const ry = shadow.ry ?? rx * 0.35;
+        const alpha = shadow.alpha ?? 0.35;
+        const offsetY = shadow.offsetY ?? 0;
+
+        const foot = view.world2Screen({
+            x: actor.transform.x,
+            y: actor.transform.y - actor.origin.y + actor.tile.scaled.halfHeight + offsetY
+        });
+
+        view.ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+        view.ctx.beginPath();
+        view.ctx.ellipse(foot.x, foot.y, rx, ry, 0, 0, Math.PI * 2);
+        view.ctx.fill();
     }
 
     /**
