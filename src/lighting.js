@@ -2,6 +2,14 @@
  * Offscreen compositor applying signed per-channel ambient light to a rendered layer, preserving its transparency
  */
 
+// Ordered (Bayer) dithering matrix for the optional retro stippled-light look
+const BAYER_4X4 = [
+    0, 8, 2, 10,
+    12, 4, 14, 6,
+    3, 11, 1, 9,
+    15, 7, 13, 5
+];
+
 class Lighting {
 
     constructor() {
@@ -102,7 +110,7 @@ class Lighting {
      */
 
     applyPointLight(view, data, width, pointLight) {
-        const { radius, color, intensity = 1 } = pointLight;
+        const { radius, color, intensity = 1, dither } = pointLight;
         const center = view.world2Screen(pointLight);
         const radiusSq = radius * radius;
 
@@ -122,12 +130,34 @@ class Lighting {
                 const i = (rowOffset + x) * 4;
                 if (data[i + 3] === 0) continue; // skip fully transparent pixels
 
-                const falloff = (1 - distSq / radiusSq) * intensity; // quadratic falloff
+                let falloff = 1 - distSq / radiusSq; // quadratic falloff
+                if (dither) falloff = this.ditherFalloff(falloff, x, y, dither.size || 1, dither.edge ?? 1);
+                falloff *= intensity;
+
                 data[i] += color.r * falloff;
                 data[i + 1] += color.g * falloff;
                 data[i + 2] += color.b * falloff;
             }
         }
+    }
+
+    /**
+     * Stipple ordered dither: pixels below the per-pixel Bayer threshold are skipped entirely,
+     * the rest keep their natural falloff brightness (so dots still fade with distance instead
+     * of all snapping to full intensity, which made the earlier binary version too strong).
+     * Falloff values at/above edge stay solid (filled core), only the band below it is dithered
+     * @param cellSize: Number - screen pixels per dither cell, align with the game's virtual pixel scale
+     * @param edge: Number - falloff (0..1) above which the light stays solid instead of dithered
+     */
+
+    ditherFalloff(falloff, x, y, cellSize, edge) {
+        if (falloff >= edge) return falloff;
+
+        const cellX = Math.floor(x / cellSize) % 4;
+        const cellY = Math.floor(y / cellSize) % 4;
+        const threshold = (BAYER_4X4[cellY * 4 + cellX] + 0.5) / 16;
+        const normalized = edge > 0 ? falloff / edge : 0;
+        return normalized > threshold ? falloff : 0;
     }
 
 }
