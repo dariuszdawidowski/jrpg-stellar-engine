@@ -51,39 +51,83 @@ class Lighting {
     /**
      * Restore view.ctx, tint the accumulated batch and composite it onto the real canvas
      * @param view: Object - view reference
-     * @param ambient: {r, g, b} - signed ambient light (-255..255 per channel, 0 neutral)
+     * @param light: Object - level.light reference ({ambient, points})
      */
 
-    end(view, ambient) {
+    end(view, light) {
         view.ctx = this.savedCtx;
 
-        // Tint in place (future point/cone lights would add more passes here)
-        this.applyAmbient(ambient);
+        // Tint in place (future cone lights would add more passes here)
+        this.applyLighting(view, light);
 
         // Composite the tinted batch, with its original transparency intact, onto the real canvas
         view.ctx.drawImage(this.scene, 0, 0);
     }
 
     /**
-     * Add the signed ambient offset directly to each pixel's RGB, leaving alpha untouched so
-     * transparency/anti-aliased edges are never affected (avoids blend-mode edge artifacts)
+     * Add the ambient offset and all point light contributions directly to each pixel's RGB,
+     * leaving alpha untouched so transparency/anti-aliased edges are never affected
+     * @param view: Object - view reference, used to project point lights into screen space
+     * @param light: Object - level.light reference ({ambient, points})
      */
 
-    applyAmbient(ambient) {
-        const { r, g, b } = ambient;
-        if (!r && !g && !b) return;
+    applyLighting(view, light) {
+        const ambient = light.ambient;
+        const points = Object.values(light.points);
+        const hasAmbient = ambient && (ambient.r || ambient.g || ambient.b);
+        if (!hasAmbient && !points.length) return;
 
-        const image = this.sceneCtx.getImageData(0, 0, this.scene.width, this.scene.height);
+        const width = this.scene.width;
+        const image = this.sceneCtx.getImageData(0, 0, width, this.scene.height);
         const data = image.data;
 
-        for (let i = 0; i < data.length; i += 4) {
-            if (data[i + 3] === 0) continue; // skip fully transparent pixels
-            data[i] += r; // Uint8ClampedArray clamps to 0-255 automatically
-            data[i + 1] += g;
-            data[i + 2] += b;
+        // Ambient: uniform per-pixel add across the whole buffer
+        if (hasAmbient) {
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i + 3] === 0) continue; // skip fully transparent pixels
+                data[i] += ambient.r; // Uint8ClampedArray clamps to 0-255 automatically
+                data[i + 1] += ambient.g;
+                data[i + 2] += ambient.b;
+            }
         }
 
+        // Point lights: only touch each light's screen-space bounding box, never the whole canvas
+        points.forEach(pointLight => this.applyPointLight(view, data, width, pointLight));
+
         this.sceneCtx.putImageData(image, 0, 0);
+    }
+
+    /**
+     * Add one point light's falloff contribution within its screen-space bounding box
+     */
+
+    applyPointLight(view, data, width, pointLight) {
+        const { radius, color, intensity = 1 } = pointLight;
+        const center = view.world2Screen(pointLight);
+        const radiusSq = radius * radius;
+
+        const minX = Math.max(0, Math.floor(center.x - radius));
+        const maxX = Math.min(width - 1, Math.ceil(center.x + radius));
+        const minY = Math.max(0, Math.floor(center.y - radius));
+        const maxY = Math.min((data.length / 4 / width) - 1, Math.ceil(center.y + radius));
+
+        for (let y = minY; y <= maxY; y++) {
+            const dy = y - center.y;
+            const rowOffset = y * width;
+            for (let x = minX; x <= maxX; x++) {
+                const dx = x - center.x;
+                const distSq = dx * dx + dy * dy;
+                if (distSq >= radiusSq) continue;
+
+                const i = (rowOffset + x) * 4;
+                if (data[i + 3] === 0) continue; // skip fully transparent pixels
+
+                const falloff = (1 - distSq / radiusSq) * intensity; // quadratic falloff
+                data[i] += color.r * falloff;
+                data[i + 1] += color.g * falloff;
+                data[i + 2] += color.b * falloff;
+            }
+        }
     }
 
 }

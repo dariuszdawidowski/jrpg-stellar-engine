@@ -63,6 +63,8 @@ class Level {
         this.light = {
             // Ambient light color {r: 0, g: 0, b: 0} (from -255 to 255, 0 is neutral, null for no ambient light calculations)
             ambient: null,
+            // Point lights {'id': {x, y, radius, color: {r, g, b}, intensity}, ...}, brightening only
+            points: {},
         };
 
         // Id generation counter
@@ -314,12 +316,13 @@ class Level {
     render(view, layers = null) {
 
         const ambient = this.light.ambient;
+        const hasPoints = Object.keys(this.light.points).length > 0;
         let lighting = false;
 
         // Ends the current batch of tinted layers, if any
         const flushLighting = () => {
             if (lighting) {
-                this.lighting.end(view, ambient);
+                this.lighting.end(view, this.light);
                 lighting = false;
             }
         };
@@ -330,7 +333,7 @@ class Level {
             if (layers && !layers.includes(layer.name)) return;
 
             // Group consecutive tiles/colliders/objects layers into a single tint pass
-            const tintable = ambient && (layer.class == 'tiles' || layer.class == 'colliders' || layer.class == 'objects');
+            const tintable = (ambient || hasPoints) && (layer.class == 'tiles' || layer.class == 'colliders' || layer.class == 'objects');
             if (tintable && !lighting) {
                 this.lighting.begin(view);
                 lighting = true;
