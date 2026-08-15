@@ -112,7 +112,14 @@ class Level {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(source, 0, 0);
 
-                const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let image;
+                try {
+                    image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                } catch (error) {
+                    // Canvas tainted by cross-origin/file:// images - pixel readback is impossible, skip baking
+                    console.warn('precalculateAmbient skipped: canvas is tainted (serve the page over http(s), not file://)', error);
+                    return;
+                }
                 const data = image.data;
                 for (let i = 0; i < data.length; i += 4) {
                     if (data[i + 3] === 0) continue; // skip fully transparent pixels
