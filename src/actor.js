@@ -76,6 +76,9 @@ class Actor extends AnimSprite {
 
         // Shadow
         this.shadow = args.shadow || false;
+
+        // Mirror
+        this.mirror = args.mirror || false;
     }
 
     /**
@@ -453,13 +456,42 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Render Actor
+     * Render actor mirror (for reflection effects)
      */
 
-    render(view) {
-        super.position(this.transform.x, this.transform.y);
+    renderMirror(view) {
         super.cell(this.anim.frame());
-        super.render(view);
+        super.renderMirror(view);
+    }
+
+    /**
+     * Render a flat ellipse shadow at an actor's feet
+     * @param actor.shadow: true (defaults) | {rx, ry, offsetY, alpha} - enables/configures the shadow
+     */
+
+    renderShadow(view) {
+        const shadow = this.shadow === true ? {} : this.shadow;
+        const rx = shadow.rx ?? this.tile.scaled.halfWidth * 0.75;
+        const ry = shadow.ry ?? rx * 0.35;
+        const alpha = shadow.alpha ?? 0.5;
+        const offsetY = shadow.offsetY ?? 5;
+        const foot = view.world2Screen({
+            x: this.transform.x,
+            y: this.transform.y + offsetY
+        });
+
+        view.ctx.save();
+        view.ctx.translate(foot.x, foot.y);
+        view.ctx.imageSmoothingEnabled = false;
+        view.ctx.scale(1, ry / rx);
+        const gradient = view.ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+        gradient.addColorStop(0, `rgba(0, 0, 0, ${alpha})`);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        view.ctx.fillStyle = gradient;
+        view.ctx.beginPath();
+        view.ctx.arc(0, 0, rx, 0, Math.PI * 2);
+        view.ctx.fill();
+        view.ctx.restore();
     }
 
     /**

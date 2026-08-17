@@ -199,6 +199,89 @@ class Sprite {
     }
 
     /**
+     * Render sprite mirror (for reflection effects)
+     */
+
+    _getMirrorCanvas() {
+        const w = this.tile.scaled.width;
+        const h = this.tile.scaled.height;
+
+
+        if (!this._mirrorCanvas || this._mirrorCanvas.width !== w || this._mirrorCanvas.height !== h) {
+            this._mirrorCanvas = document.createElement('canvas');
+            this._mirrorCanvas.width = w;
+            this._mirrorCanvas.height = h;
+            this._mirrorCtx = this._mirrorCanvas.getContext('2d');
+            this._mirrorGradient = this._mirrorCtx.createLinearGradient(0, 0, 0, h);
+            this._mirrorGradient.addColorStop(0, 'rgba(255,255,255,0.25)');
+            this._mirrorGradient.addColorStop(0.5, 'rgba(255,255,255,0)');
+        }
+
+        const ctx = this._mirrorCtx;
+        ctx.clearRect(0, 0, w, h);
+
+        const sx = this.tile.width * (this.tile.current % this.atlas.cols);
+        const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
+
+        ctx.save();
+        ctx.scale(1, -1);
+        ctx.drawImage(
+            this.atlas.image,
+            sx, sy, this.tile.width, this.tile.height,
+            0, -h, w, h
+        );
+        ctx.restore();
+
+        ctx.globalCompositeOperation = 'destination-in';
+        ctx.fillStyle = this._mirrorGradient;
+        ctx.fillRect(0, 0, w, h);
+        ctx.globalCompositeOperation = 'source-over';
+
+        return this._mirrorCanvas;
+    }
+
+    renderMirror(view) {
+        const d = view.world2Screen({
+            x: this.transform.x - this.origin.x,
+            y: this.transform.y - this.origin.y + this.tile.scaled.height
+        });
+
+        if (d.x > -this.tile.scaled.width && d.x < view.canvas.width &&
+            d.y > -this.tile.scaled.height && d.y < view.canvas.height) {
+
+            const mirror = this._getMirrorCanvas();
+
+            if (this.transform.rotation !== null) {
+                const centerX = Math.round(d.x) + this.tile.scaled.halfWidth;
+                const centerY = Math.round(d.y) + this.tile.scaled.halfHeight;
+
+                view.ctx.save();
+                view.ctx.translate(centerX, centerY);
+                view.ctx.rotate(this.transform.rotation.angle * Math.PI / 180);
+                view.ctx.translate(this.transform.rotation.offsetX, this.transform.rotation.offsetY);
+
+                view.ctx.drawImage(
+                    mirror,
+                    -this.tile.scaled.halfWidth,
+                    -this.tile.scaled.halfHeight,
+                    this.tile.scaled.width,
+                    this.tile.scaled.height
+                );
+
+                view.ctx.restore();
+            } else {
+                view.ctx.drawImage(
+                    mirror,
+                    Math.round(d.x),
+                    Math.round(d.y),
+                    this.tile.scaled.width,
+                    this.tile.scaled.height
+                );
+            }
+        }
+    }
+
+    /**
      * Debug render
      * @param view: View context
      */
