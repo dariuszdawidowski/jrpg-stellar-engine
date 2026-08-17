@@ -16,7 +16,7 @@ class Lighting {
 
         // Layer render target, tinted in place then composited onto the real canvas
         this.scene = document.createElement('canvas');
-        this.sceneCtx = this.scene.getContext('2d');
+        this.sceneCtx = this.scene.getContext('2d', { willReadFrequently: true });
         this.disableSmoothing();
 
     }
@@ -87,28 +87,21 @@ class Lighting {
         if (!hasAmbient && !points.length && !spots.length) return;
 
         const width = this.scene.width;
-        let image;
-        try {
-            image = this.sceneCtx.getImageData(0, 0, width, this.scene.height);
-        } catch (error) {
-            // Canvas tainted by cross-origin/file:// images - pixel readback is impossible, skip lighting
-            return;
-        }
-        const data = image.data;
+        const image = this.sceneCtx.getImageData(0, 0, width, this.scene.height);
 
         // Ambient: uniform per-pixel add across the whole buffer
         if (hasAmbient) {
-            for (let i = 0; i < data.length; i += 4) {
-                if (data[i + 3] === 0) continue; // skip fully transparent pixels
-                data[i] += ambient.r; // Uint8ClampedArray clamps to 0-255 automatically
-                data[i + 1] += ambient.g;
-                data[i + 2] += ambient.b;
+            for (let i = 0; i < image.data.length; i += 4) {
+                if (image.data[i + 3] === 0) continue; // skip fully transparent pixels
+                image.data[i] += ambient.r; // Uint8ClampedArray clamps to 0-255 automatically
+                image.data[i + 1] += ambient.g;
+                image.data[i + 2] += ambient.b;
             }
         }
 
         // Point/spot lights: only touch each light's screen-space bounding box, never the whole canvas
-        points.forEach(pointLight => this.applyPointLight(view, data, width, pointLight));
-        spots.forEach(spotLight => this.applySpotLight(view, data, width, spotLight));
+        points.forEach(pointLight => this.applyPointLight(view, image.data, width, pointLight));
+        spots.forEach(spotLight => this.applySpotLight(view, image.data, width, spotLight));
 
         this.sceneCtx.putImageData(image, 0, 0);
     }
