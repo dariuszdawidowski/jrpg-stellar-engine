@@ -483,18 +483,25 @@ class Level {
         const shadow = actor.shadow === true ? {} : actor.shadow;
         const rx = shadow.rx ?? actor.tile.scaled.halfWidth * 0.75;
         const ry = shadow.ry ?? rx * 0.35;
-        const alpha = shadow.alpha ?? 0.2;
+        const alpha = shadow.alpha ?? 0.5;
         const offsetY = shadow.offsetY ?? 5;
-
         const foot = view.world2Screen({
             x: actor.transform.x,
             y: actor.transform.y + offsetY
         });
 
-        view.ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+        view.ctx.save();
+        view.ctx.translate(foot.x, foot.y);
+        view.ctx.imageSmoothingEnabled = false;
+        view.ctx.scale(1, ry / rx);
+        const gradient = view.ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+        gradient.addColorStop(0, `rgba(0, 0, 0, ${alpha})`);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        view.ctx.fillStyle = gradient;
         view.ctx.beginPath();
-        view.ctx.ellipse(foot.x, foot.y, rx, ry, 0, 0, Math.PI * 2);
+        view.ctx.arc(0, 0, rx, 0, Math.PI * 2);
         view.ctx.fill();
+        view.ctx.restore();
     }
 
     /**
