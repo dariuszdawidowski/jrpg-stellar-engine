@@ -481,14 +481,14 @@ class Level {
 
     renderActorShadow(view, actor) {
         const shadow = actor.shadow === true ? {} : actor.shadow;
-        const rx = shadow.rx ?? actor.tile.scaled.halfWidth * 0.6;
+        const rx = shadow.rx ?? actor.tile.scaled.halfWidth * 0.75;
         const ry = shadow.ry ?? rx * 0.35;
-        const alpha = shadow.alpha ?? 0.35;
-        const offsetY = shadow.offsetY ?? 0;
+        const alpha = shadow.alpha ?? 0.2;
+        const offsetY = shadow.offsetY ?? 5;
 
         const foot = view.world2Screen({
             x: actor.transform.x,
-            y: actor.transform.y - actor.origin.y + actor.tile.scaled.halfHeight + offsetY
+            y: actor.transform.y + offsetY
         });
 
         view.ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
