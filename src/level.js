@@ -182,10 +182,10 @@ class Level {
      * Returns a random spawn point of type
      */
 
-    getSpawnPoint(type, fallback = {x: 0, y: 0}) {
+    getSpawnPoint(type, fallback = null) {
         if (type in this.spawnpoints && this.spawnpoints[type].length > 0) {
             const spawnpoint = this.spawnpoints[type][randomRangeInt(0, this.spawnpoints[type].length - 1)];
-            return {x: spawnpoint.x, y: spawnpoint.y};
+            if (spawnpoint) return spawnpoint;
         }
         return fallback;
     }
@@ -194,10 +194,21 @@ class Level {
      * Returns all spawn point for given type
      */
 
-    getSpawnPoints(type, fallback = [{x: 0, y: 0}]) {
-        if (type in this.spawnpoints && this.spawnpoints[type].length > 0) {
+    getSpawnPoints(type, fallback = []) {
+        // Wildcard search
+        if (type.includes('*')) {
+            const regex = new RegExp('^' + type.replace('*', '.*') + '$');
+            const matchingTypes = Object.keys(this.spawnpoints).filter(spType => regex.test(spType));
+            const matchingSpawnPoints = matchingTypes.flatMap(spType => this.spawnpoints[spType]);
+            if (matchingSpawnPoints.length > 0) return matchingSpawnPoints;
+        }
+
+        // Normal search
+        else if (type in this.spawnpoints && this.spawnpoints[type].length > 0) {
             return this.spawnpoints[type];
         }
+
+        // Fallback
         return fallback;
     }
 
