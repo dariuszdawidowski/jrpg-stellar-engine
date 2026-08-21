@@ -36,16 +36,19 @@ class Actor extends AnimSprite {
             y: 0,
             dir: {x: 0, y: 0}, // direction (face direction, not cleared)
             set: function(x, y) {
-                // Normalize vector
                 const length = Math.sqrt(x * x + y * y);
-                if (length > 0) {
-                    x /= length;
-                    y /= length;
+                if (length > EPSILON) {
+                    const clampedLength = Math.min(length, 1);
+                    const normX = x / length;
+                    const normY = y / length;
+                    this.x = normX * clampedLength;
+                    this.y = normY * clampedLength;
+                    this.dir.x = normX;
+                    this.dir.y = normY;
+                } else {
+                    this.x = 0;
+                    this.y = 0;
                 }
-                this.x = x;
-                this.y = y;
-                this.dir.x = x;
-                this.dir.y = y;
             },
             get isUp() {
                return this.y < -EPSILON;
