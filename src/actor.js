@@ -168,26 +168,21 @@ class Actor extends AnimSprite {
      */
 
     collide(others, deltaTime) {
+        
+        // Deadzone + direction/speed from analog input
+        const { x: vecX, y: vecY, magnitude } = this._applyDeadzone(
+            this.transform.vec.x,
+            this.transform.vec.y
+        );
 
-        // If the vector is zero, there is no need to check for collisions
-        if (this.transform.vec.isZero) {
+        if (magnitude < EPSILON) {
             return [0, 0];
         }
-        
+
         // Base movement value
         const basePixels = this.properties.spd * deltaTime;
-        
-        // Normalize movement vector (to prevent diagonal movement from being faster)
-        let vecX = this.transform.vec.x;
-        let vecY = this.transform.vec.y;
-        
-        if (Math.abs(vecX) > EPSILON || Math.abs(vecY) > EPSILON) {
-            const vecLength = Math.sqrt(vecX * vecX + vecY * vecY);
-            vecX /= vecLength;
-            vecY /= vecLength;
-        }
-        
-        // Calculate potential movement
+
+        // vecX/vecY already encode direction * magnitude, więc mnożymy wprost
         const horizontalPixels = basePixels * vecX;
         const verticalPixels = basePixels * vecY;
         
@@ -279,6 +274,34 @@ class Actor extends AnimSprite {
         const finalSlideV = horizontalCollisions > 1 ? 0 : slideVertical;
         
         return [finalHorizontal + finalSlideH, finalVertical + finalSlideV];
+    }
+
+    /**
+     * Applies radial deadzone and returns direction + speed scale.
+     * Works correctly for both digital input (keyboard, magnitude 0/1/√2)
+     * and analog input (gamepad, magnitude 0.0–1.0).
+     */
+
+    _applyDeadzone(x, y, deadzone = 0.15) {
+        const magnitude = Math.sqrt(x * x + y * y);
+
+        if (magnitude < deadzone) {
+            return { x: 0, y: 0, magnitude: 0 };
+        }
+
+        // Clamp to unit circle (handles keyboard diagonals >1, or
+        // imprecise stick calibration going slightly outside the circle)
+        const clampedMagnitude = Math.min(magnitude, 1);
+
+        // Rescale so speed goes smoothly from 0 (at deadzone edge) to 1 (full tilt),
+        // instead of jumping straight from 0 to "deadzone speed"
+        const scaledMagnitude = (clampedMagnitude - deadzone) / (1 - deadzone);
+
+        return {
+            x: (x / magnitude) * scaledMagnitude,
+            y: (y / magnitude) * scaledMagnitude,
+            magnitude: scaledMagnitude
+        };
     }
 
     /**
