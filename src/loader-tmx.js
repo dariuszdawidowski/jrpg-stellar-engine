@@ -349,6 +349,11 @@ class LoaderTMX {
                     this.parseObjectAmbientLight(level, obj, properties);
                 }
 
+                // Point lights
+                else if (type == 'pointlight') {
+                    this.parseObjectPointLight(level, obj, properties);
+                }
+
                 // Custom
                 else {
                     layer.actors.push(this.parseObjectCustom(level, obj, properties));
@@ -555,11 +560,29 @@ class LoaderTMX {
      */
 
     parseObjectAmbientLight(level, node, properties) {
-        const name = node.getAttribute('name');
+        level.lights.ambient = { r: properties.rgb[0] || 0, g: properties.rgb[1] || 0, b: properties.rgb[2] || 0 };
+    }
+
+    /**
+     * Parse <object id="1" name="foo" type="PointLight" x="10" y="20" width="30" height="40"> <properties> ... </properties> <ellipse/> </object>
+     */
+
+    parseObjectPointLight(level, node, properties) {
+        const name = `${node.getAttribute('name')}.${crypto.randomUUID()}`;
         const x = parseFloat(node.getAttribute('x')) * level.scale;
         const y = parseFloat(node.getAttribute('y')) * level.scale;
-        const childPoint = node.querySelector('point');
-        level.light.ambient = { r: properties.rgb[0] || 0, g: properties.rgb[1] || 0, b: properties.rgb[2] || 0 };
+        const w = parseFloat(node.getAttribute('width')) * level.scale;
+        const h = parseFloat(node.getAttribute('height')) * level.scale;
+        const cx = x + (w / 2);
+        const cy = y + (h / 2);
+        level.lights.points[name] = {
+            x: cx,
+            y: cy,
+            radius: ((w / 2) + (h / 2)) / 2,
+            color: properties.color || {r: 255, g: 255, b: 255},
+            intensity: properties.intensity || 1.0,
+            dither: {size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7}
+        };
     }
 
     /**
