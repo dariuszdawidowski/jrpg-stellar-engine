@@ -354,6 +354,11 @@ class LoaderTMX {
                     this.parseObjectPointLight(level, obj, properties);
                 }
 
+                // Spot lights
+                else if (type == 'spotlight') {
+                    this.parseObjectSpotLight(level, obj, properties);
+                }
+
                 // Custom
                 else {
                     layer.actors.push(this.parseObjectCustom(level, obj, properties));
@@ -579,6 +584,27 @@ class LoaderTMX {
             x: cx,
             y: cy,
             radius: ((w / 2) + (h / 2)) / 2,
+            color: properties.color || {r: 255, g: 255, b: 255},
+            intensity: properties.intensity || 1.0,
+            dither: {size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7}
+        };
+    }
+
+    /**
+     * Parse <object id="1" name="foo" type="SpotLight" x="10" y="20"> <properties> ... </properties> <point/> </object>
+     */
+
+    parseObjectSpotLight(level, node, properties) {
+        const name = `${node.getAttribute('name')}.${crypto.randomUUID()}`;
+        const x = parseFloat(node.getAttribute('x')) * level.scale;
+        const y = parseFloat(node.getAttribute('y')) * level.scale;
+        level.lights.spots[name] = {
+            x,
+            y,
+            radius: properties.radius || 100,
+            angle: properties.angle || 90,
+            width: properties.width || 40,
+            cone: properties.cone || 100,
             color: properties.color || {r: 255, g: 255, b: 255},
             intensity: properties.intensity || 1.0,
             dither: {size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7}
