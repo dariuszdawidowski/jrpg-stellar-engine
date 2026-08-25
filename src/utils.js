@@ -167,6 +167,34 @@ function parseProperties(propertiesNode) {
             case 'float':
                 valueCalc = parseFloat(value);
                 break;
+            case 'color':
+                // Convert hex color to {r, g, b} object
+                if (value && value.startsWith('#')) {
+                    const hex = value.slice(1);
+                    const bigint = parseInt(hex, 16);
+                    const r = (bigint >> 16) & 255;
+                    const g = (bigint >> 8) & 255;
+                    const b = bigint & 255;
+                    valueCalc = { r, g, b };
+                }
+                break;
+            case 'list':
+                valueCalc = [];
+                prop.querySelectorAll('item').forEach((valNode) => {
+                    if (valNode.getAttribute('type') === 'int') {
+                        valueCalc.push(parseInt(valNode.getAttribute('value'), 10));
+                    }
+                    else if (valNode.getAttribute('type') === 'float') {
+                        valueCalc.push(parseFloat(valNode.getAttribute('value')));
+                    }
+                    else if (valNode.getAttribute('type') === 'bool') {
+                        valueCalc.push(valNode.getAttribute('value') === 'true');
+                    }
+                    else {
+                        valueCalc.push(valNode.getAttribute('value'));
+                    }
+                });
+                break;
         }
         // Original value
         properties['_' + name] = value;

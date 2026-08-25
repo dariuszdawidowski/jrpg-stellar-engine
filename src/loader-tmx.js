@@ -344,6 +344,11 @@ class LoaderTMX {
                     this.parseObjectText(level, obj);
                 }
 
+                // Ambient lights
+                else if (type == 'ambientlight') {
+                    this.parseObjectAmbientLight(level, obj, properties);
+                }
+
                 // Custom
                 else {
                     layer.actors.push(this.parseObjectCustom(level, obj, properties));
@@ -355,7 +360,7 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <object id="1" name="foo" type="Spawn" x="10" y="20">
+     * Parse <object id="1" name="foo" type="Spawn" x="10" y="20" w="30" h="40"> <properties> ... </properties> </object>
      */
 
     async parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties) {
@@ -395,7 +400,7 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <object id="1" name="foo" type="Respawn" x="10" y="20">
+     * Parse <object id="1" name="foo" type="Respawn" x="10" y="20" w="30" h="40"> <properties> ... </properties> </object>
      */
 
     parseObjectRespawn(level, layer, resources, name, x, y, w, h, properties) {
@@ -456,7 +461,7 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <object id="1" name="foo" type="Portal" x="10" y="20">
+     * Parse <object id="1" name="foo" type="Portal" x="10" y="20"> <properties> ... </properties> </object>
      */
 
     parseObjectPortal(level, node, properties) {
@@ -501,7 +506,7 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <object id="1" name="foo" type="Shape" x="10" y="20"> <polyline points="1.0,2.0 3.0,4.0"/> </object>
+     * Parse <object id="1" name="foo" type="Shape" x="10" y="20"> <properties> ... </properties> <polyline points="1.0,2.0 3.0,4.0"/> </object>
      */
 
     parseObjectShape(level, node, properties) {
@@ -546,7 +551,19 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <object id="1" name="foo" type="" x="10" y="20"> <point/> </object>
+     * Parse <object id="1" name="foo" type="AmbientLight" x="10" y="20"> <properties> ... </properties> <point/> </object>
+     */
+
+    parseObjectAmbientLight(level, node, properties) {
+        const name = node.getAttribute('name');
+        const x = parseFloat(node.getAttribute('x')) * level.scale;
+        const y = parseFloat(node.getAttribute('y')) * level.scale;
+        const childPoint = node.querySelector('point');
+        level.light.ambient = { r: properties.rgb[0] || 0, g: properties.rgb[1] || 0, b: properties.rgb[2] || 0 };
+    }
+
+    /**
+     * Parse <object id="1" name="foo" type="" x="10" y="20"> <properties> ... </properties><point/> </object>
      */
 
     parseObjectCustom(level, node, properties) {
