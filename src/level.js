@@ -61,7 +61,7 @@ class Level {
 
         // Lighting
         this.lights = {
-            // Ambient light color {r: 0, g: 0, b: 0} (from -255 to 255, 0 is neutral, null for no ambient light calculations)
+            // Ambient light color {r: 0, g: 0, b: 0, static: bool} (from -255 to 255, 0 is neutral, null or static=false for no ambient dynamic light calculations)
             ambient: null,
             // Point lights {'id': {x, y, radius, color: {r, g, b}, intensity}, ...}, brightening only
             points: {},
@@ -92,7 +92,9 @@ class Level {
      * @param args.r/g/b: Number - signed offset per channel (-255..255, 0 neutral), same as light.ambient
      */
 
-    async precalculateAmbient({ r, g, b }) {
+    async precalculateAmbient(color = null) {
+
+        const { r, g, b } = color || this.lights.ambient || { r: 0, g: 0, b: 0 };
 
         // Collect every atlas currently referenced by this level's tilesets and actors
         const atlases = [

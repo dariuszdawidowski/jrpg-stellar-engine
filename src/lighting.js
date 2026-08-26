@@ -80,7 +80,7 @@ class Lighting {
      */
 
     applyLighting(view, light) {
-        const ambient = light.ambient;
+        const ambient = light.ambient && !light.ambient.static ? light.ambient : null;
         const points = Object.values(light.points);
         const spots = Object.values(light.spots);
         const hasAmbient = ambient && (ambient.r || ambient.g || ambient.b);

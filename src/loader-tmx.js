@@ -566,6 +566,8 @@ class LoaderTMX {
 
     parseObjectAmbientLight(level, node, properties) {
         level.lights.ambient = { r: properties.rgb[0] || 0, g: properties.rgb[1] || 0, b: properties.rgb[2] || 0 };
+        if ('static' in properties) level.lights.ambient.static = properties.static;
+        else level.lights.ambient.static = false;
     }
 
     /**
