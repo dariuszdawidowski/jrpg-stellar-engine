@@ -26,8 +26,8 @@ class Level {
         // Tile size
         this.tile = { w: 0, h: 0 };
 
-        // Environment layers [{name: 'string', class: 'colliders|empty', map: [[]]}, ...]
-        this.layers = []; // [class Layer]
+        // Environment layers [{type: 'tiles|image|objects', name: 'string', class: 'string', map: [[]]}, ...]
+        this.layers = [];
 
         // Custom renderers
         this.renderers = {};
@@ -274,7 +274,7 @@ class Level {
 
         // Add to layer registry
         const objectLayer = this.layers.find(layer => layer.name === args.layer);
-        if (objectLayer && objectLayer.class === 'objects') {
+        if (objectLayer && objectLayer.type === 'objects') {
             if (!objectLayer.actors) objectLayer.actors = [];
             if (!objectLayer.actors.includes(actorInstance.id)) objectLayer.actors.push(actorInstance.id);
         }
@@ -405,24 +405,23 @@ class Level {
 
         // Iterate layers
         this.layers.forEach(layer => {
-
             if (layers && !layers.includes(layer.name)) return;
 
             // Group consecutive tiles/colliders/objects layers into a single tint pass
-            const tintable = (ambient || hasPoints || hasSpots) && (layer.class == 'tiles' || layer.class == 'colliders' || layer.class == 'objects');
+            const tintable = (ambient || hasPoints || hasSpots) && (layer.type == 'tiles' || layer.type == 'colliders' || layer.type == 'objects');
             if (tintable && !lighting) {
                 this.lightRender.begin(view);
                 lighting = true;
             } else if (!tintable) flushLighting();
 
             // Render backgrounds/foregrounds
-            if (layer.class == 'image') this.renderImageLayer(view, layer);
+            if (layer.type == 'image') this.renderImageLayer(view, layer);
 
             // Render actors
-            else if (layer.class == 'objects') this.renderObjectsLayer(view, layer);
+            else if (layer.type == 'objects') this.renderObjectsLayer(view, layer);
 
             // Render tiles
-            else if (layer.class == 'tiles' || layer.class == 'colliders') this.renderTilesLayer(view, layer);
+            else if (layer.type == 'tiles') this.renderTilesLayer(view, layer);
 
             // Render custom
             else this.renderCustomLayer(view, layer);

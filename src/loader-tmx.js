@@ -206,6 +206,7 @@ class LoaderTMX {
 
     parseImageLayer(level, url, node) {
         const imageName = node.getAttribute('name');
+        const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : '';
         const imageOffsetX = node.hasAttribute('offsetx') ? parseInt(node.getAttribute('offsetx')) : 0;
         const imageOffsetY = node.hasAttribute('offsety') ? parseInt(node.getAttribute('offsety')) : 0;
         const imageRepeatX = node.hasAttribute('repeatx') ? parseInt(node.getAttribute('repeatx')) : 0;
@@ -218,8 +219,9 @@ class LoaderTMX {
         const imageHeight = parseInt(nodeImage.getAttribute('height'));
         if (imageName && imageSource) {
             const layer = {
+                'type': 'image',
                 'name': imageName,
-                'class': 'image',
+                'class': cl,
                 'src': null,
                 'x':  imageOffsetX,
                 'y':  imageOffsetY,
@@ -250,12 +252,12 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <layer id="1" name="foo" width="10" height="20" locked="1">
+     * Parse <layer id="1" name="foo" class="bar" width="10" height="20" locked="1">
      */
 
     parseLayer(level, node) {
         const name = node.getAttribute('name').toLowerCase();
-        const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : 'tiles';
+        const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : '';
         const data = node.querySelector('data');
         const offsetX = node.hasAttribute('offsetx') ? node.getAttribute('offsetx').toLowerCase() : null;
         const offsetY = node.hasAttribute('offsety') ? node.getAttribute('offsety').toLowerCase() : null;
@@ -263,6 +265,7 @@ class LoaderTMX {
             const arrayContent = data.textContent.split(',').map(Number);
             const indexes = create2DArray(arrayContent, parseInt(node.getAttribute('width')));
             const layer = {
+                'type': 'tiles',
                 'name': name,
                 'class': cl,
                 'offset': {x: 0, y: 0},
@@ -286,10 +289,11 @@ class LoaderTMX {
 
     parseObjectGroup(level, resources, node) {
         const layerName = node.getAttribute('name').toLowerCase().trim();
-        const layerClass = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase().trim() : 'objects';
+        const layerClass = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase().trim() : '';
         const layer = {
+            'type': 'objects',
             'name': layerName,
-            'class': layerClass === '' ? 'objects' : layerClass,
+            'class': layerClass,
             'actors': []
         }
         level.layers.push(layer);
