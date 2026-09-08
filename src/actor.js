@@ -80,8 +80,8 @@ class Actor extends AnimSprite {
         // Shadow
         this.shadow = args.shadow || false;
 
-        // Mirror
-        this.mirror = args.mirror || false;
+        // Reflection
+        this.reflect = args.reflect || false;
     }
 
     /**
@@ -482,12 +482,13 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Render actor mirror (for reflection effects)
+     * Render actor's reflection
+     * @param view: View context
      */
 
-    renderMirror(view) {
+    renderReflect(view) {
         super.cell(this.anim.frame());
-        super.renderMirror(view);
+        super.renderReflect(view);
     }
 
     /**

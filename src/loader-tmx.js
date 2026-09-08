@@ -205,6 +205,8 @@ class LoaderTMX {
      */
 
     parseImageLayer(level, url, node) {
+
+        // Parse attributes
         const imageName = node.getAttribute('name');
         const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : '';
         const imageOffsetX = node.hasAttribute('offsetx') ? parseInt(node.getAttribute('offsetx')) : 0;
@@ -217,6 +219,11 @@ class LoaderTMX {
         const imageSource = nodeImage.getAttribute('source');
         const imageWidth = parseInt(nodeImage.getAttribute('width'));
         const imageHeight = parseInt(nodeImage.getAttribute('height'));
+
+        // Parse properties
+        const properties = parseProperties(node.querySelector('properties'));
+
+        // Add image layer to level
         if (imageName && imageSource) {
             const layer = {
                 'type': 'image',
@@ -235,7 +242,8 @@ class LoaderTMX {
                     'x': imageParallaxX,
                     'y': imageParallaxY
                 },
-                'coordinates': 'world'
+                'coordinates': 'world',
+                'properties': properties
             };
             // Load from html resource
             if (imageSource.startsWith('#')) {
@@ -256,11 +264,17 @@ class LoaderTMX {
      */
 
     parseLayer(level, node) {
+
+        // Parse attributes
         const name = node.getAttribute('name').toLowerCase();
         const cl = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase() : '';
         const data = node.querySelector('data');
         const offsetX = node.hasAttribute('offsetx') ? node.getAttribute('offsetx').toLowerCase() : null;
         const offsetY = node.hasAttribute('offsety') ? node.getAttribute('offsety').toLowerCase() : null;
+
+        // Parse properties
+        const properties = parseProperties(node.querySelector('properties'));
+
         if (data && !name.trim().startsWith('.')) {
             const arrayContent = data.textContent.split(',').map(Number);
             const indexes = create2DArray(arrayContent, parseInt(node.getAttribute('width')));
@@ -269,7 +283,8 @@ class LoaderTMX {
                 'name': name,
                 'class': cl,
                 'offset': {x: 0, y: 0},
-                'map': indexes
+                'map': indexes,
+                'properties': properties
             };
             if (offsetX !== null) layer.offset.x = offsetX;
             if (offsetY !== null) layer.offset.y = offsetY;
@@ -288,13 +303,21 @@ class LoaderTMX {
      */
 
     parseObjectGroup(level, resources, node) {
+
+        // Parse attributes
         const layerName = node.getAttribute('name').toLowerCase().trim();
         const layerClass = node.hasAttribute('class') ? node.getAttribute('class').toLowerCase().trim() : '';
+
+        // Parse properties
+        const properties = parseProperties(node.querySelector('properties'));
+
+        // Create layer
         const layer = {
             'type': 'objects',
             'name': layerName,
             'class': layerClass,
-            'actors': []
+            'actors': [],
+            'properties': properties
         }
         level.layers.push(layer);
         node.querySelectorAll('object').forEach(obj => {

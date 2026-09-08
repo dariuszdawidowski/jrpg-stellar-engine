@@ -35,6 +35,9 @@ class Level {
         // Actors {type: {'name': object, ...}, ...} for items, chars, npcs, mobs, mounts, vehicles, etc.
         this.actors = {};
 
+        // Current actors {'layer': [actor, ...], ...} (each layer separately culled and sorted) for rendering
+        this.renderActors = {};
+
         // Spawn points {'player-1': [ SpawnPoint, ...], ...}
         this.spawnpoints = {};
 
@@ -276,7 +279,7 @@ class Level {
         const objectLayer = this.layers.find(layer => layer.name === args.layer);
         if (objectLayer && objectLayer.type === 'objects') {
             if (!objectLayer.actors) objectLayer.actors = [];
-            if (!objectLayer.actors.includes(actorInstance.id)) objectLayer.actors.push(actorInstance.id);
+            if (!objectLayer.actors.includes(actorInstance.id)) objectLayer.actors.push(actorInstance);
         }
 
         // Add a type to global actors registry
@@ -298,9 +301,9 @@ class Level {
         // Remove from layer
         for (const layer of this.layers) {
             if (('actors' in layer) && Array.isArray(layer.actors)) {
-                const idx = layer.actors.indexOf(id);
-                if (idx !== -1) {
-                    layer.actors.splice(idx, 1);
+                const index = layer.actors.findIndex(actor => actor.id === id);
+                if (index !== -1) {
+                    layer.actors.splice(index, 1);
                     break;
                 }
             }
@@ -403,6 +406,11 @@ class Level {
             }
         };
 
+        // Prepare render actors (culled and sorted)
+        this.layers.forEach(layer => {
+            if (layer.type === 'objects') this.prepareRenderActors(view, layer);
+        });
+
         // Iterate layers
         this.layers.forEach(layer => {
             if (layers && !layers.includes(layer.name)) return;
@@ -415,13 +423,20 @@ class Level {
             } else if (!tintable) flushLighting();
 
             // Render backgrounds/foregrounds
-            if (layer.type == 'image') this.renderImageLayer(view, layer);
+            if (layer.type === 'image') this.renderImageLayer(view, layer);
 
             // Render actors
-            else if (layer.type == 'objects') this.renderObjectsLayer(view, layer);
+            else if (layer.type === 'objects') this.renderObjectsLayer(view, layer);
 
             // Render tiles
-            else if (layer.type == 'tiles') this.renderTilesLayer(view, layer);
+            else if (layer.type === 'tiles') {
+                // Render shadows
+                if (layer.class === 'shadows') this.renderShadowsLayer(view, layer);
+                // Render reflections
+                else if (layer.class === 'reflect') this.renderReflectLayer(view, layer);
+                // Generic tiles layer
+                else this.renderTilesLayer(view, layer);
+            }
 
             // Render custom
             else this.renderCustomLayer(view, layer);
@@ -448,40 +463,52 @@ class Level {
     }
 
     /**
+     * Prepare actors for rendering (culling and sorting)
+     */
+
+    prepareRenderActors(view, layer) {
+
+        // Create layer if not exists or clear it if exists
+        if (!(layer.name in this.renderActors)) this.renderActors[layer.name] = [];
+        else this.renderActors[layer.name].length = 0;
+
+        // Cull off-screen actors
+        for (const actor of layer.actors) {
+            if (this.isActorVisible(view, actor)) this.renderActors[layer.name].push(actor);
+        }
+
+        // Sort actors
+        if (layer.properties.sort) this.renderActors[layer.name].sort(function(a, b) {
+            return (a.transform.y - a.origin.y + a.tile.scaled.halfHeight) - (b.transform.y - b.origin.y + b.tile.scaled.halfHeight);
+        });
+
+    }
+
+    isActorVisible(view, actor) {
+        const width = actor.tile.scaled.width;
+        const height = actor.tile.scaled.height;
+
+        const pos = view.world2Screen({
+            x: actor.transform.x - actor.tile.scaled.halfWidth,
+            y: actor.transform.y - actor.tile.scaled.halfHeight
+        });
+
+        return (
+            pos.x + width >= 0 &&
+            pos.x <= view.canvas.width &&
+            pos.y + height >= 0 &&
+            pos.y <= view.canvas.height
+        );
+    }    
+
+    /**
      * Render objects layer
      */
 
     renderObjectsLayer(view, layer) {
 
-        // Visible actors
-        const actors = [];
-
-        // Collect culled actors
-        Object.values(this.actors).forEach(actorsGroup => {
-            // Iterate actors in group
-            Object.entries(actorsGroup).forEach(([actorId, actor]) => {
-                // Iterate actor IDs in the current layer
-                layer.actors.forEach(actorIdOnLayer => {
-                    if (actorIdOnLayer == actorId) {
-                        const pos = view.world2Screen({
-                            x: actor.transform.x - actor.tile.scaled.halfWidth,
-                            y: actor.transform.y - actor.tile.scaled.halfHeight
-                        });
-                        if (pos.x > -actor.tile.scaled.width && pos.x < view.canvas.width + actor.tile.scaled.width && pos.y > -actor.tile.scaled.height && pos.y < view.canvas.height + actor.tile.scaled.height) actors.push(actor);
-                    }
-                });
-            });
-        });
-
-        // Sort actors
-        actors.sort(function(a, b) {
-            return (a.transform.y - a.origin.y + a.tile.scaled.halfHeight) - (b.transform.y - b.origin.y + b.tile.scaled.halfHeight);
-        });
-
-        // Render actors (with an optional shadow and mirror)
-        actors.forEach(actor => {
-            if (actor.shadow) actor.renderShadow(view);
-            if (actor.mirror) actor.renderMirror(view);
+        // Render actors
+        this.renderActors[layer.name].forEach(actor => {
             actor.render(view);
         });
 
@@ -495,6 +522,42 @@ class Level {
         for (const tileset of Object.values(this.tilesets)) {
             tileset.ref.render(view, layer.map, this.offset.x - layer.offset.x, this.offset.y - layer.offset.y, tileset.first);
         }
+    }
+
+    /**
+     * Render shadows layer
+     */
+
+    renderShadowsLayer(view, layer) {
+
+        // Render tiles
+        this.renderTilesLayer(view, layer);
+
+        // Render actor's shadows
+        for (const layerName in this.renderActors) {
+            this.renderActors[layerName].forEach(actor => {
+                if (actor.shadow) actor.renderShadow(view);
+            });
+        }
+
+    }
+
+    /**
+     * Render reflect layer
+     */
+
+    renderReflectLayer(view, layer) {
+
+        // Render tiles
+        this.renderTilesLayer(view, layer);
+
+        // Render actor's reflections
+        for (const layerName in this.renderActors) {
+            this.renderActors[layerName].forEach(actor => {
+                if (actor.reflect) actor.renderReflect(view);
+            });
+        }
+
     }
 
     /**

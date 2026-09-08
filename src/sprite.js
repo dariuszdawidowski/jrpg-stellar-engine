@@ -199,7 +199,7 @@ class Sprite {
     }
 
     /**
-     * Render sprite mirror (for reflection effects)
+     * Render sprite reflection
      */
 
     _getMirrorCanvas() {
@@ -240,7 +240,7 @@ class Sprite {
         return this._mirrorCanvas;
     }
 
-    renderMirror(view) {
+    renderReflect(view) {
         const d = view.world2Screen({
             x: this.transform.x - this.origin.x,
             y: this.transform.y - this.origin.y + this.tile.scaled.height
