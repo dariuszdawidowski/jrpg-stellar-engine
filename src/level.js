@@ -20,8 +20,8 @@ class Level {
         // Scale
         this.scale = 1;
 
-        // Tileset definitions {'tileset id': {ref: TileSet object reference, first: Number of index offset}, ...}
-        this.tilesets = {};
+        // Tileset definitions Map<tileset id, {ref: TileSet object reference, first: Number of index offset}>
+        this.tilesets = new Map();
 
         // Tile size
         this.tile = { w: 0, h: 0 };
@@ -66,10 +66,10 @@ class Level {
         this.lights = {
             // Ambient light color {r: 0, g: 0, b: 0, static: bool} (from -255 to 255, 0 is neutral, null or static=false for no ambient dynamic light calculations)
             ambient: null,
-            // Point lights {'id': {x, y, radius, color: {r, g, b}, intensity}, ...}, brightening only
-            points: {},
-            // Spot lights {'id': {x, y, radius, angle, cone, color: {r, g, b}, intensity}, ...}, brightening only
-            spots: {},
+            // Point lights [{x, y, radius, color: {r, g, b}, intensity}, ...], brightening only
+            points: [],
+            // Spot lights [{x, y, radius, angle, cone, color: {r, g, b}, intensity}, ...], brightening only
+            spots: [],
         };
 
         // Ambient light compositor for tiles/colliders/objects layers
@@ -101,7 +101,7 @@ class Level {
 
         // Collect every atlas currently referenced by this level's tilesets and actors
         const atlases = [
-            ...Object.values(this.tilesets).map(tileset => tileset.ref.atlas),
+            ...Array.from(this.tilesets.values()).map(tileset => tileset.ref.atlas),
             ...Object.values(this.actors).flatMap(group => Object.values(group).map(actor => actor.atlas))
         ];
 
@@ -164,7 +164,7 @@ class Level {
 
     getColliders(margin = 0) {
         const colliders = [];
-        const tileset = Object.values(this.tilesets).length ? Object.values(this.tilesets)[0] : null;
+        const tileset = this.tilesets.values().next().value || null;
         if (tileset) {
             this.layers.forEach(layer => {
                 if (layer.class == 'colliders') {
@@ -368,7 +368,7 @@ class Level {
     update(deltaTime) {
 
         // Update tilesets
-        for (const tileset of Object.values(this.tilesets)) {
+        for (const tileset of this.tilesets.values()) {
             tileset.ref.update(deltaTime);
         }
 
@@ -376,14 +376,11 @@ class Level {
         const colliders = this.getColliders();
 
         // Update all actors
-        Object.values(this.actors).forEach(actors => {
-            Object.values(actors).forEach(actor => {
-                actor.update({
-                    deltaTime,
-                    colliders
-                });
-            });
-        });
+        for (const group in this.actors) {
+            for (const name in this.actors[group]) {
+                this.actors[group][name].update({ deltaTime, colliders });
+            }
+        }
 
     }
 
@@ -394,8 +391,8 @@ class Level {
     render(view, layers = null) {
 
         const ambient = this.lights.ambient;
-        const hasPoints = Object.keys(this.lights.points).length > 0;
-        const hasSpots = Object.keys(this.lights.spots).length > 0;
+        const hasPoints = this.lights.points.length > 0;
+        const hasSpots = this.lights.spots.length > 0;
         let lighting = false;
 
         // Ends the current batch of tinted layers, if any
@@ -519,7 +516,7 @@ class Level {
      */
 
     renderTilesLayer(view, layer) {
-        for (const tileset of Object.values(this.tilesets)) {
+        for (const tileset of this.tilesets.values()) {
             tileset.ref.render(view, layer.map, this.offset.x - layer.offset.x, this.offset.y - layer.offset.y, tileset.first);
         }
     }
@@ -582,7 +579,7 @@ class Level {
         this.layers.forEach(layer => {
 
             // Colliders
-            for (const tileset of Object.values(this.tilesets)) {
+            for (const tileset of this.tilesets.values()) {
                 if (layer.class == 'colliders')
                     tileset.ref.debug(view, layer.map, this.offset.x, this.offset.y, tileset.first);
             }

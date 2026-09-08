@@ -188,14 +188,14 @@ class LoaderTMX {
         if (tilesetName && tilesetFirst) {
             // Tilesets passed in contructor
             if (this.tilesets) {
-                level.tilesets[tilesetName] = {ref: this.tilesets[tilesetName], first: tilesetFirst};
+                level.tilesets.set(tilesetName, {ref: this.tilesets[tilesetName], first: tilesetFirst});
             }
             // Tilesets prefetched in resources
             else {
-                level.tilesets[tilesetName] = {
+                level.tilesets.set(tilesetName, {
                     ref: resources.tsx[tilesetName].tileset,
                     first: tilesetFirst
-                };
+                });
             }
         }
     }
@@ -602,21 +602,20 @@ class LoaderTMX {
      */
 
     parseObjectPointLight(level, node, properties) {
-        const name = `${node.getAttribute('name')}.${crypto.randomUUID()}`;
         const x = parseFloat(node.getAttribute('x')) * level.scale;
         const y = parseFloat(node.getAttribute('y')) * level.scale;
         const w = parseFloat(node.getAttribute('width')) * level.scale;
         const h = parseFloat(node.getAttribute('height')) * level.scale;
         const cx = x + (w / 2);
         const cy = y + (h / 2);
-        level.lights.points[name] = {
+        level.lights.points.push({
             x: cx,
             y: cy,
             radius: ((w / 2) + (h / 2)) / 2,
             color: properties.color || {r: 255, g: 255, b: 255},
             intensity: properties.intensity || 1.0,
             dither: {size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7}
-        };
+        });
     }
 
     /**
@@ -624,10 +623,9 @@ class LoaderTMX {
      */
 
     parseObjectSpotLight(level, node, properties) {
-        const name = `${node.getAttribute('name')}.${crypto.randomUUID()}`;
         const x = parseFloat(node.getAttribute('x')) * level.scale;
         const y = parseFloat(node.getAttribute('y')) * level.scale;
-        level.lights.spots[name] = {
+        level.lights.spots.push({
             x,
             y,
             radius: properties.radius || 100,
@@ -637,7 +635,7 @@ class LoaderTMX {
             color: properties.color || {r: 255, g: 255, b: 255},
             intensity: properties.intensity || 1.0,
             dither: {size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7}
-        };
+        });
     }
 
     /**
