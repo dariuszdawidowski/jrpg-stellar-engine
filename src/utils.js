@@ -235,6 +235,7 @@ function parseSlug(text) {
   return text
     .toString()
     .toLowerCase()
+    .replace(/ł/g, 'l')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^\w\s-]/g, '')
