@@ -86,6 +86,8 @@ class Level {
         // View reference
         this.view = args.view;
 
+        // Colliders for the whole level (calculated automatically)
+        this.colliders = null;
     }
 
     /**
@@ -163,16 +165,18 @@ class Level {
      */
 
     getColliders(margin = 0) {
-        const colliders = [];
-        const tileset = this.tilesets.values().next().value || null;
-        if (tileset) {
-            this.layers.forEach(layer => {
-                if (layer.class == 'colliders') {
-                    colliders.push(...tileset.ref.getColliders(layer.map, this.offset.x, this.offset.y, tileset.first, margin));
-                }
-            });
+        if (this.colliders === null) {
+            this.colliders = [];
+            const tileset = this.tilesets.values().next().value || null;
+            if (tileset) {
+                this.layers.forEach(layer => {
+                    if (layer.class == 'colliders') {
+                        this.colliders.push(...tileset.ref.getColliders(layer.map, this.offset.x, this.offset.y, tileset.first, margin));
+                    }
+                });
+            }
         }
-        return colliders;
+        return this.colliders;
     }
 
     /**
