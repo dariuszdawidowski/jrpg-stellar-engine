@@ -20,7 +20,6 @@ class AnimSprite extends Sprite {
         for (const key in this.animations) {
             for (const animation of this.animations[key]) {
                 if (Array.isArray(animation.frame) && animation.frame.length === 2 && typeof animation.frame[0] === 'number' && typeof animation.frame[1] === 'number') {
-                    console.log(animation);
                     animation.frame = animation.frame[0] + (animation.frame[1] * args.cols);
                 }
             }
