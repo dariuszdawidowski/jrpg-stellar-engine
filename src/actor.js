@@ -477,8 +477,8 @@ class Actor extends AnimSprite {
      * Update actor
      */
 
-    update() {
-        /*** Overload ***/
+    update(args) {
+        super.update(args);
     }
 
     /**
