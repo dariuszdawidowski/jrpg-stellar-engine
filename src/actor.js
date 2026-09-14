@@ -96,37 +96,37 @@ class Actor extends AnimSprite {
      * Animate based on movement
      */
 
-    animate(name = null, deltaTime = 0, loop = true) {
+    animate(name = null, deltaTime = 0, loop = true, priority = 0) {
         // Pass named animation
         if (name) {
-            super.animate(name, deltaTime, loop);
+            super.animate(name, deltaTime, loop, priority);
         }
         // Calculate animation name based on angle
         else {
             const angle = Math.atan2(this.transform.vec.dir.y, this.transform.vec.dir.x);
             // Right
             if (angle > -1.4 && angle < 1.4) {
-                if (!this.transform.vec.isZero) super.animate('moveRight', deltaTime, loop);
-                else if ('idleRight' in this.animations) super.animate('idleRight', deltaTime, loop);
-                else super.animate('idle', deltaTime, loop);
+                if (!this.transform.vec.isZero) super.animate('moveRight', deltaTime, true, 0);
+                else if ('idleRight' in this.animations) super.animate('idleRight', deltaTime, true, 0);
+                else super.animate('idle', deltaTime, true, 0);
             }
             // Left
             else if (angle < -2.2 || angle > 2.2) {
-                if (!this.transform.vec.isZero) super.animate('moveLeft', deltaTime, loop);
-                else if ('idleLeft' in this.animations) super.animate('idleLeft', deltaTime, loop);
-                else super.animate('idle', deltaTime, loop);
+                if (!this.transform.vec.isZero) super.animate('moveLeft', deltaTime, true, 0);
+                else if ('idleLeft' in this.animations) super.animate('idleLeft', deltaTime, true, 0);
+                else super.animate('idle', deltaTime, true, 0);
             }
             // Up
             else if (angle <= -1.4) {
-                if (!this.transform.vec.isZero) super.animate('moveUp', deltaTime, loop);
-                else if ('idleUp' in this.animations) super.animate('idleUp', deltaTime, loop);
-                else super.animate('idle', deltaTime, loop);
+                if (!this.transform.vec.isZero) super.animate('moveUp', deltaTime, true, 0);
+                else if ('idleUp' in this.animations) super.animate('idleUp', deltaTime, true, 0);
+                else super.animate('idle', deltaTime, true, 0);
             }
             // Down
             else if (angle >= 1.4) {
-                if (!this.transform.vec.isZero) super.animate('moveDown', deltaTime, loop);
-                else if ('idleDown' in this.animations) super.animate('idleDown', deltaTime, loop);
-                else super.animate('idle', deltaTime, loop);
+                if (!this.transform.vec.isZero) super.animate('moveDown', deltaTime, true, 0);
+                else if ('idleDown' in this.animations) super.animate('idleDown', deltaTime, true, 0);
+                else super.animate('idle', deltaTime, true, 0);
             }
         }
     }
@@ -471,14 +471,6 @@ class Actor extends AnimSprite {
 
         // Check for AABB overlap
         return box4Box(my, other);
-    }
-
-    /**
-     * Update actor
-     */
-
-    update(args) {
-        super.update(args);
     }
 
     /**

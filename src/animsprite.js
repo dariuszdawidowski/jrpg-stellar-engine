@@ -13,12 +13,9 @@ class AnimSprite extends Sprite {
     constructor(args) {
         super(args);
 
-        // Animation map
-        this.animations = 'animations' in args ? args.animations : {};
-
-        // Bake frames number when provieded as [x,y]
-        for (const key in this.animations) {
-            for (const animation of this.animations[key]) {
+        // Bake frames number when provided as [x,y]
+        for (const key in args.animations) {
+            for (const animation of args.animations[key]) {
                 if (Array.isArray(animation.frame) && animation.frame.length === 2 && typeof animation.frame[0] === 'number' && typeof animation.frame[1] === 'number') {
                     animation.frame = animation.frame[0] + (animation.frame[1] * args.cols);
                 }
@@ -27,6 +24,9 @@ class AnimSprite extends Sprite {
 
         // Current animation state
         this.anim = {
+
+            // Animation map
+            animations: ('animations' in args) ? args.animations : {},
 
             // Animation name
             name: null,
@@ -40,22 +40,56 @@ class AnimSprite extends Sprite {
             // Current time of the animation frame
             time: 0,
 
-            // Start new anim
-            start: function(name, animation) {
-                this.name = name;
-                this.frames = animation;
-                this.index = 0;
-                this.time = 0;
+            // Loop flag for the animation
+            loop: true,
+
+            // Current animation priority
+            priority: 0,
+
+            // Continue current anim or start new one if necessary
+            play: function(name, loop = true, priority = 0) {
+                if (this.name !== name && this.priority <= priority) {
+                    this.name = name;
+                    this.frames = this.animations[name];
+                    this.index = 0;
+                    this.time = 0;
+                    this.priority = priority;
+                    this.loop = loop;
+                }
             },
 
             // Play forward a little bit
-            advance: function(deltaTime, loop = true) {
-                this.time += deltaTime;
-                if (this.time * 1000 >= this.frames[this.index].duration) {
-                    this.time = 0;
-                    if (this.index < this.frames.length - 1) this.index ++;
-                    else if (loop) this.index = 0;
+            update: function(deltaTime) {
+                if (this.name) {
+                    this.time += deltaTime;
+                    // Check if the current frame's duration has elapsed
+                    if (this.time * 1000 >= this.frames[this.index].duration) {
+                        this.time = this.time - (this.frames[this.index].duration / 1000);
+                        // Advance to the next frame
+                        if (this.index < this.frames.length - 1) {
+                            this.index ++;
+                        }
+                        // Last frame reached
+                        else {
+                            // Go back to the first frame if looping
+                            if (this.loop) {
+                                this.index = 0;
+                            }
+                            // Stop the animation if not looping
+                            else {
+                                this.stop();
+                            }
+                        }
+                    }
                 }
+            },
+
+            stop: function() {
+                this.name = null;
+                this.frames = null;
+                this.index = 0;
+                this.time = 0;
+                this.priority = 0;
             },
 
             // Get current tile index
@@ -67,20 +101,11 @@ class AnimSprite extends Sprite {
     }
 
     /**
-     * Update animation
-     * @param name: string - name of the animation
-     * @param deltaTime: Number - time passed since last frame
-     * @param loop: bool - should be looped
+     * Update
      */
 
-    animate(name, deltaTime = 0, loop = true) {
-        if (this.anim.name != name) {
-            if (name in this.animations) this.anim.start(name, this.animations[name]);
-            else console.error(`Can't find animation '${name}' in the ${this.name}!`)
-        }
-        else {
-            this.anim.advance(deltaTime, loop);
-        }
+    update(deltaTime = 0) {
+        this.anim.update(deltaTime);
     }
 
     /**
@@ -91,14 +116,6 @@ class AnimSprite extends Sprite {
         super.position(this.transform.x, this.transform.y);
         super.cell(this.anim.frame());
         super.render(view);
-    }
-
-    /**
-     * Update animated sprite with default animation
-     */
-
-    update(args) {
-        if (this.anim.name) this.animate(this.anim.name, args.deltaTime);
     }
 
 }
