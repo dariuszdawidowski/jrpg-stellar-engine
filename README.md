@@ -23,6 +23,20 @@ Open `example/index.html` in the browser.
 # Quick start
 Include `dist/jrpg-stellar-engine.js` in your html file.
 
+## Vanilla JS (browser script tag)
+```html
+<script src="dist/jrpg-stellar-engine.js"></script>
+<script>
+    const level = new Level({ /* ... */ });
+</script>
+```
+Classes and functions (`Actor`, `Level`, `Cache`, `randomRangeInt`, etc.) are exposed as global variables, same as the individual `src/*.js` files.
+
+## Node.js (CommonJS require)
+```js
+const { Actor, Level, Cache } = require('jrpg-stellar-engine');
+```
+
 # Levels
 Compatible with "Tiled" map editor format (tsx+tmx) https://www.mapeditor.org/.
 

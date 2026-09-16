@@ -1,4 +1,8 @@
 /* JRPG Stellar Engine v0.8.0.build.304 */
+(function (root, factory) {
+    if (typeof module === 'object' && module.exports) module.exports = factory();
+    else Object.assign(root, factory());
+})(typeof self !== 'undefined' ? self : this, function () {
 <%- await minjs('src/cache.js') %>
 <%- await minjs('src/atlas.js') %>
 <%- await minjs('src/tile.js') %>
@@ -18,3 +22,5 @@
 <%- await minjs('src/loader-tmx.js') %>
 <%- await minjs('src/view.js') %>
 <%- await minjs('src/utils.js') %>
+return { Cache, Atlas, Tile, Sprite, AnimSprite, TileSet, Lighting, Actor, MOB, Portal, Stairs, SpawnPoint, RespawnPoint, Level, LoaderACX, LoaderTSX, LoaderTMX, View, EPSILON, BAYER_4X4, randomRangeInt, randomRangeFloat, roundToNearestEven, create2DArray, resolvePath, point4Box, anglePoints, distancePoints, box4Box, parseProperties, parseIntRange, parseSlug };
+});
