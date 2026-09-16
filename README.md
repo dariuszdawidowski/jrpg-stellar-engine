@@ -43,11 +43,8 @@ Compatible with "Tiled" map editor format (tsx+tmx) https://www.mapeditor.org/.
 # Load from CDN
 https://unpkg.com/jrpg-stellar-engine@latest/dist/jrpg-stellar-engine.js
 
-# Deploy
-This is a Vanilla-JS project, NodeJS is used only as a build system.
-
 # Release (for developers)
-* Bump version in the package.json
+* Bump version in the package.json + `npm i`
 * Bump version in the README.md
 * Bump version in the jrpg-stellar-engine.js.ejs and build number `git rev-list --count HEAD`
 
