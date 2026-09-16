@@ -181,11 +181,12 @@ class Actor extends AnimSprite {
 
     /**
      * Render self and mounted children, respecting per-direction behind/front order
+     * @param calledFromMount: bool - true when invoked by the mounting parent, bypasses the mountParent guard
      */
 
-    render(view) {
+    render(view, calledFromMount = false) {
         // Drawn by the parent instead, avoids being rendered twice
-        if (this.mountParent) return;
+        if (this.mountParent && !calledFromMount) return;
 
         this._syncMounts();
 
@@ -196,10 +197,9 @@ class Actor extends AnimSprite {
             const { child, offsets } = this.mounts[name];
             (this._resolveMountOffset(offsets, facing).behind ? behind : front).push(child);
         }
-
-        behind.forEach(child => child.render(view));
+        behind.forEach(child => child.render(view, true));
         super.render(view);
-        front.forEach(child => child.render(view));
+        front.forEach(child => child.render(view, true));
     }
 
     /**
@@ -645,6 +645,14 @@ class Actor extends AnimSprite {
                     'duration': 100
                 }
             ]
+        },
+        'mounts': {
+            'hand': {
+                'up':    { 'x': 0, 'y': -6, 'angle': 180, 'behind': true },
+                'down':  { 'x': 0, 'y': 6,  'angle': 0,   'behind': false },
+                'left':  { 'x': -6, 'y': 2, 'angle': -90, 'behind': false },
+                'right': { 'x': 6, 'y': 2,  'angle': 90,  'behind': false }
+            }
         }
     */
 
@@ -670,7 +678,8 @@ class Actor extends AnimSprite {
                 width: this.collider.width,
                 height: this.collider.height
             },
-            animations: { ...this.animations }
+            animations: { ...this.animations },
+            mounts: { ...this.mountPoints }
         };
         return serialized;
     }
