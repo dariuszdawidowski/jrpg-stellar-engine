@@ -43,10 +43,10 @@ Example #2:
     </animation>
     <mounts>
         <mount name="hand">
-            <up x="0" y="-6" angle="180" behind="true"/>
-            <down x="0" y="6" angle="0" behind="false"/>
-            <left x="-6" y="2" angle="-90" behind="false"/>
-            <right x="6" y="2" angle="90" behind="false"/>
+            <up x="0" y="-6" angle="180" rotate="true" behind="true"/>
+            <down x="0" y="6" angle="0" rotate="false" behind="false"/>
+            <left x="-6" y="2" angle="-90" rotate="true" behind="false"/>
+            <right x="6" y="2" angle="90" rotate="true" behind="false"/>
         </mount>
     </mounts>
 </actor>
@@ -199,6 +199,7 @@ class LoaderACX {
                                     x: parseFloat(directionEl.getAttribute('x') || 0) * params.scale,
                                     y: parseFloat(directionEl.getAttribute('y') || 0) * params.scale,
                                     angle: parseFloat(directionEl.getAttribute('angle') || 0),
+                                    rotate: directionEl.getAttribute('rotate') === 'true',
                                     behind: directionEl.getAttribute('behind') === 'true'
                                 };
                             }

@@ -118,7 +118,7 @@ class Actor extends AnimSprite {
      * Attach a sprite/actor to this actor at a named slot
      * @param slot: string - slot name
      * @param child: Sprite|AnimSprite|Actor - object to attach (must have transform)
-     * @param offsets: {up, down, left, right} - per-direction {x, y, angle, behind}, falls back to this.mountPoints[slot]
+     * @param offsets: {up, down, left, right} - per-direction {x, y, angle, rotate, behind}, falls back to this.mountPoints[slot]
      */
 
     mount(slot, child, offsets = null) {
@@ -156,7 +156,7 @@ class Actor extends AnimSprite {
      */
 
     _resolveMountOffset(offsets, facing) {
-        return { x: 0, y: 0, angle: 0, behind: false, ...offsets[facing] };
+        return { x: 0, y: 0, angle: 0, rotate: false, behind: false, ...offsets[facing] };
     }
 
     /**
@@ -170,7 +170,7 @@ class Actor extends AnimSprite {
             const offset = this._resolveMountOffset(offsets, facing);
             child.transform.x = this.transform.x + offset.x;
             child.transform.y = this.transform.y + offset.y;
-            child.transform.rotation = offset.angle ? { angle: offset.angle, offsetX: 0, offsetY: 0 } : null;
+            child.transform.rotation = offset.rotate ? { angle: offset.angle, offsetX: 0, offsetY: 0 } : null;
             // Copy facing onto mounted actors so their own anim.play() picks the right animation
             if (child.transform.vec) {
                 child.transform.vec.dir.x = this.transform.vec.dir.x;
