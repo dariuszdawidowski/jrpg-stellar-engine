@@ -880,7 +880,8 @@
                 player.move(x, y);
 
                 // Animate
-                player.animate('moveUp', deltaTime);
+                player.anim.play('moveUp', true, 0);
+                player.anim.update(deltaTime);
                 
                 // Scrol view
                 if (player.transform.y + view.offset.y < view.bounds.top) view.offset.y -= y;
@@ -898,7 +899,8 @@
                 player.move(x, y);
 
                 // Animate
-                player.animate('moveDown', deltaTime);
+                player.anim.play('moveDown', true, 0);
+                player.anim.update(deltaTime);
 
                 // Scrol view
                 if (player.transform.y + view.offset.y > view.bounds.bottom) view.offset.y -= y;
@@ -923,7 +925,8 @@
                 player.move(x, y);
 
                 // Animate
-                player.animate('moveLeft', deltaTime);
+                player.anim.play('moveLeft', true, 0);
+                player.anim.update(deltaTime);
 
                 // Scrol view
                 if (player.transform.x + view.offset.x < view.bounds.left) view.offset.x -= x;
@@ -948,7 +951,8 @@
                 player.move(x, y);
 
                 // Animate
-                player.animate('moveRight', deltaTime);
+                player.anim.play('moveRight', true, 0);
+                player.anim.update(deltaTime);
 
                 // Scrol view
                 if (player.transform.x + view.offset.x > view.bounds.right) view.offset.x -= x;
@@ -1007,7 +1011,7 @@
                 // Player actions
                 if (input.action) {
                     if (player.collideWithSprite(level.actors.item['objects.chest.2'])) {
-                        level.actors.item['objects.chest.2'].animate('open');
+                        level.actors.item['objects.chest.2'].anim.play('open', true, 0);
                         level.actors.item['objects.chest.2'].render(view);
                     }
                 }

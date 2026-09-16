@@ -41,6 +41,14 @@ Example #2:
         <frame tileid="5" duration="100"/>
         <frame tileid="6" duration="100"/>
     </animation>
+    <mounts>
+        <mount name="hand">
+            <up x="0" y="-6" angle="180" behind="true"/>
+            <down x="0" y="6" angle="0" behind="false"/>
+            <left x="-6" y="2" angle="-90" behind="false"/>
+            <right x="6" y="2" angle="90" behind="false"/>
+        </mount>
+    </mounts>
 </actor>
 
 */
@@ -175,6 +183,29 @@ class LoaderACX {
                         });
                     });
                     params['animations'] = anim;
+                }
+
+                // Mounts (v0.5+)
+                const mountEls = actor.querySelectorAll('mounts > mount');
+                if (mountEls.length) {
+                    const mounts = {};
+                    mountEls.forEach(mountEl => {
+                        const slot = mountEl.getAttribute('name');
+                        const table = {};
+                        ['up', 'down', 'left', 'right'].forEach(direction => {
+                            const directionEl = mountEl.querySelector(direction);
+                            if (directionEl) {
+                                table[direction] = {
+                                    x: parseFloat(directionEl.getAttribute('x') || 0) * params.scale,
+                                    y: parseFloat(directionEl.getAttribute('y') || 0) * params.scale,
+                                    angle: parseFloat(directionEl.getAttribute('angle') || 0),
+                                    behind: directionEl.getAttribute('behind') === 'true'
+                                };
+                            }
+                        });
+                        mounts[slot] = table;
+                    });
+                    params['mounts'] = mounts;
                 }
 
                 return params;

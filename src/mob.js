@@ -56,12 +56,14 @@ class MOB extends Actor {
             if (this.transform.vec.x != 0 || this.transform.vec.y != 0) {
                 let [x, y] = this.collide(args.colliders, args.deltaTime);
                 this.move(x, y);
-                this.animate(null, args.deltaTime);
+                const move = { up: 'moveUp', down: 'moveDown', left: 'moveLeft', right: 'moveRight' };
+                this.anim.play(move[this.getFacing()], true, 0);
             }
             // Idle
             else {
-                this.animate('idle', args.deltaTime);
+                this.anim.play('idle', true, 0);
             }
+            this.anim.update(args.deltaTime);
         }
         else {
             // Random new direction

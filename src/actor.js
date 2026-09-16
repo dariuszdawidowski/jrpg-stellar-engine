@@ -82,6 +82,15 @@ class Actor extends AnimSprite {
 
         // Reflection
         this.reflect = args.reflect || false;
+
+        // Mounted children, keyed by slot name: {child, offsets}
+        this.mounts = {};
+
+        // Per-direction offset tables for slots, keyed by slot name (from ACX or set manually)
+        this.mountPoints = args.mounts || {};
+
+        // Parent this actor is mounted onto (null if not mounted)
+        this.mountParent = null;
     }
 
     /**
@@ -93,42 +102,104 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Animate based on movement
+     * Facing direction bucket based on the movement direction vector
+     * @returns 'up' | 'down' | 'left' | 'right'
      */
 
-    animate(name = null, deltaTime = 0, loop = true, priority = 0) {
-        // Pass named animation
-        if (name) {
-            super.animate(name, deltaTime, loop, priority);
+    getFacing() {
+        const angle = Math.atan2(this.transform.vec.dir.y, this.transform.vec.dir.x);
+        if (angle > -1.4 && angle < 1.4) return 'right';
+        if (angle < -2.2 || angle > 2.2) return 'left';
+        if (angle <= -1.4) return 'up';
+        return 'down';
+    }
+
+    /**
+     * Attach a sprite/actor to this actor at a named slot
+     * @param slot: string - slot name
+     * @param child: Sprite|AnimSprite|Actor - object to attach (must have transform)
+     * @param offsets: {up, down, left, right} - per-direction {x, y, angle, behind}, falls back to this.mountPoints[slot]
+     */
+
+    mount(slot, child, offsets = null) {
+        this.mounts[slot] = { child, offsets: offsets || this.mountPoints[slot] || {} };
+        child.mountParent = this;
+    }
+
+    /**
+     * Detach a mounted slot
+     * @param slot: string - slot name
+     * @returns the detached child, or null
+     */
+
+    unmount(slot) {
+        const mount = this.mounts[slot];
+        if (!mount) return null;
+        mount.child.mountParent = null;
+        delete this.mounts[slot];
+        return mount.child;
+    }
+
+    /**
+     * Get the child currently attached to a slot
+     * @param slot: string - slot name
+     */
+
+    getMount(slot) {
+        return slot in this.mounts ? this.mounts[slot].child : null;
+    }
+
+    /**
+     * Merge a slot's per-direction offset with defaults
+     * @param offsets: {up, down, left, right} - offset table
+     * @param facing: string - current facing bucket
+     */
+
+    _resolveMountOffset(offsets, facing) {
+        return { x: 0, y: 0, angle: 0, behind: false, ...offsets[facing] };
+    }
+
+    /**
+     * Sync every mounted child's transform to follow this actor
+     */
+
+    _syncMounts() {
+        const facing = this.getFacing();
+        for (const name in this.mounts) {
+            const { child, offsets } = this.mounts[name];
+            const offset = this._resolveMountOffset(offsets, facing);
+            child.transform.x = this.transform.x + offset.x;
+            child.transform.y = this.transform.y + offset.y;
+            child.transform.rotation = offset.angle ? { angle: offset.angle, offsetX: 0, offsetY: 0 } : null;
+            // Copy facing onto mounted actors so their own anim.play() picks the right animation
+            if (child.transform.vec) {
+                child.transform.vec.dir.x = this.transform.vec.dir.x;
+                child.transform.vec.dir.y = this.transform.vec.dir.y;
+            }
         }
-        // Calculate animation name based on angle
-        else {
-            const angle = Math.atan2(this.transform.vec.dir.y, this.transform.vec.dir.x);
-            // Right
-            if (angle > -1.4 && angle < 1.4) {
-                if (!this.transform.vec.isZero) super.animate('moveRight', deltaTime, true, 0);
-                else if ('idleRight' in this.animations) super.animate('idleRight', deltaTime, true, 0);
-                else super.animate('idle', deltaTime, true, 0);
-            }
-            // Left
-            else if (angle < -2.2 || angle > 2.2) {
-                if (!this.transform.vec.isZero) super.animate('moveLeft', deltaTime, true, 0);
-                else if ('idleLeft' in this.animations) super.animate('idleLeft', deltaTime, true, 0);
-                else super.animate('idle', deltaTime, true, 0);
-            }
-            // Up
-            else if (angle <= -1.4) {
-                if (!this.transform.vec.isZero) super.animate('moveUp', deltaTime, true, 0);
-                else if ('idleUp' in this.animations) super.animate('idleUp', deltaTime, true, 0);
-                else super.animate('idle', deltaTime, true, 0);
-            }
-            // Down
-            else if (angle >= 1.4) {
-                if (!this.transform.vec.isZero) super.animate('moveDown', deltaTime, true, 0);
-                else if ('idleDown' in this.animations) super.animate('idleDown', deltaTime, true, 0);
-                else super.animate('idle', deltaTime, true, 0);
-            }
+    }
+
+    /**
+     * Render self and mounted children, respecting per-direction behind/front order
+     */
+
+    render(view) {
+        // Drawn by the parent instead, avoids being rendered twice
+        if (this.mountParent) return;
+
+        this._syncMounts();
+
+        const facing = this.getFacing();
+        const behind = [];
+        const front = [];
+        for (const name in this.mounts) {
+            const { child, offsets } = this.mounts[name];
+            (this._resolveMountOffset(offsets, facing).behind ? behind : front).push(child);
         }
+
+        behind.forEach(child => child.render(view));
+        super.render(view);
+        front.forEach(child => child.render(view));
     }
 
     /**
