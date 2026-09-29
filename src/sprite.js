@@ -282,6 +282,74 @@ class Sprite {
     }
 
     /**
+     * Render tinted silhouette of the current frame, used as the glow halo source
+     */
+
+    _getGlowCanvas(color) {
+        const w = this.tile.scaled.width;
+        const h = this.tile.scaled.height;
+
+        if (!this._glowCanvas || this._glowCanvas.width !== w || this._glowCanvas.height !== h) {
+            this._glowCanvas = document.createElement('canvas');
+            this._glowCanvas.width = w;
+            this._glowCanvas.height = h;
+            this._glowCtx = this._glowCanvas.getContext('2d');
+        }
+
+        const ctx = this._glowCtx;
+        ctx.clearRect(0, 0, w, h);
+
+        const sx = this.tile.width * (this.tile.current % this.atlas.cols);
+        const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
+
+        ctx.drawImage(this.atlas.image, sx, sy, this.tile.width, this.tile.height, 0, 0, w, h);
+
+        ctx.globalCompositeOperation = 'source-in';
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, w, h);
+        ctx.globalCompositeOperation = 'source-over';
+
+        return this._glowCanvas;
+    }
+
+    /**
+     * Draw an additive blurred glow/bloom halo behind the sprite, call manually where needed
+     * @param view: View context
+     * @param config.color: string - halo color (default '#ffffff')
+     * @param config.blur: Number - blur radius in px (default 12)
+     * @param config.intensity: Number - alpha of the halo (default 0.8)
+     * @param config.scale: Number - halo size relative to the sprite (default 1.3)
+     */
+
+    renderGlow(view, config = {}) {
+        const color = config.color ?? '#ffffff';
+        const blur = config.blur ?? 12;
+        const intensity = config.intensity ?? 0.8;
+        const scale = config.scale ?? 1.3;
+
+        const d = view.world2Screen({
+            x: this.transform.x - this.origin.x,
+            y: this.transform.y - this.origin.y
+        });
+
+        if (d.x <= -this.tile.scaled.width || d.x >= view.canvas.width ||
+            d.y <= -this.tile.scaled.height || d.y >= view.canvas.height) return;
+
+        const glow = this._getGlowCanvas(color);
+        const w = this.tile.scaled.width * scale;
+        const h = this.tile.scaled.height * scale;
+        const cx = Math.round(d.x) + this.tile.scaled.halfWidth;
+        const cy = Math.round(d.y) + this.tile.scaled.halfHeight;
+
+        view.ctx.save();
+        view.ctx.globalCompositeOperation = 'lighter';
+        view.ctx.globalAlpha = intensity;
+        view.ctx.filter = `blur(${blur}px)`;
+        view.ctx.drawImage(glow, cx - w / 2, cy - h / 2, w, h);
+        view.ctx.restore();
+    }
+
+    /**
      * Debug render
      * @param view: View context
      */
