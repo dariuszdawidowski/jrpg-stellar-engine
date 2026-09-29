@@ -857,6 +857,8 @@
                             }).then(result => {
                                 player = result;
                                 player.view = view;
+                                // Advance the animation set by anim.play() below (level.update() calls this with an args object, not a raw number)
+                                player.update = (args) => player.anim.update(args.deltaTime);
                                 // Load Level
                                 loadLevel('test-tmx', 'player').then(() => start());
                             })
@@ -881,8 +883,7 @@
 
                 // Animate
                 player.anim.play('moveUp', true, 0);
-                player.anim.update(deltaTime);
-                
+
                 // Scrol view
                 if (player.transform.y + view.offset.y < view.bounds.top) view.offset.y -= y;
             };
@@ -900,7 +901,6 @@
 
                 // Animate
                 player.anim.play('moveDown', true, 0);
-                player.anim.update(deltaTime);
 
                 // Scrol view
                 if (player.transform.y + view.offset.y > view.bounds.bottom) view.offset.y -= y;
@@ -926,7 +926,6 @@
 
                 // Animate
                 player.anim.play('moveLeft', true, 0);
-                player.anim.update(deltaTime);
 
                 // Scrol view
                 if (player.transform.x + view.offset.x < view.bounds.left) view.offset.x -= x;
@@ -952,7 +951,6 @@
 
                 // Animate
                 player.anim.play('moveRight', true, 0);
-                player.anim.update(deltaTime);
 
                 // Scrol view
                 if (player.transform.x + view.offset.x > view.bounds.right) view.offset.x -= x;
