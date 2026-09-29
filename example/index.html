@@ -807,6 +807,9 @@
                 // Load Map
                 level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, view, prefetch: false });
 
+                // Pre-render tile layers into chunks (perf demo, opt-in - see Level.bakeChunks())
+                level.bakeChunks();
+
                 // Insert player in layer
                 level.actors['objects'] = {
                     'player': player

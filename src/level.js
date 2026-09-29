@@ -70,6 +70,8 @@ class Level {
             points: [],
             // Spot lights [{x, y, radius, angle, cone, color: {r, g, b}, intensity}, ...], brightening only
             spots: [],
+            // 'scene' tints tiles/colliders/objects every frame (default), 'sprites' skips tiles/colliders (cheaper, relies on baked static ambient there)
+            mode: 'scene',
         };
 
         // Ambient light compositor for tiles/colliders/objects layers
@@ -88,6 +90,15 @@ class Level {
 
         // Colliders for the whole level (calculated automatically)
         this.colliders = null;
+
+        // Chunk pre-rendering (optional perf feature, opt-in via bakeChunks()): tile-grid chunk size in tiles
+        this.chunkSize = args.chunkSize || 16;
+
+        // True once bakeChunks() has finished (render() only takes the chunk-blit path afterwards)
+        this.chunksEnabled = false;
+
+        // Baked chunk canvases Map<'layerName:cx:cy', {canvas: HTMLCanvasElement|null, dynamic: bool}>
+        this.chunks = new Map();
     }
 
     /**
@@ -150,6 +161,105 @@ class Level {
             atlas.image = tinted.get(atlas.image);
         }
 
+    }
+
+    /**
+     * Pre-render every 'tiles' layer into fixed-size chunk canvases (see this.chunkSize), with any
+     * static ambient light baked in once - render() then blits whole chunks instead of iterating every
+     * tile every frame, and skips chunks fully outside the viewport. Opt-in: call once after tilesets
+     * are loaded (layers/tilesets must not change afterwards, besides single tiles via invalidateChunk).
+     * Chunks containing an animated tile are left out of the bake and keep rendering live (see bakeChunk).
+     */
+
+    bakeChunks() {
+        this.chunks.clear();
+        for (const layer of this.layers) {
+            if (layer.type !== 'tiles') continue;
+            const cols = layer.map[0]?.length || 0;
+            const rows = layer.map.length;
+            const chunkCols = Math.ceil(cols / this.chunkSize);
+            const chunkRows = Math.ceil(rows / this.chunkSize);
+            for (let cy = 0; cy < chunkRows; cy++) {
+                for (let cx = 0; cx < chunkCols; cx++) {
+                    this.bakeChunk(layer, cx, cy);
+                }
+            }
+        }
+        this.chunksEnabled = true;
+    }
+
+    /**
+     * (Re)bake a single chunk of a layer, e.g. after a runtime tile change (destructible tile, door, ...)
+     * @param layerName: string
+     * @param tileX/tileY: Number - any tile coordinate inside the chunk to rebake
+     */
+
+    invalidateChunk(layerName, tileX, tileY) {
+        if (!this.chunksEnabled) return;
+        const layer = this.layers.find(l => l.type === 'tiles' && l.name === layerName);
+        if (!layer) return;
+        this.bakeChunk(layer, Math.floor(tileX / this.chunkSize), Math.floor(tileY / this.chunkSize));
+    }
+
+    /**
+     * Bake (or re-bake) one chunk canvas of a layer, used by bakeChunks() and invalidateChunk()
+     */
+
+    bakeChunk(layer, cx, cy) {
+        const tileset = this.tilesets.values().next().value || null;
+        if (!tileset) return;
+
+        const slice = layer.map
+            .slice(cy * this.chunkSize, cy * this.chunkSize + this.chunkSize)
+            .map(row => row.slice(cx * this.chunkSize, cx * this.chunkSize + this.chunkSize));
+        if (slice.length === 0 || slice[0].length === 0) return;
+
+        const key = `${layer.name}:${cx}:${cy}`;
+
+        // Animated tiles can't be baked into a static bitmap - leave the whole chunk to be rendered live
+        const dynamic = slice.some(row => row.some(nr => {
+            for (const ts of this.tilesets.values()) {
+                const index = nr - ts.first;
+                if (index > -1 && index in ts.ref.anim) return true;
+            }
+            return false;
+        }));
+        if (dynamic) {
+            this.chunks.set(key, { canvas: null, dynamic: true });
+            return;
+        }
+
+        const w = slice[0].length * tileset.ref.tile.scaled.width;
+        const h = slice.length * tileset.ref.tile.scaled.height;
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.mozImageSmoothingEnabled = false;
+
+        // Minimal view shim: chunk-local coordinates, no camera scroll
+        const chunkView = { ctx, canvas: { width: w, height: h }, world2Screen: transform => transform };
+        for (const ts of this.tilesets.values()) {
+            ts.ref.render(chunkView, slice, 0, 0, ts.first);
+        }
+
+        // Bake static ambient once - dynamic point/spot lights always stay computed per frame
+        if (this.lights.ambient?.static) {
+            const { r, g, b } = this.lights.ambient;
+            const image = ctx.getImageData(0, 0, w, h);
+            const data = image.data;
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i + 3] === 0) continue; // skip fully transparent pixels
+                data[i] += r; // Uint8ClampedArray clamps to 0-255 automatically
+                data[i + 1] += g;
+                data[i + 2] += b;
+            }
+            ctx.putImageData(image, 0, 0);
+        }
+
+        this.chunks.set(key, { canvas, dynamic: false });
     }
 
     /**
@@ -397,6 +507,7 @@ class Level {
         const ambient = this.lights.ambient;
         const hasPoints = this.lights.points.length > 0;
         const hasSpots = this.lights.spots.length > 0;
+        const spritesOnly = this.lights.mode === 'sprites';
         let lighting = false;
 
         // Ends the current batch of tinted layers, if any
@@ -416,8 +527,9 @@ class Level {
         this.layers.forEach(layer => {
             if (layers && !layers.includes(layer.name)) return;
 
-            // Group consecutive tiles/colliders/objects layers into a single tint pass
-            const tintable = (ambient || hasPoints || hasSpots) && (layer.type == 'tiles' || layer.type == 'colliders' || layer.type == 'objects');
+            // Group consecutive tiles/colliders/objects layers into a single tint pass - in 'sprites'
+            // lights.mode tiles/colliders are skipped (cheaper, relies on their baked static ambient)
+            const tintable = (ambient || hasPoints || hasSpots) && (layer.type == 'objects' || (!spritesOnly && (layer.type == 'tiles' || layer.type == 'colliders')));
             if (tintable && !lighting) {
                 this.lightRender.begin(view);
                 lighting = true;
@@ -520,8 +632,62 @@ class Level {
      */
 
     renderTilesLayer(view, layer) {
-        for (const tileset of this.tilesets.values()) {
+        if (this.chunksEnabled) this.renderTilesLayerChunked(view, layer);
+        else for (const tileset of this.tilesets.values()) {
             tileset.ref.render(view, layer.map, this.offset.x - layer.offset.x, this.offset.y - layer.offset.y, tileset.first);
+        }
+    }
+
+    /**
+     * Render tiles layer by blitting pre-baked chunks (see bakeChunks()), skipping off-screen ones;
+     * chunks with animated tiles (not baked) fall back to a live per-tile render of just that chunk
+     */
+
+    renderTilesLayerChunked(view, layer) {
+        const tileset = this.tilesets.values().next().value || null;
+        if (!tileset) return;
+
+        const sx = this.offset.x - layer.offset.x;
+        const sy = this.offset.y - layer.offset.y;
+        const factor = tileset.ref.tile.scaled.factor;
+        const tileW = tileset.ref.tile.scaled.width;
+        const tileH = tileset.ref.tile.scaled.height;
+        const chunkPixelW = this.chunkSize * tileW;
+        const chunkPixelH = this.chunkSize * tileH;
+        const cols = layer.map[0]?.length || 0;
+        const rows = layer.map.length;
+        const chunkCols = Math.ceil(cols / this.chunkSize);
+        const chunkRows = Math.ceil(rows / this.chunkSize);
+
+        for (let cy = 0; cy < chunkRows; cy++) {
+            for (let cx = 0; cx < chunkCols; cx++) {
+
+                // Top-left of this chunk in screen space, matching the per-tile math in TileSet.render()
+                const worldX = (-sx * factor) + (cx * this.chunkSize * tileW);
+                const worldY = (-sy * factor) + (cy * this.chunkSize * tileH);
+                const screen = view.world2Screen({x: worldX, y: worldY});
+
+                // Skip chunks fully outside the viewport
+                if (screen.x + chunkPixelW < 0 || screen.x > view.canvas.width ||
+                    screen.y + chunkPixelH < 0 || screen.y > view.canvas.height) continue;
+
+                const chunk = this.chunks.get(`${layer.name}:${cx}:${cy}`);
+
+                if (chunk && !chunk.dynamic) {
+                    view.ctx.drawImage(chunk.canvas, Math.round(screen.x), Math.round(screen.y));
+                }
+                else {
+                    // Not baked (animated tiles) - render just this chunk's tiles live
+                    const localSx = sx - (cx * this.chunkSize) * tileset.ref.tile.width;
+                    const localSy = sy - (cy * this.chunkSize) * tileset.ref.tile.height;
+                    const slice = layer.map
+                        .slice(cy * this.chunkSize, cy * this.chunkSize + this.chunkSize)
+                        .map(row => row.slice(cx * this.chunkSize, cx * this.chunkSize + this.chunkSize));
+                    for (const ts of this.tilesets.values()) {
+                        ts.ref.render(view, slice, localSx, localSy, ts.first);
+                    }
+                }
+            }
         }
     }
 
