@@ -32,6 +32,13 @@ class View {
         // [{x, y, w, h}, ...]
         this.debugBox = [];
 
+        // Downsample factor for the optional full-screen bloom glow layer
+        this.glowScale = args.glowScale ?? 0.5;
+
+        // Offscreen accumulation canvas for full-screen bloom (created lazily by _resizeGlowLayer)
+        this.glowCanvas = null;
+        this.glowCtx = null;
+
         // Resize window
         window.addEventListener('resize', () => {
             this.fitCanvas();
@@ -47,6 +54,47 @@ class View {
 
     cls() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    /**
+     * (Re)create the glow layer canvas to match the current canvas size and glowScale
+     */
+
+    _resizeGlowLayer() {
+        if (!this.glowCanvas) {
+            this.glowCanvas = document.createElement('canvas');
+            this.glowCtx = this.glowCanvas.getContext('2d');
+        }
+        this.glowCanvas.width = Math.max(1, Math.round(this.canvas.width * this.glowScale));
+        this.glowCanvas.height = Math.max(1, Math.round(this.canvas.height * this.glowScale));
+    }
+
+    /**
+     * Clear the glow layer and prepare it to receive renderGlowLayer() draws for this frame
+     */
+
+    beginGlow() {
+        this.glowCtx.setTransform(1, 0, 0, 1, 0, 0);
+        this.glowCtx.clearRect(0, 0, this.glowCanvas.width, this.glowCanvas.height);
+        this.glowCtx.setTransform(this.glowScale, 0, 0, this.glowScale, 0, 0);
+    }
+
+    /**
+     * Blur the glow layer once and composite it additively onto the main canvas
+     * @param config.blur: Number - blur radius in px (default 20)
+     * @param config.intensity: Number - alpha of the composited layer (default 0.6)
+     */
+
+    compositeGlow(config = {}) {
+        const blur = config.blur ?? 20;
+        const intensity = config.intensity ?? 0.6;
+
+        this.ctx.save();
+        this.ctx.globalCompositeOperation = 'lighter';
+        this.ctx.globalAlpha = intensity;
+        this.ctx.filter = `blur(${blur}px)`;
+        this.ctx.drawImage(this.glowCanvas, 0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.restore();
     }
 
     /**
@@ -158,6 +206,7 @@ class View {
         this.ctx.imageSmoothingEnabled = false;
         this.ctx.webkitImageSmoothingEnabled = false;
         this.ctx.mozImageSmoothingEnabled = false;
+        this._resizeGlowLayer();
     }
 
     /**

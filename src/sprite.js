@@ -350,6 +350,38 @@ class Sprite {
     }
 
     /**
+     * Contribute this sprite's tinted silhouette to view's full-screen bloom glow layer (unblurred, cheap),
+     * call once per frame between view.beginGlow() and view.compositeGlow()
+     * @param view: View context
+     * @param config.color: string - halo color (default '#ffffff')
+     * @param config.scale: Number - halo size relative to the sprite (default 1.3)
+     */
+
+    renderGlowLayer(view, config = {}) {
+        const color = config.color ?? '#ffffff';
+        const scale = config.scale ?? 1.3;
+
+        const d = view.world2Screen({
+            x: this.transform.x - this.origin.x,
+            y: this.transform.y - this.origin.y
+        });
+
+        if (d.x <= -this.tile.scaled.width || d.x >= view.canvas.width ||
+            d.y <= -this.tile.scaled.height || d.y >= view.canvas.height) return;
+
+        const glow = this._getGlowCanvas(color);
+        const w = this.tile.scaled.width * scale;
+        const h = this.tile.scaled.height * scale;
+        const cx = Math.round(d.x) + this.tile.scaled.halfWidth;
+        const cy = Math.round(d.y) + this.tile.scaled.halfHeight;
+
+        view.glowCtx.save();
+        view.glowCtx.globalCompositeOperation = 'lighter';
+        view.glowCtx.drawImage(glow, cx - w / 2, cy - h / 2, w, h);
+        view.glowCtx.restore();
+    }
+
+    /**
      * Debug render
      * @param view: View context
      */
