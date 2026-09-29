@@ -808,10 +808,10 @@
                 level = await loaderTMX.parseLevel({ xml: document.getElementById(map).innerText, scale, view, prefetch: false });
 
                 // Insert player in layer
-                level.actors['player'] = {
+                level.actors['objects'] = {
                     'player': player
                 };
-                level.getLayer('objects').actors.push('player');
+                level.getLayer('objects').actors.push(player);
 
                 // Move player to spawn point
                 const {x, y} = level.getSpawnPoint(spawn.toLowerCase(), {x: 0, y: 0});
