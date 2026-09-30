@@ -571,10 +571,7 @@ class Actor extends AnimSprite {
         const ry = shadow.ry ?? rx * 0.35;
         const alpha = shadow.alpha ?? 0.5;
         const offsetY = shadow.offsetY ?? 5;
-        const foot = view.world2Screen({
-            x: this.transform.x,
-            y: this.transform.y + offsetY
-        });
+        const foot = view.world2ScreenXY(this.transform.x, this.transform.y + offsetY);
 
         view.ctx.save();
         view.ctx.translate(foot.x, foot.y);

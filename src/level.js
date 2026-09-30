@@ -543,7 +543,12 @@ class Level {
 
         // Clear last frame's ZGate overrides before recomputing them below
         this.deferredActors = {};
-        Object.values(this.actors).forEach(group => Object.values(group).forEach(actor => actor.mountOverrides = {}));
+        // Skip entirely when there are no ZGates, and reuse each actor's object instead of reallocating it every frame
+        if (this.zgates.length > 0) {
+            Object.values(this.actors).forEach(group => Object.values(group).forEach(actor => {
+                for (const slot in actor.mountOverrides) delete actor.mountOverrides[slot];
+            }));
+        }
 
         // Prepare render actors (culled, sorted and ZGate-deferred)
         this.layers.forEach(layer => {
@@ -638,7 +643,9 @@ class Level {
      */
 
     applyZGates(actors) {
-        for (let i = actors.length - 1; i >= 0; i--) {
+        // Single forward pass, compacting kept actors in place instead of splice() (O(n) instead of O(n^2))
+        let writeIndex = 0;
+        for (let i = 0; i < actors.length; i++) {
             const actor = actors[i];
             const baselineY = actor.transform.y - actor.origin.y + actor.tile.scaled.halfHeight;
             const mask = actor.getMask();
@@ -659,9 +666,12 @@ class Level {
             if (deferredTo) {
                 if (!(deferredTo in this.deferredActors)) this.deferredActors[deferredTo] = [];
                 this.deferredActors[deferredTo].push(actor);
-                actors.splice(i, 1);
+            }
+            else {
+                actors[writeIndex++] = actor;
             }
         }
+        actors.length = writeIndex;
     }
 
     isActorVisible(view, actor) {
@@ -669,10 +679,7 @@ class Level {
         const height = actor.tile.scaled.height;
         const margin = this.cullingMargin;
 
-        const pos = view.world2Screen({
-            x: actor.transform.x - actor.origin.x - margin,
-            y: actor.transform.y - actor.origin.y - margin
-        });
+        const pos = view.world2ScreenXY(actor.transform.x - actor.origin.x - margin, actor.transform.y - actor.origin.y - margin);
 
         return (
             pos.x + width + margin * 2 >= 0 &&
@@ -742,7 +749,7 @@ class Level {
                 // Top-left of this chunk in screen space, matching the per-tile math in TileSet.render()
                 const worldX = (-sx * factor) + (cx * this.chunkSize * tileW);
                 const worldY = (-sy * factor) + (cy * this.chunkSize * tileH);
-                const screen = view.world2Screen({x: worldX, y: worldY});
+                const screen = view.world2ScreenXY(worldX, worldY);
 
                 // Skip chunks fully outside the viewport
                 if (screen.x + chunkPixelW < 0 || screen.x > view.canvas.width ||

@@ -152,11 +152,8 @@ class Sprite {
     render(view, cullingMargin = 0) {
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
-        const d = view.world2Screen({
-            x: this.transform.x - this.origin.x,
-            y: this.transform.y - this.origin.y,
-        });
-        
+        const d = view.world2ScreenXY(this.transform.x - this.origin.x, this.transform.y - this.origin.y);
+
         if (d.x > -this.tile.scaled.width - cullingMargin && d.x < view.canvas.width + cullingMargin &&
             d.y > -this.tile.scaled.height - cullingMargin && d.y < view.canvas.height + cullingMargin) {
             
@@ -241,10 +238,7 @@ class Sprite {
     }
 
     renderReflect(view) {
-        const d = view.world2Screen({
-            x: this.transform.x - this.origin.x,
-            y: this.transform.y - this.origin.y + this.tile.scaled.height
-        });
+        const d = view.world2ScreenXY(this.transform.x - this.origin.x, this.transform.y - this.origin.y + this.tile.scaled.height);
 
         if (d.x > -this.tile.scaled.width && d.x < view.canvas.width &&
             d.y > -this.tile.scaled.height && d.y < view.canvas.height) {
@@ -327,10 +321,7 @@ class Sprite {
         const intensity = config.intensity ?? 0.8;
         const scale = config.scale ?? 1.3;
 
-        const d = view.world2Screen({
-            x: this.transform.x - this.origin.x,
-            y: this.transform.y - this.origin.y
-        });
+        const d = view.world2ScreenXY(this.transform.x - this.origin.x, this.transform.y - this.origin.y);
 
         if (d.x <= -this.tile.scaled.width || d.x >= view.canvas.width ||
             d.y <= -this.tile.scaled.height || d.y >= view.canvas.height) return;
@@ -361,10 +352,7 @@ class Sprite {
         const color = config.color ?? '#ffffff';
         const scale = config.scale ?? 1.3;
 
-        const d = view.world2Screen({
-            x: this.transform.x - this.origin.x,
-            y: this.transform.y - this.origin.y
-        });
+        const d = view.world2ScreenXY(this.transform.x - this.origin.x, this.transform.y - this.origin.y);
 
         if (d.x <= -this.tile.scaled.width || d.x >= view.canvas.width ||
             d.y <= -this.tile.scaled.height || d.y >= view.canvas.height) return;

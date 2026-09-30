@@ -112,7 +112,7 @@ class Lighting {
 
     applyPointLight(view, data, width, pointLight) {
         const { radius, color, intensity = 1, dither } = pointLight;
-        const center = view.world2Screen(pointLight);
+        const center = view.world2ScreenXY(pointLight.x, pointLight.y);
         const radiusSq = radius * radius;
 
         const minX = Math.max(0, Math.floor(center.x - radius));
@@ -150,7 +150,7 @@ class Lighting {
 
     applySpotLight(view, data, width, spotLight) {
         const { radius, angle, cone, width: originWidth = 0, color, intensity = 1, dither } = spotLight;
-        const center = view.world2Screen(spotLight);
+        const center = view.world2ScreenXY(spotLight.x, spotLight.y);
         const radiusSq = radius * radius;
         const angleRad = angle * Math.PI / 180;
         const halfCone = (cone / 2) * Math.PI / 180;

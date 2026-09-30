@@ -32,11 +32,13 @@ class TileSet extends Sprite {
 
     getColliders(tiles, sx = 0, sy = 0, first = 0, margin = 0) {
         const colliders = [];
-        let x = -sx * this.tile.scaled.factor;
+        const startX = -sx * this.tile.scaled.factor;
+        let x = startX;
         let y = -sy * this.tile.scaled.factor;
-        tiles.forEach(line => {
-            line.forEach(nr => {
-                const index = nr - first;
+        for (let row = 0; row < tiles.length; row++) {
+            const line = tiles[row];
+            for (let col = 0; col < line.length; col++) {
+                const index = line[col] - first;
                 if (index > -1) {
                     colliders.push({
                         left: x - margin,
@@ -46,10 +48,10 @@ class TileSet extends Sprite {
                     });
                 }
                 x += this.tile.scaled.width;
-            });
-            x = -sx * this.tile.scaled.factor;
+            }
+            x = startX;
             y += this.tile.scaled.height;
-        });
+        }
         return colliders;
     }
 
@@ -92,21 +94,23 @@ class TileSet extends Sprite {
 
     render(view, tiles, sx = 0, sy = 0, first = 0) {
 
-        let x = (-sx * this.tile.scaled.factor) + this.tile.scaled.halfWidth;
+        const startX = (-sx * this.tile.scaled.factor) + this.tile.scaled.halfWidth;
+        let x = startX;
         let y = (-sy * this.tile.scaled.factor) + this.tile.scaled.halfHeight;
-        tiles.forEach(line => {
-            line.forEach(nr => {
-                const index = nr - first;
+        for (let row = 0; row < tiles.length; row++) {
+            const line = tiles[row];
+            for (let col = 0; col < line.length; col++) {
+                const index = line[col] - first;
                 if (index > -1) {
                     this.position(x, y);
                     this.cell(this.frame(index));
                     super.render(view);
                 }
                 x += this.tile.scaled.width;
-            });
-            x = (-sx * this.tile.scaled.factor) + this.tile.scaled.halfWidth;
+            }
+            x = startX;
             y += this.tile.scaled.height;
-        });
+        }
 
     }
 

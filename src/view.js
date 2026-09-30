@@ -39,6 +39,9 @@ class View {
         this.glowCanvas = null;
         this.glowCtx = null;
 
+        // Reusable result object for world2ScreenXY(), avoids an allocation per tile/actor on hot render paths
+        this._scratchPoint = {x: 0, y: 0};
+
         // Resize window
         window.addEventListener('resize', () => {
             this.fitCanvas();
@@ -252,6 +255,18 @@ class View {
             x: transform.x + this.center.x + this.offset.x,
             y: transform.y + this.center.y + this.offset.y
         };
+    }
+
+    /**
+     * Same as world2Screen() but writes into a reused object instead of allocating a new one -
+     * safe only when the result is consumed immediately (no caching across calls)
+     * @param x/y: Number - world coordinates
+     */
+
+    world2ScreenXY(x, y) {
+        this._scratchPoint.x = x + this.center.x + this.offset.x;
+        this._scratchPoint.y = y + this.center.y + this.offset.y;
+        return this._scratchPoint;
     }
 
     /**
