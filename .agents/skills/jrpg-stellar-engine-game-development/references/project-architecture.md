@@ -70,6 +70,17 @@ Keep state transitions explicit. Prevent duplicate frame loops during scene chan
 - Use readable module names and a clear single owner for each mutable piece of state.
 - Validate a production build and the actual deployed URL/base path, not just the Vite dev server.
 
+## Build and Release Boundaries
+
+Read [build target notes](./build-targets.md) before adding deployment scripts. Keep the web build as the shared source artifact, then run separate platform-specific packaging or native-build stages. Do not combine Steam uploads or mobile signing with the ordinary web build.
+
+- Web: Vite creates the deployable static site.
+- Desktop: Electron packages the web runtime; build Windows and macOS on their respective native hosts. Linux is optional unless requested.
+- Steam: SteamPipe maps already-built platform files into depots. It is distribution, not an Electron target or installer maker.
+- Mobile: Capacitor copies the Vite output into native projects, then Xcode/Android tooling produces signed release artifacts.
+
+Build scripts must preserve existing outputs unless an explicit destructive option such as `--clean` is passed. Build into a temporary sibling directory first when replacing release staging, validate source and target paths, and only swap directories after a complete successful copy.
+
 ## References in This Workspace
 
 - Engine distribution/runtime: `jrpg-stellar-engine/README.md`, `jrpg-stellar-engine/package.json`, `jrpg-stellar-engine/jrpg-stellar-engine.js.ejs`.

@@ -1,6 +1,6 @@
 ---
 name: jrpg-stellar-engine-game-development
-description: 'Use when creating or extending a 2D JRPG, pixel-art, top-down, or similar browser game with JRPG Stellar Engine; especially for Vite/Node.js project setup, Canvas game architecture, Tiled TMX/TSX maps, ACX actors, asset loading, gameplay systems, input, rendering, and engine integration.'
+description: 'Use when creating or extending a 2D JRPG, pixel-art, top-down, or similar game with JRPG Stellar Engine; especially for Vite/Node.js architecture, Canvas, Tiled, asset loading, gameplay, Electron desktop packaging, SteamPipe, Capacitor iOS/Android builds, and release scripts.'
 ---
 
 # JRPG Stellar Engine Game Development
@@ -23,7 +23,8 @@ Build maintainable browser games around JRPG Stellar Engine's actual capabilitie
 5. Store maps, tilesets, actor definitions, images, audio, and other content as separate files. Load them through URLs and the engine loaders or a verified asset layer. Handle asynchronous readiness and loading failures before starting gameplay.
 6. Before using an engine class or method, confirm its current signature and lifecycle in the installed version. Read [engine API notes](./references/engine-api.md) and [asset/Tiled notes](./references/assets-and-tiled.md) as relevant.
 7. Use [project architecture notes](./references/project-architecture.md) for project boundaries and [gameplay patterns](./references/gameplay-patterns.md) for modular gameplay design.
-8. After each vertical slice or feature, run the narrowest relevant checks. Then start the game in a browser, exercise the affected interaction, inspect console and network errors, and run the production build.
+8. For deployment or build-script work, follow [build target notes](./references/build-targets.md). Keep web, Electron, SteamPipe, and Capacitor outputs as explicit, separate stages; preserve existing project tooling and require explicit opt-in before replacing staged release content.
+9. After each vertical slice or feature, run the narrowest relevant checks. Then start the game in a browser, exercise the affected interaction, inspect console and network errors, and run the relevant production build.
 
 ## Non-Negotiable Boundaries
 
@@ -31,6 +32,8 @@ Build maintainable browser games around JRPG Stellar Engine's actual capabilitie
 - Treat developer demos as API references, not production entrypoints. Inline TMX/TSX/ACX, manually ordered script tags, and direct-file launches are not a production Vite pattern.
 - Do not embed sprites, maps, tilesets, actor XML, or large game data in HTML or JavaScript when the content can live in separately loaded files.
 - Do not assume `fetch()` rejects HTTP 404 responses, that every image layer is loaded when a map promise resolves, or that actor spawns are complete when `LoaderTMX.loadLevel()` returns. Verify readiness against the installed version and the actual level content.
+- Do not delete or overwrite existing build, release, or staging output without an explicit clean/replace flag such as `--clean`; validate paths before destructive operations and stage replacements before swapping them into place.
+- Never put signing passwords, Steam credentials, API tokens, or provisioning secrets in tracked scripts, command history, or build logs.
 - Avoid broad engine changes when an application-level adapter or focused game module is sufficient. Do not change engine APIs or add a backend unless the task requires it.
 
 ## Completion Criteria
@@ -39,4 +42,5 @@ Build maintainable browser games around JRPG Stellar Engine's actual capabilitie
 - Vite development and production builds resolve the engine and all referenced assets.
 - A loaded map renders, the primary game interaction works, and asynchronous setup errors are visible and actionable.
 - No unintended 404s, uncaught errors, or missing assets remain in the browser console/network log.
+- Each requested platform target has a documented build command and an artifact appropriate to its distribution channel; native builds are verified on supported host toolchains.
 - Changes preserve the existing architecture, and the new code is split by responsibility rather than appended to a monolithic entrypoint.
