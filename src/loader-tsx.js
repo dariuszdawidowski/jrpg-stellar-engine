@@ -80,20 +80,20 @@ class LoaderTSX {
         const blob = await response.blob();
         const imageURL = URL.createObjectURL(blob);
         const img = new Image();
-        img.src = imageURL;
-        let resourcesDiv = document.querySelector('#resources');
-        if (!resourcesDiv) {
-            resourcesDiv = document.createElement('div');
-            resourcesDiv.id = 'resources';
-            resourcesDiv.style.display = 'none';
-            document.body.appendChild(resourcesDiv);
-        }
-        resourcesDiv.appendChild(img);
-        img.onload = () => {
+        try {
+            let resourcesDiv = document.querySelector('#resources');
+            if (!resourcesDiv) {
+                resourcesDiv = document.createElement('div');
+                resourcesDiv.id = 'resources';
+                resourcesDiv.style.display = 'none';
+                document.body.appendChild(resourcesDiv);
+            }
+            resourcesDiv.appendChild(img);
+            await waitForImageLoad(img, url, imageURL);
+            return img;
+        } finally {
             URL.revokeObjectURL(imageURL);
-        };
-
-        return img;
+        }
     }
 
 }
