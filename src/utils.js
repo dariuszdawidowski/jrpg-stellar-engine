@@ -56,6 +56,43 @@ function assertFetchResponseOk(response, url) {
     throw new Error(`Failed to fetch "${url}"${status ? ` (${status})` : ''}`);
 }
 
+function waitForImageLoad(image, source, url = null) {
+    if (url === null && typeof image.complete === 'undefined') return Promise.resolve(image);
+    if (url === null && image.complete) {
+        return image.naturalWidth > 0
+            ? Promise.resolve(image)
+            : Promise.reject(new Error(`Failed to load image: ${source}`));
+    }
+
+    return new Promise((resolve, reject) => {
+        const cleanup = () => {
+            if (typeof image.removeEventListener === 'function') {
+                image.removeEventListener('load', onLoad);
+                image.removeEventListener('error', onError);
+            }
+        };
+        const onLoad = () => {
+            cleanup();
+            if (image.naturalWidth === 0) reject(new Error(`Failed to load image: ${source}`));
+            else resolve(image);
+        };
+        const onError = () => {
+            cleanup();
+            reject(new Error(`Failed to load image: ${source}`));
+        };
+
+        if (typeof image.addEventListener === 'function') {
+            image.addEventListener('load', onLoad);
+            image.addEventListener('error', onError);
+        } else {
+            image.onload = onLoad;
+            image.onerror = onError;
+        }
+
+        if (url !== null) image.src = url;
+    });
+}
+
 function getXmlRoot(doc, rootName, source) {
     const parserError = doc.querySelector('parsererror');
     if (parserError) {

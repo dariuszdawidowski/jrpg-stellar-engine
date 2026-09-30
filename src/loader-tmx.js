@@ -88,7 +88,7 @@ class LoaderTMX {
 
                     // Image
                     case 'imagelayer':
-                        this.parseImageLayer(level, url, node);
+                        await this.parseImageLayer(level, url, node);
                         break;
 
                     // Layer
@@ -207,7 +207,7 @@ class LoaderTMX {
      * Parse <imagelayer id="1" name="foo" locked="1" offsetx="-512" offsety="-512" repeatx="1" repeaty="1">
      */
 
-    parseImageLayer(level, url, node) {
+    async parseImageLayer(level, url, node) {
 
         // Parse attributes
         const imageName = node.getAttribute('name');
@@ -251,12 +251,14 @@ class LoaderTMX {
             // Load from html resource
             if (imageSource.startsWith('#')) {
                 layer.src = document.querySelector(imageSource);
+                if (!layer.src) throw new Error(`Image layer "${imageName}" references missing resource ${imageSource}`);
+                await waitForImageLoad(layer.src, imageSource);
             }
             // Load from file
             else {
                 const img = new Image();
-                img.src = url ? resolvePath(url, imageSource) : imageSource;
-                layer.src = img;
+                const imageUrl = url ? resolvePath(url, imageSource) : imageSource;
+                layer.src = await waitForImageLoad(img, imageUrl, imageUrl);
             }
             if (layer.src) level.layers.push(layer);
         }
