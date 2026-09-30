@@ -19,5 +19,6 @@
 <%- await minjs('src/loader-tmx.js') %>
 <%- await minjs('src/view.js') %>
 <%- await minjs('src/utils.js') %>
-return { Cache, Sprite, AnimSprite, TileSet, Lighting, Actor, Portal, Stairs, SpawnPoint, RespawnPoint, Level, LoaderACX, LoaderTSX, LoaderTMX, View, EPSILON, BAYER_4X4, randomRangeInt, randomRangeFloat, roundToNearestEven, create2DArray, resolvePath, point4Box, anglePoints, distancePoints, box4Box, parseProperties, parseIntRange, parseSlug };
+<%- await minjs('src/pathfinder.js') %>
+return { Cache, Sprite, AnimSprite, TileSet, Lighting, Actor, Portal, Stairs, SpawnPoint, RespawnPoint, Level, LoaderACX, LoaderTSX, LoaderTMX, View, Pathfinder, EPSILON, BAYER_4X4, randomRangeInt, randomRangeFloat, roundToNearestEven, create2DArray, resolvePath, point4Box, anglePoints, distancePoints, box4Box, parseProperties, parseIntRange, parseSlug };
 });

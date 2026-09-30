@@ -30,11 +30,19 @@ Include `dist/jrpg-stellar-engine.js` in your html file.
     const level = new Level({ /* ... */ });
 </script>
 ```
-Classes and functions (`Actor`, `Level`, `Cache`, `randomRangeInt`, etc.) are exposed as global variables, same as the individual `src/*.js` files.
+Classes and functions (`Actor`, `Level`, `Cache`, `Pathfinder`, `randomRangeInt`, etc.) are exposed as global variables, same as the individual `src/*.js` files.
 
 ## Node.js (CommonJS require)
 ```js
-const { Actor, Level, Cache } = require('jrpg-stellar-engine');
+const { Actor, Level, Cache, Pathfinder } = require('jrpg-stellar-engine');
+```
+
+# Pathfinding
+`Pathfinder` finds a path using the level's collider list. `findPath()` may return `null` while an incremental search is still in progress; call it again with the same start, end, and collider list to continue. If the collider array is mutated in place, call `invalidateSearch()` before searching again.
+
+```js
+const pathfinder = new Pathfinder({ gridSize: 16, maxSearchDistance: 1000 });
+const path = pathfinder.findPath(start, end, level.getColliders());
 ```
 
 # Levels
