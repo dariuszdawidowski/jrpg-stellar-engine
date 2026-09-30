@@ -72,8 +72,6 @@ class Pathfinder {
                 parent: null
             };
             const endNode = {x: finalEndX, y: finalEndY};
-            const heuristic = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-
             this.search = {
                 startX,
                 startY,
@@ -86,7 +84,7 @@ class Pathfinder {
                 closedList: [],
                 nodeMap: {[`${startNode.x},${startNode.y}`]: startNode},
                 closestNode: startNode,
-                closestDistance: heuristic(startNode, endNode),
+                closestDistance: this._heuristic(startNode, endNode),
                 complete: false,
                 path: null
             };
@@ -95,7 +93,18 @@ class Pathfinder {
         if (this.search.complete) return this.search.path;
 
         const searchSteps = Math.max(1, Math.floor(steps));
-        const heuristic = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        const collisionSize = this.gridSize * 0.7;
+        const isBlocked = (x, y) => {
+            const centerX = x * this.gridSize + this.gridSize / 2;
+            const centerY = y * this.gridSize + this.gridSize / 2;
+            const rect = {
+                left: centerX - collisionSize / 2,
+                top: centerY - collisionSize / 2,
+                right: centerX + collisionSize / 2,
+                bottom: centerY + collisionSize / 2
+            };
+            return colliders.some(collider => box4Box(rect, collider));
+        };
         const neighbors = [
             {x: -1, y: 0},
             {x: 1, y: 0},
@@ -127,7 +136,7 @@ class Pathfinder {
                 return this.search.path;
             }
 
-            const currentDistance = heuristic(currentNode, this.search.endNode);
+            const currentDistance = this._heuristic(currentNode, this.search.endNode);
             if (currentDistance < this.search.closestDistance) {
                 this.search.closestNode = currentNode;
                 this.search.closestDistance = currentDistance;
@@ -144,19 +153,12 @@ class Pathfinder {
                     continue;
                 }
 
-                const worldPos = {
-                    x: neighborPos.x * this.gridSize + this.gridSize / 2,
-                    y: neighborPos.y * this.gridSize + this.gridSize / 2
-                };
-                const collisionSize = this.gridSize * 0.7;
-                const neighborRect = {
-                    left: worldPos.x - collisionSize / 2,
-                    top: worldPos.y - collisionSize / 2,
-                    right: worldPos.x + collisionSize / 2,
-                    bottom: worldPos.y + collisionSize / 2
-                };
-                const hasCollision = colliders.some(collider => box4Box(neighborRect, collider));
-                if (hasCollision || this.search.closedList.some(node => node.x === neighborPos.x && node.y === neighborPos.y)) continue;
+                if (isBlocked(neighborPos.x, neighborPos.y)
+                    || this.search.closedList.some(node => node.x === neighborPos.x && node.y === neighborPos.y)) continue;
+
+                if (dir.x !== 0 && dir.y !== 0
+                    && isBlocked(currentNode.x + dir.x, currentNode.y)
+                    && isBlocked(currentNode.x, currentNode.y + dir.y)) continue;
 
                 const neighborKey = `${neighborPos.x},${neighborPos.y}`;
                 let neighborNode = this.search.nodeMap[neighborKey];
@@ -173,7 +175,7 @@ class Pathfinder {
                     }
 
                     neighborNode.g = gScore;
-                    neighborNode.h = heuristic(neighborNode, this.search.endNode);
+                    neighborNode.h = this._heuristic(neighborNode, this.search.endNode);
                     neighborNode.f = neighborNode.g + neighborNode.h;
                 }
             }
@@ -189,6 +191,13 @@ class Pathfinder {
         }
 
         return null;
+    }
+
+    _heuristic(a, b) {
+        const dx = Math.abs(a.x - b.x);
+        const dy = Math.abs(a.y - b.y);
+        const diagonalSteps = Math.min(dx, dy);
+        return Math.max(dx, dy) + (1.4 - 1) * diagonalSteps;
     }
 
     /**
