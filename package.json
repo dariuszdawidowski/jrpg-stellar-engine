@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/dariuszdawidowski/jrpg-stellar-engine#readme",
   "devDependencies": {
-    "fs": "^0.0.1-security",
     "ejs": "^6.0.1",
     "terser": "^5.49.0"
   }
