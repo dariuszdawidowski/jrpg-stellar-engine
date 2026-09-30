@@ -53,6 +53,12 @@ class Level {
         // Generic masks [{name, left, top, right, bottom}, ...]
         this.masks = [];
 
+        // Z-order gates [{name, layer, anchorY, scope, left, top, right, bottom}, ...] - let an actor/mount jump above one specific cover layer
+        this.zgates = [];
+
+        // Actors deferred past their home 'objects' layer into a later cover layer's overlay pass, keyed by cover layer name, rebuilt every frame
+        this.deferredActors = {};
+
         // Generic shapes [{name, x, y, points: [{x, y}, ...], properties: {}}, ...]
         this.shapes = [];
 
@@ -468,6 +474,15 @@ class Level {
     }
 
     /**
+     * Resolve a layer's render-order band: explicit 'zband' property wins, otherwise its position in
+     * this.layers (i.e. today's plain Tiled layer order), so maps without any zband stay unaffected
+     */
+
+    resolveZBand(layer) {
+        return ('zband' in layer.properties) ? layer.properties.zband : this.layers.indexOf(layer);
+    }
+
+    /**
      * Register custom layers with actor loaders and renderers
      */
 
@@ -518,13 +533,20 @@ class Level {
             }
         };
 
-        // Prepare render actors (culled and sorted)
+        // Clear last frame's ZGate overrides before recomputing them below
+        this.deferredActors = {};
+        Object.values(this.actors).forEach(group => Object.values(group).forEach(actor => actor.mountOverrides = {}));
+
+        // Prepare render actors (culled, sorted and ZGate-deferred)
         this.layers.forEach(layer => {
             if (layer.type === 'objects') this.prepareRenderActors(view, layer);
         });
 
+        // Render in zband order (defaults to plain Tiled layer order) instead of raw this.layers
+        const orderedLayers = [...this.layers].sort((a, b) => this.resolveZBand(a) - this.resolveZBand(b));
+
         // Iterate layers
-        this.layers.forEach(layer => {
+        orderedLayers.forEach(layer => {
             if (layers && !layers.includes(layer.name)) return;
 
             // Group consecutive tiles/colliders/objects layers into a single tint pass - in 'sprites'
@@ -549,6 +571,8 @@ class Level {
                 else if (layer.class === 'reflect') this.renderReflectLayer(view, layer);
                 // Generic tiles layer
                 else this.renderTilesLayer(view, layer);
+                // Actors/mounts that jumped above this specific cover layer via a ZGate
+                this.renderDeferredActors(view, layer);
             }
 
             // Render custom
@@ -576,7 +600,7 @@ class Level {
     }
 
     /**
-     * Prepare actors for rendering (culling and sorting)
+     * Prepare actors for rendering (culling, sorting and ZGate overrides)
      */
 
     prepareRenderActors(view, layer) {
@@ -595,6 +619,41 @@ class Level {
             return (a.transform.y - a.origin.y + a.tile.scaled.halfHeight) - (b.transform.y - b.origin.y + b.tile.scaled.halfHeight);
         });
 
+        // Apply ZGate overrides, deferring whole actors past their home layer or flagging a mount slot to flip in front
+        if (this.zgates.length > 0) this.applyZGates(this.renderActors[layer.name]);
+
+    }
+
+    /**
+     * Check every actor against every ZGate, moving matches into this.deferredActors (scope 'actor') or
+     * flagging a mount slot override (scope 'mount:<slot>') - only actors past a gate's anchorY are affected
+     */
+
+    applyZGates(actors) {
+        for (let i = actors.length - 1; i >= 0; i--) {
+            const actor = actors[i];
+            const baselineY = actor.transform.y - actor.origin.y + actor.tile.scaled.halfHeight;
+            const mask = actor.getMask();
+            let deferredTo = null;
+
+            for (const gate of this.zgates) {
+                if (baselineY < gate.anchorY || !box4Box(mask, gate)) continue;
+
+                if (gate.scope.startsWith('mount:')) {
+                    actor.mountOverrides[gate.scope.slice('mount:'.length)] = true;
+                }
+                else if (!deferredTo) {
+                    deferredTo = gate.layer;
+                }
+            }
+
+            // Move the whole actor out of its home layer into the target cover layer's overlay pass
+            if (deferredTo) {
+                if (!(deferredTo in this.deferredActors)) this.deferredActors[deferredTo] = [];
+                this.deferredActors[deferredTo].push(actor);
+                actors.splice(i, 1);
+            }
+        }
     }
 
     isActorVisible(view, actor) {
@@ -625,6 +684,15 @@ class Level {
             actor.render(view);
         });
 
+    }
+
+    /**
+     * Render actors/mounts deferred onto this specific cover layer by a ZGate (see applyZGates)
+     */
+
+    renderDeferredActors(view, layer) {
+        if (!(layer.name in this.deferredActors)) return;
+        this.deferredActors[layer.name].forEach(actor => actor.render(view));
     }
 
     /**
@@ -811,6 +879,22 @@ class Level {
                 shape.right - shape.left,
                 shape.bottom - shape.top
             );
+        });
+
+        // ZGates (box) with their anchorY seam line
+        view.ctx.fillStyle = 'rgba(255, 128, 0, 0.35)';
+        view.ctx.strokeStyle = 'rgba(255, 128, 0, 0.9)';
+        this.zgates.forEach(gate => {
+            view.ctx.fillRect(
+                gate.left + ox,
+                gate.top + oy,
+                gate.right - gate.left,
+                gate.bottom - gate.top
+            );
+            view.ctx.beginPath();
+            view.ctx.moveTo(gate.left + ox, gate.anchorY + oy);
+            view.ctx.lineTo(gate.right + ox, gate.anchorY + oy);
+            view.ctx.stroke();
         });
 
         // Actors

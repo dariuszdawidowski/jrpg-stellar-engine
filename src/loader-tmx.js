@@ -361,6 +361,11 @@ class LoaderTMX {
                     this.parseObjectMask(level, obj);
                 }
 
+                // ZGates (per-cover-layer render order override)
+                else if (type == 'zgate') {
+                    this.parseObjectZGate(level, obj, properties);
+                }
+
                 // Shapes
                 else if (type == 'shape') {
                     this.parseObjectShape(level, obj, properties);
@@ -535,6 +540,29 @@ class LoaderTMX {
             x: x + (w / 2),
             y: y + (h / 2),
             radius: w / 2,
+            left: x,
+            top: y,
+            right: x + w,
+            bottom: y + h
+        });
+    }
+
+    /**
+     * Parse <object id="1" name="foo" type="ZGate" x="10" y="20" width="30" height="40"> <properties layer="cover" scope="actor|mount:slot" anchor=".."/> </object>
+     */
+
+    parseObjectZGate(level, node, properties) {
+        const name = node.getAttribute('name');
+        const x = parseFloat(node.getAttribute('x')) * level.scale;
+        const y = parseFloat(node.getAttribute('y')) * level.scale;
+        const w = parseFloat(node.getAttribute('width')) * level.scale;
+        const h = parseFloat(node.getAttribute('height')) * level.scale;
+        level.zgates.push({
+            name: name.trim(),
+            layer: (properties.layer || '').toLowerCase(),
+            // Seam line an actor's baseline must cross to be drawn above this cover layer, defaults to the gate's bottom edge
+            anchorY: ('anchor' in properties) ? y + properties.anchor : y + h,
+            scope: properties.scope || 'actor',
             left: x,
             top: y,
             right: x + w,
