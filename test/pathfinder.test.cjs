@@ -57,3 +57,31 @@ test('findPath does not move diagonally through two blocked orthogonal cells', (
         [0.5, 0.5, 1.5, 1.5]
     );
 });
+
+test('findPath restarts when given a new collider list for the same endpoints', () => {
+    const pathfinder = createPathfinder();
+    const start = { x: 0.5, y: 0.5 };
+    const end = { x: 2.5, y: 0.5 };
+    pathfinder.findPath(start, end, [], 100);
+
+    const colliders = [{ left: 1, top: 0, right: 2, bottom: 1 }];
+    const path = pathfinder.findPath(start, end, colliders, 1000);
+
+    assert.ok(path);
+    assert.equal(path.some(point => point.x === 1.5 && point.y === 0.5), false);
+});
+
+test('invalidateSearch restarts after colliders are mutated in place', () => {
+    const pathfinder = createPathfinder();
+    const start = { x: 0.5, y: 0.5 };
+    const end = { x: 2.5, y: 0.5 };
+    const colliders = [];
+    pathfinder.findPath(start, end, colliders, 100);
+    colliders.push({ left: 1, top: 0, right: 2, bottom: 1 });
+
+    pathfinder.invalidateSearch();
+    const path = pathfinder.findPath(start, end, colliders, 1000);
+
+    assert.ok(path);
+    assert.equal(path.some(point => point.x === 1.5 && point.y === 0.5), false);
+});

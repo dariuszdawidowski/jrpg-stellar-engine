@@ -42,7 +42,8 @@ class Pathfinder {
             || this.search.startX !== startX
             || this.search.startY !== startY
             || this.search.endX !== endX
-            || this.search.endY !== endY;
+            || this.search.endY !== endY
+            || this.search.colliders !== colliders;
 
         if (hasNewSearch) {
             this.debugPoints = [];
@@ -191,6 +192,14 @@ class Pathfinder {
         }
 
         return null;
+    }
+
+    /**
+     * Discard cached search state after colliders are mutated in place
+     */
+
+    invalidateSearch() {
+        this.search = null;
     }
 
     _heuristic(a, b) {
