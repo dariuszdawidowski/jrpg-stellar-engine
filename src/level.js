@@ -287,14 +287,18 @@ class Level {
     getColliders(margin = 0) {
         if (this.colliders === null) {
             this.colliders = [];
-            const tileset = this.tilesets.values().next().value || null;
-            if (tileset) {
-                this.layers.forEach(layer => {
-                    if (layer.class == 'colliders') {
-                        this.colliders.push(...tileset.ref.getColliders(layer.map, this.offset.x, this.offset.y, tileset.first, margin));
-                    }
+            const tilesets = Array.from(this.tilesets.values()).sort((a, b) => a.first - b.first);
+            this.layers.forEach(layer => {
+                if (layer.class !== 'colliders') return;
+
+                tilesets.forEach((tileset, index) => {
+                    const nextFirst = tilesets[index + 1]?.first ?? Infinity;
+                    const tiles = layer.map.map(row => row.map(gid => (
+                        gid > 0 && gid >= tileset.first && gid < nextFirst ? gid : 0
+                    )));
+                    this.colliders.push(...tileset.ref.getColliders(tiles, this.offset.x, this.offset.y, tileset.first, margin));
                 });
-            }
+            });
         }
         return this.colliders;
     }
