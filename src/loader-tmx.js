@@ -28,13 +28,14 @@ class LoaderTMX {
      * @param args.scale: int - scale for this level (default 1)
      * @param args.view: Object - view reference
      * @param args.prefetch: bool - prefetch .acx & .tsx resources
+        * @param args.cullingMargin: Number - extra actor culling margin in pixels (default 0)
      */
 
     async loadLevel(args) {
-        const { url = null, scale = 1, prefetch = true } = args;
+        const { url = null, scale = 1, prefetch = true, cullingMargin = 0 } = args;
         const file = await fetch(url);
         const text = await file.text();
-        const level = await this.parseLevel({ xml: text, url, scale, prefetch, view: args.view });
+        const level = await this.parseLevel({ xml: text, url, scale, prefetch, view: args.view, cullingMargin });
         return level;
     }
 
@@ -45,18 +46,19 @@ class LoaderTMX {
      * @param args.scale: int - scale for this level (default 1)
      * @param args.view: Object - view reference
      * @param args.prefetch: bool - prefetch .acx & .tsx resources
+        * @param args.cullingMargin: Number - extra actor culling margin in pixels (default 0)
      */
 
     async parseLevel(args) {
 
-        const { xml = null, url = null, scale = 1, prefetch = true } = args;
+        const { xml = null, url = null, scale = 1, prefetch = true, cullingMargin = 0 } = args;
 
         // Parse XML
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'application/xml');
 
         // Create Level instance to return to
-        const level = new Level({ view: args.view });
+        const level = new Level({ view: args.view, cullingMargin });
 
         // Scale
         level.scale = scale;

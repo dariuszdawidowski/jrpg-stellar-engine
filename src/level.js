@@ -6,7 +6,8 @@ class Level {
 
     /**
      * Constructor
-     * @param args.view: Object - view refernece
+        * @param args.view: Object - view reference
+        * @param args.cullingMargin: Number - extra actor culling margin in pixels (default 0)
      */
 
     constructor(args) {
@@ -93,6 +94,9 @@ class Level {
 
         // View reference
         this.view = args.view;
+
+        // Extra actor culling margin in rendered pixels
+        this.cullingMargin = Math.max(0, args.cullingMargin ?? 0);
 
         // Colliders for the whole level (calculated automatically)
         this.colliders = null;
@@ -659,16 +663,17 @@ class Level {
     isActorVisible(view, actor) {
         const width = actor.tile.scaled.width;
         const height = actor.tile.scaled.height;
+        const margin = this.cullingMargin;
 
         const pos = view.world2Screen({
-            x: actor.transform.x - actor.tile.scaled.halfWidth,
-            y: actor.transform.y - actor.tile.scaled.halfHeight
+            x: actor.transform.x - actor.origin.x - margin,
+            y: actor.transform.y - actor.origin.y - margin
         });
 
         return (
-            pos.x + width >= 0 &&
+            pos.x + width + margin * 2 >= 0 &&
             pos.x <= view.canvas.width &&
-            pos.y + height >= 0 &&
+            pos.y + height + margin * 2 >= 0 &&
             pos.y <= view.canvas.height
         );
     }    
@@ -681,7 +686,7 @@ class Level {
 
         // Render actors
         this.renderActors[layer.name].forEach(actor => {
-            actor.render(view);
+            actor.render(view, false, this.cullingMargin);
         });
 
     }
@@ -692,7 +697,7 @@ class Level {
 
     renderDeferredActors(view, layer) {
         if (!(layer.name in this.deferredActors)) return;
-        this.deferredActors[layer.name].forEach(actor => actor.render(view));
+        this.deferredActors[layer.name].forEach(actor => actor.render(view, false, this.cullingMargin));
     }
 
     /**

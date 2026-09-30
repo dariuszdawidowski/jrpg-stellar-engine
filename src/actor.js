@@ -190,7 +190,7 @@ class Actor extends AnimSprite {
      * @param calledFromMount: bool - true when invoked by the mounting parent, bypasses the mountParent guard
      */
 
-    render(view, calledFromMount = false) {
+    render(view, calledFromMount = false, cullingMargin = 0) {
         // Drawn by the parent instead, avoids being rendered twice
         if (this.mountParent && !calledFromMount) return;
 
@@ -203,9 +203,9 @@ class Actor extends AnimSprite {
             const { child, offsets } = this.mounts[name];
             (this._resolveMountOffset(offsets, facing, name).behind ? behind : front).push(child);
         }
-        behind.forEach(child => child.render(view, true));
-        super.render(view);
-        front.forEach(child => child.render(view, true));
+        behind.forEach(child => child.render(view, true, cullingMargin));
+        super.render(view, cullingMargin);
+        front.forEach(child => child.render(view, true, cullingMargin));
     }
 
     /**

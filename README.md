@@ -40,6 +40,8 @@ const { Actor, Level, Cache } = require('jrpg-stellar-engine');
 # Levels
 Compatible with "Tiled" map editor format (tsx+tmx) https://www.mapeditor.org/.
 
+`LoaderTMX.loadLevel()` and `LoaderTMX.parseLevel()` accept an optional `cullingMargin` in rendered pixels. It expands actor visibility checks on each edge of the viewport; the default is `0`.
+
 # Load from CDN
 https://unpkg.com/jrpg-stellar-engine@latest/dist/jrpg-stellar-engine.js
 

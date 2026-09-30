@@ -149,7 +149,7 @@ class Sprite {
      * @param view: View context
      */
 
-    render(view) {
+    render(view, cullingMargin = 0) {
         const sx = this.tile.width * (this.tile.current % this.atlas.cols);
         const sy = this.tile.height * Math.floor(this.tile.current / this.atlas.cols);
         const d = view.world2Screen({
@@ -157,8 +157,8 @@ class Sprite {
             y: this.transform.y - this.origin.y,
         });
         
-        if (d.x > -this.tile.scaled.width && d.x < view.canvas.width && 
-            d.y > -this.tile.scaled.height && d.y < view.canvas.height) {
+        if (d.x > -this.tile.scaled.width - cullingMargin && d.x < view.canvas.width + cullingMargin &&
+            d.y > -this.tile.scaled.height - cullingMargin && d.y < view.canvas.height + cullingMargin) {
             
             if (this.transform.rotation !== null) {
                 const centerX = Math.round(d.x) + this.tile.scaled.halfWidth;

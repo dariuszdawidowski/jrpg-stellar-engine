@@ -112,10 +112,10 @@ class AnimSprite extends Sprite {
      * Render animated sprite
      */
 
-    render(view) {
+    render(view, cullingMargin = 0) {
         super.position(this.transform.x, this.transform.y);
         super.cell(this.anim.frame());
-        super.render(view);
+        super.render(view, cullingMargin);
     }
 
 }
