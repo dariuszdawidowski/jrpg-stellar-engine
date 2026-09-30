@@ -65,7 +65,6 @@
         <script src="../src/tileset.js"></script>
         <script src="../src/lighting.js"></script>
         <script src="../src/actor.js"></script>
-        <script src="../src/mob.js"></script>
         <script src="../src/level.js"></script>
         <script src="../src/loader-acx.js"></script>
         <script src="../src/loader-tsx.js"></script>
@@ -513,7 +512,7 @@
 
         <!-- ACX -->
         <script id="player-acx" type="text/xml">
-            <actor version="0.2" name="player" type="Actor" resource="#char1" width="48" height="80" cols="3" rows="4">
+            <actor version="0.2" name="player" type="Player" resource="#char1" width="48" height="80" cols="3" rows="4">
                 <movement speed="80" />
                 <collider x="4" y="16" width="8" height="4"/>
                 <animation name="idleUp">
@@ -653,6 +652,218 @@
                     <frame tileid="0" duration="1000"/>
                 </animation>
             </actor>
+        </script>
+
+        <!-- Player: demo-specific playable actor wrapping movement, animation and view scrolling -->
+        <script type="text/javascript">
+
+            class Player extends Actor {
+
+                /**
+                 * Advance animation every frame
+                 */
+
+                update(args) {
+                    this.anim.update(args.deltaTime);
+                }
+
+                /**
+                 * Stand still, facing the last moved direction instead of looping the move animation
+                 */
+
+                idle() {
+                    super.idle();
+                    const idle = { up: 'idleUp', down: 'idleDown', left: 'idleLeft', right: 'idleRight' };
+                    this.anim.play(idle[this.getFacing()], true, 0);
+                }
+
+                /**
+                 * Drive movement from the input state, one direction at a time
+                 */
+
+                control(input, deltaTime) {
+                    if (input.up) {
+                        this.moveUp(deltaTime);
+                    }
+                    else if (input.down) {
+                        this.moveDown(deltaTime);
+                    }
+                    else if (input.left) {
+                        this.moveLeft(deltaTime);
+                    }
+                    else if (input.right) {
+                        this.moveRight(deltaTime);
+                    }
+                }
+
+                moveUp(deltaTime) {
+
+                    // Direction
+                    this.transform.vec.y = -1;
+
+                    // Collide
+                    const [x, y] = this.collide(this.level.getColliders(), deltaTime);
+
+                    // Move
+                    this.move(x, y);
+
+                    // Animate
+                    this.anim.play('moveUp', true, 0);
+
+                    // Scroll view
+                    if (this.transform.y + this.view.offset.y < this.view.bounds.top) this.view.offset.y -= y;
+                }
+
+                moveDown(deltaTime) {
+
+                    // Direction
+                    this.transform.vec.y = 1;
+
+                    // Collide
+                    const [x, y] = this.collide(this.level.getColliders(), deltaTime);
+
+                    // Move
+                    this.move(x, y);
+
+                    // Animate
+                    this.anim.play('moveDown', true, 0);
+
+                    // Scroll view
+                    if (this.transform.y + this.view.offset.y > this.view.bounds.bottom) this.view.offset.y -= y;
+                }
+
+                moveLeft(deltaTime) {
+
+                    // Direction
+                    this.transform.vec.x = -1;
+
+                    // Collide
+                    let [x, y] = this.collide(this.level.getColliders(), deltaTime);
+
+                    // Stairs
+                    const st = this.stairsLeft(this.level.getStairs(), deltaTime);
+                    if (st) {
+                        x += st[0];
+                        y += st[1];
+                    }
+
+                    // Move
+                    this.move(x, y);
+
+                    // Animate
+                    this.anim.play('moveLeft', true, 0);
+
+                    // Scroll view
+                    if (this.transform.x + this.view.offset.x < this.view.bounds.left) this.view.offset.x -= x;
+                }
+
+                moveRight(deltaTime) {
+
+                    // Direction
+                    this.transform.vec.x = 1;
+
+                    // Collide
+                    let [x, y] = this.collide(this.level.getColliders(), deltaTime);
+
+                    // Stairs
+                    const st = this.stairsRight(this.level.getStairs(), deltaTime);
+                    if (st) {
+                        x += st[0];
+                        y += st[1];
+                    }
+
+                    // Move
+                    this.move(x, y);
+
+                    // Animate
+                    this.anim.play('moveRight', true, 0);
+
+                    // Scroll view
+                    if (this.transform.x + this.view.offset.x > this.view.bounds.right) this.view.offset.x -= x;
+                }
+
+            }
+
+        </script>
+
+        <!-- MOB: example-only wandering NPC behaviour, moved here from the engine (not part of the library bundle) -->
+        <script type="text/javascript">
+
+            /**
+             * MOB - mobile object, actor with self-movement
+             */
+
+            class MOB extends Actor {
+
+                /**
+                 * Create sprite
+                 * All params from TileSet+Sprite
+                 */
+
+                constructor(args) {
+                    super(args);
+
+                    // Current action (used)
+                    this.action = 'idle';
+
+                    // Helper counter for movement (seconds)
+                    this.duration = 0;
+
+                    // Last collision bounce direction (to avoid)
+                    this.last = [0, 0];
+
+                    // Start wander
+                    this.wander();
+                }
+
+
+                /**
+                 * Start new wandering
+                 */
+
+                wander() {
+                    // Duration of movement (sec)
+                    this.duration = randomRangeFloat(0.5, 2.5);
+                    // Available directions without last one
+                    const directions = [[-1, 0], [0, -1], [1, 0], [0, 1], [0, 0], [0, 0], [0, 0], [0, 0]].filter(d => !(d[0] == this.last[0] && d[1] == this.last[1]));
+                    // Random direction
+                    const direction = directions[randomRangeInt(0, directions.length - 1)];
+                    this.last[0] = direction[0];
+                    this.last[1] = direction[1];
+                    this.transform.vec.set(direction[0], direction[1]);
+                }
+
+                /**
+                 * Update every frame
+                 * @param args.colliders: [array] - list of colliders
+                 * @param args.deltaTime: Number - delta time since last frame
+                 */
+
+                update(args) {
+                    if (this.duration > 0) {
+                        this.duration -= args.deltaTime;
+
+                        // Movement
+                        if (this.transform.vec.x != 0 || this.transform.vec.y != 0) {
+                            let [x, y] = this.collide(args.colliders, args.deltaTime);
+                            this.move(x, y);
+                            const move = { up: 'moveUp', down: 'moveDown', left: 'moveLeft', right: 'moveRight' };
+                            this.anim.play(move[this.getFacing()], true, 0);
+                        }
+                        // Idle
+                        else {
+                            this.anim.play('idle', true, 0);
+                        }
+                        this.anim.update(args.deltaTime);
+                    }
+                    else {
+                        // Random new direction
+                        this.wander();
+                    }
+                }
+
+            }
+
         </script>
 
         <!-- Main canvas window -->
@@ -860,8 +1071,6 @@
                             }).then(result => {
                                 player = result;
                                 player.view = view;
-                                // Advance the animation set by anim.play() below (level.update() calls this with an args object, not a raw number)
-                                player.update = (args) => player.anim.update(args.deltaTime);
                                 // Load Level
                                 loadLevel('test-tmx', 'player').then(() => start());
                             })
@@ -871,93 +1080,6 @@
                 });
 
             });
-
-            // Player movement
-            const playerMoveUp = (deltaTime) => {
-
-                // Direction
-                player.transform.vec.y = -1;
-
-                // Collide
-                const [x, y] = player.collide(level.getColliders(), deltaTime);
-
-                // Move
-                player.move(x, y);
-
-                // Animate
-                player.anim.play('moveUp', true, 0);
-
-                // Scrol view
-                if (player.transform.y + view.offset.y < view.bounds.top) view.offset.y -= y;
-            };
-
-            const playerMoveDown = (deltaTime) => {
-
-                // Direction
-                player.transform.vec.y = 1;
-
-                // Collide
-                const [x, y] = player.collide(level.getColliders(), deltaTime);
-
-                // Move
-                player.move(x, y);
-
-                // Animate
-                player.anim.play('moveDown', true, 0);
-
-                // Scrol view
-                if (player.transform.y + view.offset.y > view.bounds.bottom) view.offset.y -= y;
-            };
-
-            const playerMoveLeft = (deltaTime) => {
-
-                // Direction
-                player.transform.vec.x = -1;
-
-                // Collide
-                let [x, y] = player.collide(level.getColliders(), deltaTime);
-
-                // Stairs
-                const st = player.stairsLeft(level.getStairs(), deltaTime);
-                if (st) {
-                    x += st[0];
-                    y += st[1];
-                }
-
-                // Move
-                player.move(x, y);
-
-                // Animate
-                player.anim.play('moveLeft', true, 0);
-
-                // Scrol view
-                if (player.transform.x + view.offset.x < view.bounds.left) view.offset.x -= x;
-            };
-
-            const playerMoveRight = (deltaTime) => {
-
-                // Direction
-                player.transform.vec.x = 1;
-
-                // Collide
-                let [x, y] = player.collide(level.getColliders(), deltaTime);
-
-                // Stairs
-                const st = player.stairsRight(level.getStairs(), deltaTime);
-                if (st) {
-                    x += st[0];
-                    y += st[1];
-                }
-
-                // Move
-                player.move(x, y);
-
-                // Animate
-                player.anim.play('moveRight', true, 0);
-
-                // Scrol view
-                if (player.transform.x + view.offset.x > view.bounds.right) view.offset.x -= x;
-            };
 
             // Start loop
             const start = () => {
@@ -988,18 +1110,7 @@
                 view.cls();
 
                 // Player movement
-                if (input.up) {
-                    playerMoveUp(deltaTime);
-                }
-                else if (input.down) {
-                    playerMoveDown(deltaTime);
-                }
-                else if (input.left) {
-                    playerMoveLeft(deltaTime);
-                }
-                else if (input.right) {
-                    playerMoveRight(deltaTime);
-                }
+                player.control(input, deltaTime);
 
                 // Enter into portal
                 level.getPortals().forEach(portal => {
