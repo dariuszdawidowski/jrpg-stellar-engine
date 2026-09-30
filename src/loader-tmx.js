@@ -98,7 +98,7 @@ class LoaderTMX {
 
                     // Objects
                     case 'objectgroup':
-                        this.parseObjectGroup(level, resources, node);
+                        await this.parseObjectGroup(level, resources, node);
                         break;
                 }
             }
@@ -305,7 +305,7 @@ class LoaderTMX {
      * Parse <objectgroup id="1" name="Objects" class="objects" locked="1">
      */
 
-    parseObjectGroup(level, resources, node) {
+    async parseObjectGroup(level, resources, node) {
 
         // Parse attributes
         const layerName = node.getAttribute('name').toLowerCase().trim();
@@ -323,7 +323,7 @@ class LoaderTMX {
             'properties': properties
         }
         level.layers.push(layer);
-        node.querySelectorAll('object').forEach(obj => {
+        for (const obj of node.querySelectorAll('object')) {
 
             // Parse attributes
             const name = obj.getAttribute('name')?.toLowerCase();
@@ -341,7 +341,7 @@ class LoaderTMX {
 
                 // Spawn point (direct)
                 if (type == 'spawn') {
-                    this.parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties);
+                    await this.parseObjectSpawn(level, layer, resources, name, x, y, w, h, properties);
                 }
 
                 // Respawn point (random repeatable spawn)
@@ -401,7 +401,7 @@ class LoaderTMX {
 
             }
 
-        });
+        }
     }
 
     /**
