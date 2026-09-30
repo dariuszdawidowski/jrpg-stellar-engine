@@ -49,6 +49,13 @@ function create2DArray(arr, width) {
 
 /****** URL UTILS ******/
 
+function assertFetchResponseOk(response, url) {
+    if (response.ok) return response;
+
+    const status = [response.status, response.statusText].filter(Boolean).join(' ');
+    throw new Error(`Failed to fetch "${url}"${status ? ` (${status})` : ''}`);
+}
+
 /**
  * Making second path absolute too
  */

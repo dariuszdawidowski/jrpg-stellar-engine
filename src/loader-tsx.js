@@ -12,7 +12,7 @@ class LoaderTSX {
      */
 
     async loadTileSet(args) {
-        const file = await fetch(args.url);
+        const file = assertFetchResponseOk(await fetch(args.url), args.url);
         const text = await file.text();
         const tileset = await this.parseTileSet({ xml: text, url: args.url, resource: args?.resource, scale: args.scale });
         return tileset;
@@ -75,7 +75,7 @@ class LoaderTSX {
     }
 
     async fetchImage(url) {
-        const response = await fetch(url);
+        const response = assertFetchResponseOk(await fetch(url), url);
         const blob = await response.blob();
         const imageURL = URL.createObjectURL(blob);
         const img = new Image();

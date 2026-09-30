@@ -33,7 +33,7 @@ class LoaderTMX {
 
     async loadLevel(args) {
         const { url = null, scale = 1, prefetch = true, cullingMargin = 0 } = args;
-        const file = await fetch(url);
+        const file = assertFetchResponseOk(await fetch(url), url);
         const text = await file.text();
         const level = await this.parseLevel({ xml: text, url, scale, prefetch, view: args.view, cullingMargin });
         return level;
@@ -155,7 +155,7 @@ class LoaderTMX {
 
             // Fetch tsx resources
             const tsxPromises = Object.keys(resources.tsx).map(async name => {
-                const tsxFile = await fetch(resources.tsx[name].url);
+                const tsxFile = assertFetchResponseOk(await fetch(resources.tsx[name].url), resources.tsx[name].url);
                 const tsxText = await tsxFile.text();
                 resources.tsx[name].buffer = tsxText;
                 resources.tsx[name].tileset = await this.loader.tsx.parseTileSet({
@@ -169,7 +169,7 @@ class LoaderTMX {
 
             // Fetch acx resources
             const acxPromises = Object.keys(resources.acx).map(async url => {
-                const acxFile = await fetch(url);
+                const acxFile = assertFetchResponseOk(await fetch(url), url);
                 const acxText = await acxFile.text();
                 resources.acx[url] = acxText;
             });
