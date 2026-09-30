@@ -32,46 +32,47 @@ class LoaderTSX {
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'application/xml');
-        const tileset = doc.querySelector('tileset');
-        if (tileset) {
+        const source = url || 'TSX input';
+        const tileset = getXmlRoot(doc, 'tileset', source);
 
-            // Image
-            const image = tileset.querySelector('image');
-            if (image) {
-                const params = {
-                    resource: (url && !resource) ? resolvePath(url, image.getAttribute('source')) : resource,
-                    width: parseInt(image.getAttribute('width')),
-                    height: parseInt(image.getAttribute('height')),
-                    cell: parseInt(tileset.getAttribute('tilewidth')),
-                    scale
-                };
+        // Image
+        const image = tileset.querySelector('image');
+        if (!image) throw new Error(`Invalid XML in ${source}: missing <image> element`);
 
-                // Preload image
-                if (preload) {
-                    params.resource = await this.fetchImage(params.resource);
-                }
+        const imageSource = image.getAttribute('source');
+        if (!imageSource) throw new Error(`Invalid XML in ${source}: <image> requires a "source"`);
 
-                // Animations
-                const anim = {};
-                tileset.querySelectorAll('tile').forEach(tile => {
-                    const animation = tile.querySelector('animation');
-                    if (animation) {
-                        const id = tile.getAttribute('id');
-                        anim[id] = [];
-                        animation.querySelectorAll('frame').forEach(f => {
-                            const tileId = parseInt(f.getAttribute('tileid'));
-                            const duration = parseInt(f.getAttribute('duration'));
-                             anim[id].push([tileId, duration]);
-                        });
-                    }
-                });
-                if (Object.keys(anim).length > 0) params['anim'] = anim;
-                const newTileset = new TileSet(params);
-                await newTileset.load();
-                return newTileset;
-            }
+        const params = {
+            resource: (url && !resource) ? resolvePath(url, imageSource) : resource,
+            width: getPositiveIntegerAttribute(image, 'width', source, 'image'),
+            height: getPositiveIntegerAttribute(image, 'height', source, 'image'),
+            cell: getPositiveIntegerAttribute(tileset, 'tilewidth', source, 'tileset'),
+            scale
+        };
+
+        // Preload image
+        if (preload) {
+            params.resource = await this.fetchImage(params.resource);
         }
-        return null;
+
+        // Animations
+        const anim = {};
+        tileset.querySelectorAll('tile').forEach(tile => {
+            const animation = tile.querySelector('animation');
+            if (animation) {
+                const id = tile.getAttribute('id');
+                anim[id] = [];
+                animation.querySelectorAll('frame').forEach(f => {
+                    const tileId = parseInt(f.getAttribute('tileid'));
+                    const duration = parseInt(f.getAttribute('duration'));
+                    anim[id].push([tileId, duration]);
+                });
+            }
+        });
+        if (Object.keys(anim).length > 0) params['anim'] = anim;
+        const newTileset = new TileSet(params);
+        await newTileset.load();
+        return newTileset;
     }
 
     async fetchImage(url) {

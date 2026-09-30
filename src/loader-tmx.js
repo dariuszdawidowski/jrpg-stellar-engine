@@ -56,6 +56,10 @@ class LoaderTMX {
         // Parse XML
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'application/xml');
+        const source = url || 'TMX input';
+        const root = getXmlRoot(doc, 'map', source);
+        const tileWidth = getPositiveIntegerAttribute(root, 'tilewidth', source, 'map');
+        const tileHeight = getPositiveIntegerAttribute(root, 'tileheight', source, 'map');
 
         // Create Level instance to return to
         const level = new Level({ view: args.view, cullingMargin });
@@ -66,12 +70,9 @@ class LoaderTMX {
         // Parse global level properties
         level.properties = parseProperties(doc.querySelector('map > properties'));
 
-        // Root <map>
-        const root = doc.querySelector('map');
-
         // Tiles size
-        level.tile.w = parseInt(root.getAttribute('tilewidth'));
-        level.tile.h = parseInt(root.getAttribute('tileheight'));
+        level.tile.w = tileWidth;
+        level.tile.h = tileHeight;
 
         // Resources list 
         const resources = await this.fetchResources(root, url, scale, prefetch);

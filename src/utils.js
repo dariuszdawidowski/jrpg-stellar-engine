@@ -56,6 +56,25 @@ function assertFetchResponseOk(response, url) {
     throw new Error(`Failed to fetch "${url}"${status ? ` (${status})` : ''}`);
 }
 
+function getXmlRoot(doc, rootName, source) {
+    const parserError = doc.querySelector('parsererror');
+    if (parserError) {
+        const details = parserError.textContent?.trim();
+        throw new Error(`Invalid XML in ${source}: ${details || 'parse error'}`);
+    }
+
+    const root = doc.querySelector(rootName);
+    if (!root) throw new Error(`Invalid XML in ${source}: missing <${rootName}> element`);
+    return root;
+}
+
+function getPositiveIntegerAttribute(node, attribute, source, elementName) {
+    const value = Number(node.getAttribute(attribute));
+    if (!Number.isInteger(value) || value <= 0) {
+        throw new Error(`Invalid XML in ${source}: <${elementName}> requires a positive integer "${attribute}"`);
+    }
+    return value;
+}
 /**
  * Making second path absolute too
  */
