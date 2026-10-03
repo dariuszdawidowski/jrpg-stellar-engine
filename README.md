@@ -38,11 +38,11 @@ const { Actor, Level, Cache, Pathfinder } = require('jrpg-stellar-engine');
 ```
 
 # Pathfinding
-`Pathfinder` finds a path using the level's collider list. `findPath()` may return `null` while an incremental search is still in progress; call it again with the same start, end, and collider list to continue. If the collider array is mutated in place, call `invalidateSearch()` before searching again.
+`Pathfinder` finds a path using the level's collider list. Pass `level.getColliderGrid()` instead of `level.getColliders()` to use spatial queries. `findPath()` may return `null` while an incremental search is still in progress; call it again with the same start, end, and collider source to continue. After mutating colliders in place, call `level.invalidateColliderGrid()` when using a grid, then call `pathfinder.invalidateSearch()` before searching again.
 
 ```js
 const pathfinder = new Pathfinder({ gridSize: 16, maxSearchDistance: 1000 });
-const path = pathfinder.findPath(start, end, level.getColliders());
+const path = pathfinder.findPath(start, end, level.getColliderGrid());
 ```
 
 # Levels

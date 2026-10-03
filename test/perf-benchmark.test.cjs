@@ -85,22 +85,32 @@ test('perf: Actor collision full scan versus spatial grid', () => {
 test('perf: Pathfinder.findPath over a cluttered grid', () => {
     const context = createEngineContext();
     const colliders = buildColliders(120, 600);
-    const pathfinder = vm.runInContext(`new Pathfinder(${JSON.stringify({ gridSize: 16, maxSearchDistance: 600 })})`, context);
+    context.colliders = colliders;
+    let grid;
+    const gridBuildElapsed = timeMs(() => {
+        grid = vm.runInContext('new SpatialGrid(colliders, 64)', context);
+    });
+    const searches = Array.from({ length: 6 }, () => ({
+        start: { x: Math.random() * 600, y: Math.random() * 600 },
+        end: { x: Math.random() * 600, y: Math.random() * 600 }
+    }));
 
-    const elapsed = timeMs(() => {
-        for (let i = 0; i < 6; i++) {
+    const runSearches = colliderSource => {
+        const pathfinder = vm.runInContext(`new Pathfinder(${JSON.stringify({ gridSize: 16, maxSearchDistance: 600 })})`, context);
+        for (const { start, end } of searches) {
             pathfinder.invalidateSearch();
-            const start = { x: Math.random() * 600, y: Math.random() * 600 };
-            const end = { x: Math.random() * 600, y: Math.random() * 600 };
             let path = null;
             let guard = 0;
             while (path === null && guard < 100) {
-                path = pathfinder.findPath(start, end, colliders, 200);
+                path = pathfinder.findPath(start, end, colliderSource, 200);
                 guard++;
             }
         }
-    });
+    };
+    const arrayElapsed = timeMs(() => runSearches(colliders));
+    const gridElapsed = timeMs(() => runSearches(grid));
 
-    console.log(`[perf] Pathfinder.findPath x6 searches over ${colliders.length} colliders: ${elapsed.toFixed(1)}ms`);
-    assert.ok(elapsed < 10000, `findPath() benchmark took unexpectedly long: ${elapsed}ms`);
+    console.log(`[perf] Pathfinder x${searches.length} searches over ${colliders.length} colliders: array ${arrayElapsed.toFixed(1)}ms, grid build ${gridBuildElapsed.toFixed(1)}ms, grid ${gridElapsed.toFixed(1)}ms`);
+    assert.ok(arrayElapsed < 10000, `findPath() array benchmark took unexpectedly long: ${arrayElapsed}ms`);
+    assert.ok(gridElapsed < 10000, `findPath() grid benchmark took unexpectedly long: ${gridElapsed}ms`);
 });

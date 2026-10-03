@@ -5,6 +5,7 @@ const test = require('node:test');
 const vm = require('node:vm');
 
 const pathfinderSource = readFileSync(join(__dirname, '..', 'src', 'pathfinder.js'), 'utf8');
+const spatialGridSource = readFileSync(join(__dirname, '..', 'src', 'spatial-grid.js'), 'utf8');
 
 function createPathfinder(args = {}) {
     const box4Box = (a, b) => !(
@@ -14,8 +15,15 @@ function createPathfinder(args = {}) {
         || a.top > b.bottom
     );
     const context = vm.createContext({ box4Box });
+    vm.runInContext(spatialGridSource, context);
     vm.runInContext(pathfinderSource, context);
     return vm.runInContext(`new Pathfinder(${JSON.stringify({ gridSize: 1, maxSearchDistance: 4, ...args })})`, context);
+}
+
+function createSpatialGrid(colliders, cellSize = 1) {
+    const context = vm.createContext({ colliders, cellSize });
+    vm.runInContext(spatialGridSource, context);
+    return vm.runInContext('new SpatialGrid(colliders, cellSize)', context);
 }
 
 function pathCost(path) {
@@ -40,6 +48,31 @@ test('findPath returns the lowest-cost route on an open grid', () => {
 
     assert.equal(path.length, 4);
     assert.equal(pathCost(path), 3.8);
+});
+
+test('findPath returns the same path with an array or spatial grid', () => {
+    const colliders = [
+        { left: 1, top: 0, right: 2, bottom: 1 },
+        { left: 6, top: 6, right: 7, bottom: 7 }
+    ];
+    const arrayPath = createPathfinder({ maxSearchDistance: 8 }).findPath(
+        { x: 0.5, y: 0.5 }, { x: 3.5, y: 0.5 }, colliders, 1000
+    );
+    const gridPathfinder = createPathfinder({ maxSearchDistance: 8 });
+    const grid = createSpatialGrid(colliders);
+    const originalQuery = grid.query.bind(grid);
+    let queryCount = 0;
+    grid.query = rect => {
+        queryCount++;
+        return originalQuery(rect);
+    };
+    const gridPath = gridPathfinder.findPath(
+        { x: 0.5, y: 0.5 }, { x: 3.5, y: 0.5 }, grid, 1000
+    );
+
+    assert.ok(arrayPath);
+    assert.equal(JSON.stringify(gridPath), JSON.stringify(arrayPath));
+    assert.ok(queryCount > 1);
 });
 
 test('incremental findPath matches a single-call search', () => {

@@ -27,7 +27,7 @@ class Pathfinder {
      * Find optimal path between two points
      * @param {object} start - Starting position {x, y}
      * @param {object} end - Ending position {x, y}
-     * @param {Array} colliders - List of level's colliders
+    * @param {Array|SpatialGrid} colliders - List of level's colliders or a spatial query provider
      * @param {Number} steps - Maximum number of A* nodes processed in one call
      * @returns {array|null} - Array of path nodes or null if path not found
      */
@@ -106,7 +106,8 @@ class Pathfinder {
                 right: centerX + collisionSize / 2,
                 bottom: centerY + collisionSize / 2
             };
-            return colliders.some(collider => box4Box(rect, collider));
+            const candidates = typeof colliders.query === 'function' ? colliders.query(rect) : colliders;
+            return candidates.some(collider => box4Box(rect, collider));
         };
         const neighbors = [
             {x: -1, y: 0},
@@ -325,7 +326,7 @@ class Pathfinder {
     /**
      * Check if point is blocked by any collider
      * @param {object} point - Point to check {x, y}
-     * @param {Array} colliders - List of colliders
+    * @param {Array|SpatialGrid} colliders - List of colliders or a spatial query provider
      * @returns {boolean} - True if point is blocked
      */
 
@@ -338,7 +339,8 @@ class Pathfinder {
             bottom: point.y + testSize / 2
         };
         
-        for (const collider of colliders) {
+        const candidates = typeof colliders.query === 'function' ? colliders.query(testRect) : colliders;
+        for (const collider of candidates) {
             if (box4Box(testRect, collider)) {
                 this.debugPoints.push({...point, blocked: true});
                 return true;
@@ -353,7 +355,7 @@ class Pathfinder {
      * Raycast with colliders
      * @param {object} point - Starting point {x, y}
      * @param {object} vector - Direction vector {x, y}
-     * @param {Array} colliders - List of colliders
+    * @param {Array|SpatialGrid} colliders - List of colliders or a spatial query provider
      * @returns {object} - Intersection point {x, y} offset by gridSize or point at maxDistance if no intersection
      */
 
