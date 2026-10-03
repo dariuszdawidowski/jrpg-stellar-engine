@@ -6,7 +6,7 @@ const test = require('node:test');
 const vm = require('node:vm');
 const { build } = require('../build.js');
 
-test('Pathfinder is exported from CommonJS and browser bundles', async () => {
+test('Pathfinder and SpatialGrid are exported from CommonJS and browser bundles', async () => {
     const repoRoot = join(__dirname, '..');
     const rootDir = await mkdtemp(join(os.tmpdir(), 'jrpg-engine-api-'));
 
@@ -18,10 +18,12 @@ test('Pathfinder is exported from CommonJS and browser bundles', async () => {
         const bundlePath = join(rootDir, 'dist', 'jrpg-stellar-engine.js');
         const commonJsApi = require(bundlePath);
         assert.equal(typeof commonJsApi.Pathfinder, 'function');
+        assert.equal(typeof commonJsApi.SpatialGrid, 'function');
 
         const browserGlobal = {};
         vm.runInNewContext(await require('node:fs/promises').readFile(bundlePath, 'utf8'), browserGlobal);
         assert.equal(typeof browserGlobal.Pathfinder, 'function');
+        assert.equal(typeof browserGlobal.SpatialGrid, 'function');
     } finally {
         await rm(rootDir, { recursive: true, force: true });
     }

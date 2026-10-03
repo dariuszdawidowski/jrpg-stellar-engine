@@ -100,6 +100,8 @@ class Level {
 
         // Colliders for the whole level (calculated automatically)
         this.colliders = null;
+        this.colliderGrid = null;
+        this.colliderGridCellSize = args.colliderGridCellSize ?? 64;
 
         // Chunk pre-rendering (optional perf feature, opt-in via bakeChunks()): tile-grid chunk size in tiles
         this.chunkSize = args.chunkSize || 16;
@@ -311,6 +313,19 @@ class Level {
             });
         }
         return this.colliders;
+    }
+
+    getColliderGrid(cellSize = this.colliderGridCellSize) {
+        const colliders = this.getColliders();
+        if (!this.colliderGrid || this.colliderGrid.colliders !== colliders || this.colliderGrid.cellSize !== cellSize) {
+            this.colliderGrid = new SpatialGrid(colliders, cellSize);
+            this.colliderGridCellSize = cellSize;
+        }
+        return this.colliderGrid;
+    }
+
+    invalidateColliderGrid() {
+        this.colliderGrid = null;
     }
 
     /**

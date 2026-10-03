@@ -7,6 +7,7 @@ const vm = require('node:vm');
 const utilsSource = readFileSync(join(__dirname, '..', 'src', 'utils.js'), 'utf8');
 const spriteSource = readFileSync(join(__dirname, '..', 'src', 'sprite.js'), 'utf8');
 const animspriteSource = readFileSync(join(__dirname, '..', 'src', 'animsprite.js'), 'utf8');
+const spatialGridSource = readFileSync(join(__dirname, '..', 'src', 'spatial-grid.js'), 'utf8');
 const actorSource = readFileSync(join(__dirname, '..', 'src', 'actor.js'), 'utf8');
 const pathfinderSource = readFileSync(join(__dirname, '..', 'src', 'pathfinder.js'), 'utf8');
 
@@ -15,6 +16,7 @@ function createEngineContext() {
     vm.runInContext(utilsSource, context);
     vm.runInContext(spriteSource, context);
     vm.runInContext(animspriteSource, context);
+    vm.runInContext(spatialGridSource, context);
     vm.runInContext(actorSource, context);
     vm.runInContext(pathfinderSource, context);
     return context;
@@ -46,11 +48,16 @@ function timeMs(fn) {
     return Number(process.hrtime.bigint() - start) / 1e6;
 }
 
-// Baseline reference for Actor.collide() broad-phase cost (Phase C): O(actors * colliders) today.
+// Compare the full collider scan with the opt-in broad-phase grid.
 // Generous threshold - this is a smoke/regression guard, not a strict perf gate (avoids CI flakiness).
-test('perf: Actor.collide() against a large level collider list', () => {
+test('perf: Actor collision full scan versus spatial grid', () => {
     const context = createEngineContext();
     const colliders = buildColliders(800, 4000);
+    context.colliders = colliders;
+    const gridBuildElapsed = timeMs(() => {
+        vm.runInContext('grid = new SpatialGrid(colliders, 64)', context);
+    });
+    const grid = context.grid;
     const actors = [];
     for (let i = 0; i < 80; i++) {
         const actor = createActor(context, Math.random() * 4000, Math.random() * 4000);
@@ -58,14 +65,20 @@ test('perf: Actor.collide() against a large level collider list', () => {
         actors.push(actor);
     }
 
-    const elapsed = timeMs(() => {
+    const fullScanElapsed = timeMs(() => {
         for (let frame = 0; frame < 15; frame++) {
             for (const actor of actors) actor.collide(colliders, 1 / 60);
         }
     });
+    const gridElapsed = timeMs(() => {
+        for (let frame = 0; frame < 15; frame++) {
+            for (const actor of actors) actor.collideGrid(grid, 1 / 60);
+        }
+    });
 
-    console.log(`[perf] Actor.collide x${actors.length} actors x${colliders.length} colliders x15 frames: ${elapsed.toFixed(1)}ms`);
-    assert.ok(elapsed < 10000, `collide() benchmark took unexpectedly long: ${elapsed}ms`);
+    console.log(`[perf] Actor collision x${actors.length} actors x${colliders.length} colliders x15 frames: full scan ${fullScanElapsed.toFixed(1)}ms, grid build ${gridBuildElapsed.toFixed(1)}ms, grid query ${gridElapsed.toFixed(1)}ms`);
+    assert.ok(fullScanElapsed < 10000, `collide() benchmark took unexpectedly long: ${fullScanElapsed}ms`);
+    assert.ok(gridElapsed < 10000, `collideGrid() benchmark took unexpectedly long: ${gridElapsed}ms`);
 });
 
 // Baseline reference for Pathfinder A* search cost (Phase D): linear open/closed list scans today.

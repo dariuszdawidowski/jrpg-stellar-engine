@@ -356,6 +356,18 @@ class Actor extends AnimSprite {
         return [finalHorizontal + finalSlideH, finalVertical + finalSlideV];
     }
 
+    collideGrid(grid, deltaTime) {
+        const collider = this.getCollider();
+        const reach = Math.abs(this.properties.spd * deltaTime);
+        const nearby = grid.query({
+            left: collider.left - reach,
+            top: collider.top - reach,
+            right: collider.right + reach,
+            bottom: collider.bottom + reach
+        });
+        return this.collide(nearby, deltaTime);
+    }
+
     /**
      * Applies radial deadzone and returns direction + speed scale.
      * Works correctly for both digital input (keyboard, magnitude 0/1/√2)

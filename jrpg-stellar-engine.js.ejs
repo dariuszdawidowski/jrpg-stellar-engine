@@ -8,6 +8,7 @@
 <%- await minjs('src/animsprite.js') %>
 <%- await minjs('src/tileset.js') %>
 <%- await minjs('src/lighting.js') %>
+<%- await minjs('src/spatial-grid.js') %>
 <%- await minjs('src/actor.js') %>
 <%- await minjs('src/portal.js') %>
 <%- await minjs('src/stairs.js') %>
@@ -20,5 +21,5 @@
 <%- await minjs('src/view.js') %>
 <%- await minjs('src/utils.js') %>
 <%- await minjs('src/pathfinder.js') %>
-return { Cache, Sprite, AnimSprite, TileSet, Lighting, Actor, Portal, Stairs, SpawnPoint, RespawnPoint, Level, LoaderACX, LoaderTSX, LoaderTMX, View, Pathfinder, EPSILON, BAYER_4X4, randomRangeInt, randomRangeFloat, roundToNearestEven, create2DArray, resolvePath, point4Box, anglePoints, distancePoints, box4Box, parseProperties, parseIntRange, parseSlug };
+return { Cache, Sprite, AnimSprite, TileSet, Lighting, SpatialGrid, Actor, Portal, Stairs, SpawnPoint, RespawnPoint, Level, LoaderACX, LoaderTSX, LoaderTMX, View, Pathfinder, EPSILON, BAYER_4X4, randomRangeInt, randomRangeFloat, roundToNearestEven, create2DArray, resolvePath, point4Box, anglePoints, distancePoints, box4Box, parseProperties, parseIntRange, parseSlug };
 });
