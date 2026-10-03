@@ -250,7 +250,17 @@ class Level {
         ctx.mozImageSmoothingEnabled = false;
 
         // Minimal view shim: chunk-local coordinates, no camera scroll
-        const chunkView = { ctx, canvas: { width: w, height: h }, world2Screen: transform => transform };
+        const chunkPoint = { x: 0, y: 0 };
+        const chunkView = {
+            ctx,
+            canvas: { width: w, height: h },
+            world2Screen: transform => transform,
+            world2ScreenXY: (x, y) => {
+                chunkPoint.x = x;
+                chunkPoint.y = y;
+                return chunkPoint;
+            }
+        };
         for (const ts of this.tilesets.values()) {
             ts.ref.render(chunkView, slice, 0, 0, ts.first);
         }
