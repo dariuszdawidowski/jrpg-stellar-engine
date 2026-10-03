@@ -42,6 +42,40 @@ test('findPath returns the lowest-cost route on an open grid', () => {
     assert.equal(pathCost(path), 3.8);
 });
 
+test('incremental findPath matches a single-call search', () => {
+    const start = { x: 0.5, y: 0.5 };
+    const end = { x: 3.5, y: 2.5 };
+    const colliders = [];
+    const fullSearch = createPathfinder().findPath(start, end, colliders, 100);
+    const incrementalSearch = createPathfinder();
+    let path = null;
+    let calls = 0;
+
+    while (path === null && calls < 100) {
+        path = incrementalSearch.findPath(start, end, colliders, 1);
+        calls++;
+    }
+
+    assert.ok(path);
+    assert.equal(JSON.stringify(path), JSON.stringify(fullSearch));
+    assert.ok(calls > 1);
+});
+
+test('open heap ignores stale entries after a node receives a better score', () => {
+    const pathfinder = createPathfinder();
+    const node = { x: 2, y: 3, f: 8 };
+    const search = { openHeap: [], nextOpenOrder: 0, closedSet: new Set() };
+
+    pathfinder._pushOpenNode(search, node);
+    node.f = 4;
+    pathfinder._pushOpenNode(search, node);
+
+    assert.equal(pathfinder._hasOpenNodes(search), true);
+    assert.equal(pathfinder._popOpenNode(search.openHeap).f, 4);
+    search.closedSet.add('2,3');
+    assert.equal(pathfinder._hasOpenNodes(search), false);
+});
+
 test('findPath does not move diagonally through two blocked orthogonal cells', () => {
     const pathfinder = createPathfinder({ maxSearchDistance: 3 });
     const blockedCells = [

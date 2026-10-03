@@ -81,14 +81,16 @@ class Pathfinder {
                 colliders,
                 startNode,
                 endNode,
-                openList: [startNode],
-                closedList: [],
+                openHeap: [],
+                nextOpenOrder: 0,
+                closedSet: new Set(),
                 nodeMap: {[`${startNode.x},${startNode.y}`]: startNode},
                 closestNode: startNode,
                 closestDistance: this._heuristic(startNode, endNode),
                 complete: false,
                 path: null
             };
+            this._pushOpenNode(this.search, startNode);
         }
 
         if (this.search.complete) return this.search.path;
@@ -117,19 +119,15 @@ class Pathfinder {
             {x: 1, y: 1}
         ];
 
-        for (let step = 0; step < searchSteps && this.search.openList.length > 0; step++) {
-            let currentIndex = 0;
-            let currentNode = this.search.openList[0];
+        let processedSteps = 0;
+        while (processedSteps < searchSteps && this._hasOpenNodes(this.search)) {
+            const entry = this._popOpenNode(this.search.openHeap);
+            const currentNode = entry.node;
+            const currentKey = `${currentNode.x},${currentNode.y}`;
+            if (entry.f !== currentNode.f || this.search.closedSet.has(currentKey)) continue;
 
-            for (let index = 1; index < this.search.openList.length; index++) {
-                if (this.search.openList[index].f < currentNode.f) {
-                    currentNode = this.search.openList[index];
-                    currentIndex = index;
-                }
-            }
-
-            this.search.openList.splice(currentIndex, 1);
-            this.search.closedList.push(currentNode);
+            this.search.closedSet.add(currentKey);
+            processedSteps++;
 
             if (currentNode.x === this.search.endNode.x && currentNode.y === this.search.endNode.y) {
                 this.search.path = this._buildPath(currentNode);
@@ -154,14 +152,13 @@ class Pathfinder {
                     continue;
                 }
 
-                if (isBlocked(neighborPos.x, neighborPos.y)
-                    || this.search.closedList.some(node => node.x === neighborPos.x && node.y === neighborPos.y)) continue;
+                const neighborKey = `${neighborPos.x},${neighborPos.y}`;
+                if (this.search.closedSet.has(neighborKey) || isBlocked(neighborPos.x, neighborPos.y)) continue;
 
                 if (dir.x !== 0 && dir.y !== 0
                     && isBlocked(currentNode.x + dir.x, currentNode.y)
                     && isBlocked(currentNode.x, currentNode.y + dir.y)) continue;
 
-                const neighborKey = `${neighborPos.x},${neighborPos.y}`;
                 let neighborNode = this.search.nodeMap[neighborKey];
                 const gScore = currentNode.g + (dir.x !== 0 && dir.y !== 0 ? 1.4 : 1);
 
@@ -169,7 +166,6 @@ class Pathfinder {
                     if (!neighborNode) {
                         neighborNode = {x: neighborPos.x, y: neighborPos.y, parent: currentNode};
                         this.search.nodeMap[neighborKey] = neighborNode;
-                        this.search.openList.push(neighborNode);
                     }
                     else {
                         neighborNode.parent = currentNode;
@@ -178,11 +174,12 @@ class Pathfinder {
                     neighborNode.g = gScore;
                     neighborNode.h = this._heuristic(neighborNode, this.search.endNode);
                     neighborNode.f = neighborNode.g + neighborNode.h;
+                    this._pushOpenNode(this.search, neighborNode);
                 }
             }
         }
 
-        if (this.search.openList.length === 0) {
+        if (!this._hasOpenNodes(this.search)) {
             this.search.complete = true;
 
             if (this.search.closestNode !== this.search.startNode) {
@@ -192,6 +189,61 @@ class Pathfinder {
         }
 
         return null;
+    }
+
+    _pushOpenNode(search, node) {
+        const heap = search.openHeap;
+        const entry = { node, f: node.f, order: search.nextOpenOrder++ };
+        let index = heap.length;
+
+        while (index > 0) {
+            const parentIndex = Math.floor((index - 1) / 2);
+            const parent = heap[parentIndex];
+            if (parent.f < entry.f || (parent.f === entry.f && parent.order < entry.order)) break;
+            heap[index] = parent;
+            index = parentIndex;
+        }
+
+        heap[index] = entry;
+    }
+
+    _popOpenNode(heap) {
+        const first = heap[0];
+        const last = heap.pop();
+        if (heap.length === 0) return first;
+
+        let index = 0;
+        while (true) {
+            const leftIndex = index * 2 + 1;
+            const rightIndex = leftIndex + 1;
+            if (leftIndex >= heap.length) break;
+
+            let childIndex = leftIndex;
+            const left = heap[leftIndex];
+            const right = heap[rightIndex];
+            if (right && (right.f < left.f || (right.f === left.f && right.order < left.order))) {
+                childIndex = rightIndex;
+            }
+
+            const child = heap[childIndex];
+            if (last.f < child.f || (last.f === child.f && last.order < child.order)) break;
+            heap[index] = child;
+            index = childIndex;
+        }
+
+        heap[index] = last;
+        return first;
+    }
+
+    _hasOpenNodes(search) {
+        while (search.openHeap.length > 0) {
+            const entry = search.openHeap[0];
+            const key = `${entry.node.x},${entry.node.y}`;
+            if (entry.f === entry.node.f && !search.closedSet.has(key)) return true;
+            this._popOpenNode(search.openHeap);
+        }
+
+        return false;
     }
 
     /**
