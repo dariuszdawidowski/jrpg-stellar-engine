@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="17" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="8">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="17" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="19">
  <tileset firstgid="1" source="props.tsx"/>
  <tileset firstgid="5" source="test.tsx"/>
+ <tileset firstgid="92" source="water.tsx"/>
  <imagelayer id="5" name="Background" locked="1" offsetx="-512" offsety="-512" repeatx="1" repeaty="1">
   <image source="../public/sprites/environment/soil.png" width="16" height="16"/>
  </imagelayer>
@@ -19,6 +20,24 @@
 0,25,25,54,83,83,83,54,83,83,83,83,83,83,83,83,0,
 0,25,83,27,54,83,83,83,83,83,83,27,87,83,25,25,0,
 0,83,27,27,58,83,83,83,83,83,27,56,56,86,56,54,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="6" name="Water" class="Reflect" width="17" height="14">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,92,93,0,92,0,0,0,0,94,0,0,94,92,93,94,0,
+0,95,0,97,95,0,97,0,96,97,0,96,97,95,96,97,0,
+0,98,99,0,0,99,100,98,99,100,98,99,100,98,99,100,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,92,93,94,92,93,94,92,93,94,92,93,94,92,93,94,0,
+0,95,96,0,95,96,97,95,96,97,95,0,0,95,96,97,0,
+0,98,0,0,0,99,100,98,99,100,0,0,0,0,0,100,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
@@ -72,4 +91,61 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="7" name="Lights">
+  <object id="8" name="Ambient" type="AmbientLight" x="0" y="0">
+   <properties>
+    <property name="rgb" type="list">
+     <item type="int" value="-30"/>
+     <item type="int" value="-30"/>
+     <item type="int" value="-30"/>
+    </property>
+    <property name="static" type="bool" value="true"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="10" name="Fireplace" type="PointLight" x="100.851" y="85.3769" width="70" height="70">
+   <properties>
+    <property name="color" type="color" value="#fff6744b"/>
+    <property name="dither edge" type="float" value="0.7"/>
+    <property name="dither size" type="float" value="2"/>
+    <property name="intensity" type="float" value="0.1"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="18" name="Fireplace" type="PointLight" x="121.201" y="105.405" width="29.2825" height="29.2825">
+   <properties>
+    <property name="color" type="color" value="#fff6744b"/>
+    <property name="dither edge" type="float" value="0.7"/>
+    <property name="dither size" type="float" value="2"/>
+    <property name="intensity" type="float" value="0.1"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="14" name="Right cone" type="SpotLight" x="272" y="110">
+   <properties>
+    <property name="angle" type="float" value="180"/>
+    <property name="color" type="color" value="#ffffb450"/>
+    <property name="cone" type="float" value="100"/>
+    <property name="dither edge" type="float" value="0.5"/>
+    <property name="dither size" type="float" value="2"/>
+    <property name="intensity" type="float" value="0.4"/>
+    <property name="radius" type="float" value="300"/>
+    <property name="width" type="float" value="180"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="15" name="Left cone" type="SpotLight" x="0" y="110">
+   <properties>
+    <property name="angle" type="float" value="1e-04"/>
+    <property name="color" type="color" value="#ffffb450"/>
+    <property name="cone" type="float" value="100"/>
+    <property name="dither edge" type="float" value="0.5"/>
+    <property name="dither size" type="float" value="2"/>
+    <property name="intensity" type="float" value="0.4"/>
+    <property name="radius" type="float" value="300"/>
+    <property name="width" type="float" value="180"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
 </map>
