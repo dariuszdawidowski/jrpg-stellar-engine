@@ -827,12 +827,37 @@ class Level {
         // Render tiles
         this.renderTilesLayer(view, layer);
 
+        // Clip reflections to the non-empty tiles of this layer
+        const tileset = this.tilesets.values().next().value || null;
+        if (!tileset) return;
+        const factor = tileset.ref.tile.scaled.factor;
+        const tileW = tileset.ref.tile.scaled.width;
+        const tileH = tileset.ref.tile.scaled.height;
+        const originX = (-(this.offset.x - layer.offset.x) * factor);
+        const originY = (-(this.offset.y - layer.offset.y) * factor);
+        const ctx = view.ctx;
+
+        ctx.save();
+        ctx.beginPath();
+        for (let row = 0; row < layer.map.length; row++) {
+            const line = layer.map[row];
+            for (let col = 0; col < line.length; col++) {
+                if (!line[col]) continue;
+                const s = view.world2ScreenXY(originX + col * tileW, originY + row * tileH);
+                if (s.x + tileW < 0 || s.x > view.canvas.width || s.y + tileH < 0 || s.y > view.canvas.height) continue;
+                ctx.rect(Math.round(s.x), Math.round(s.y), tileW, tileH);
+            }
+        }
+        ctx.clip();
+
         // Render actor's reflections
         for (const layerName in this.renderActors) {
             this.renderActors[layerName].forEach(actor => {
                 if (actor.reflect) actor.renderReflect(view);
             });
         }
+
+        ctx.restore();
 
     }
 
