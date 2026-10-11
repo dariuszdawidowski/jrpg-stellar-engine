@@ -1064,10 +1064,7 @@
                 const delta = player.control(input, deltaTime);
 
                 // Scroll view with bounds
-                if (player.transform.x + view.offset.x < view.bounds.left) view.offset.x -= delta.x;
-                else if (player.transform.x + view.offset.x > view.bounds.right) view.offset.x -= delta.x;
-                if (player.transform.y + view.offset.y < view.bounds.top) view.offset.y -= delta.y;
-                else if (player.transform.y + view.offset.y > view.bounds.bottom) view.offset.y -= delta.y;
+                view.scroll(player.transform, delta, level.bounds, {top: true});
 
                 // Enter into portal
                 level.getPortals().forEach(portal => {

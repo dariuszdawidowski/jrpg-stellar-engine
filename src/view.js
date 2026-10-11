@@ -101,6 +101,39 @@ class View {
     }
 
     /**
+     * Scroll view following a target, keeping it inside the scroll bounds (dead zone around the center).
+     * Scrolling stops at the level edges, so the target can walk up to the edge without leaving the dead zone.
+     * @param target: {x, y} - target world position (e.g. player.transform)
+     * @param delta: {x, y} - target movement in this frame
+     * @param levelBounds: {left, right, top, bottom} - optional world extent of the level (e.g. level.bounds)
+     * @param free: {left, right, top, bottom} - optional directions exempt from the level edge limit (e.g. {top: true} when sky is visible)
+     */
+
+    scroll(target, delta, levelBounds = null, free = {}) {
+        // Scroll only when pushing outward; moving back toward the box (e.g. after reaching a level edge) doesn't scroll
+        const sx = target.x + this.offset.x;
+        const sy = target.y + this.offset.y;
+        if ((sx < this.bounds.left && delta.x < 0) || (sx > this.bounds.right && delta.x > 0)) this.offset.x -= delta.x;
+        if ((sy < this.bounds.top && delta.y < 0) || (sy > this.bounds.bottom && delta.y > 0)) this.offset.y -= delta.y;
+
+        if (levelBounds && levelBounds.left !== Infinity) {
+            this.offset.x = this._clampScroll(this.offset.x, levelBounds.left, levelBounds.right, this.center.x, this.canvas.width, !!free.left, !!free.right);
+            this.offset.y = this._clampScroll(this.offset.y, levelBounds.top, levelBounds.bottom, this.center.y, this.canvas.height, !!free.top, !!free.bottom);
+        }
+    }
+
+    /**
+     * Clamp scroll offset on one axis so the view never shows outside the level (centers if level is smaller than screen)
+     */
+
+    _clampScroll(offset, min, max, center, screen, freeMin = false, freeMax = false) {
+        const maxOffset = freeMin ? Infinity : -(min + center);
+        const minOffset = freeMax ? -Infinity : screen - center - max;
+        if (minOffset > maxOffset) return (minOffset + maxOffset) / 2;
+        return Math.min(maxOffset, Math.max(minOffset, offset));
+    }
+
+    /**
      * Fill background with color
      */
 
