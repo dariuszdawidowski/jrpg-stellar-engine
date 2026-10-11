@@ -628,18 +628,20 @@
                  */
 
                 control(input, deltaTime) {
+                    const delta = { x: 0, y: 0 };
                     if (input.up) {
-                        this.moveUp(deltaTime);
+                        delta.y = this.moveUp(deltaTime);
                     }
                     else if (input.down) {
-                        this.moveDown(deltaTime);
+                        delta.y = this.moveDown(deltaTime);
                     }
                     else if (input.left) {
-                        this.moveLeft(deltaTime);
+                        delta.x = this.moveLeft(deltaTime);
                     }
                     else if (input.right) {
-                        this.moveRight(deltaTime);
+                        delta.x = this.moveRight(deltaTime);
                     }
+                    return delta;
                 }
 
                 moveUp(deltaTime) {
@@ -656,8 +658,7 @@
                     // Animate
                     this.anim.play('moveUp', true, 0);
 
-                    // Scroll view
-                    if (this.transform.y + this.view.offset.y < this.view.bounds.top) this.view.offset.y -= y;
+                    return y;
                 }
 
                 moveDown(deltaTime) {
@@ -674,8 +675,7 @@
                     // Animate
                     this.anim.play('moveDown', true, 0);
 
-                    // Scroll view
-                    if (this.transform.y + this.view.offset.y > this.view.bounds.bottom) this.view.offset.y -= y;
+                    return y;
                 }
 
                 moveLeft(deltaTime) {
@@ -699,8 +699,7 @@
                     // Animate
                     this.anim.play('moveLeft', true, 0);
 
-                    // Scroll view
-                    if (this.transform.x + this.view.offset.x < this.view.bounds.left) this.view.offset.x -= x;
+                    return x;
                 }
 
                 moveRight(deltaTime) {
@@ -724,8 +723,7 @@
                     // Animate
                     this.anim.play('moveRight', true, 0);
 
-                    // Scroll view
-                    if (this.transform.x + this.view.offset.x > this.view.bounds.right) this.view.offset.x -= x;
+                    return x;
                 }
 
             }
@@ -1063,7 +1061,13 @@
                 view.beginGlow();
 
                 // Player movement
-                player.control(input, deltaTime);
+                const delta = player.control(input, deltaTime);
+
+                // Scroll view with bounds
+                if (player.transform.x + view.offset.x < view.bounds.left) view.offset.x -= delta.x;
+                else if (player.transform.x + view.offset.x > view.bounds.right) view.offset.x -= delta.x;
+                if (player.transform.y + view.offset.y < view.bounds.top) view.offset.y -= delta.y;
+                else if (player.transform.y + view.offset.y > view.bounds.bottom) view.offset.y -= delta.y;
 
                 // Enter into portal
                 level.getPortals().forEach(portal => {
