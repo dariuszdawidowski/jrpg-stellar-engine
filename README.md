@@ -5,7 +5,7 @@ JRPG Stellar Engine
 Retro JRPG browser game engine.
 </p>
 <p align="center">
-v0.8.2 (2026)
+v0.8.3 (2026)
 </p>
 
 [![build](https://github.com/dariuszdawidowski/jrpg-stellar-engine/actions/workflows/build.yml/badge.svg)](https://github.com/dariuszdawidowski/jrpg-stellar-engine/actions/workflows/build.yml)
@@ -49,6 +49,23 @@ const path = pathfinder.findPath(start, end, level.getColliderGrid());
 Compatible with "Tiled" map editor format (tsx+tmx) https://www.mapeditor.org/.
 
 `LoaderTMX.loadLevel()` and `LoaderTMX.parseLevel()` accept an optional `cullingMargin` in rendered pixels. It expands actor visibility checks on each edge of the viewport; the default is `0`.
+
+`level.render(view)` renders every layer. Pass a layer-name array to render only selected layers, or use an ordered pipeline to interleave layer groups with custom rendering:
+
+```js
+level.render(view, {
+    passes: [
+        { layers: ['ground'] },
+        { render: (view, level) => renderReflections(view, level), lit: true },
+        { layers: ['actors'] },
+        { render: (view, level) => renderSpellEffects(view, level) },
+        { layers: ['canopy'] },
+        { render: (view, level) => renderForegroundEffects(view, level) }
+    ]
+});
+```
+
+Layers in each group retain their z-band order, while pipeline entries render in the order listed. A layer may appear in multiple groups. Actor culling, sorting, and ZGate preparation run once per `render()` call. Custom callbacks run outside the lighting batch by default; set `lit: true` to render a callback inside the current batch and avoid an extra full-canvas lighting pass. Lit custom content receives the level's dynamic lighting.
 
 For levels with many colliders, `level.getColliderGrid()` provides an opt-in spatial index. Use `actor.collideGrid(level.getColliderGrid(), deltaTime)` in place of `actor.collide(level.getColliders(), deltaTime)`. The default grid cell size is 64 pixels and can be set with `colliderGridCellSize` when creating a `Level`. Call `level.invalidateColliderGrid()` after mutating the collider list in place.
 

@@ -547,10 +547,27 @@ class Level {
     }
 
     /**
-     * Render layers (from list or just all of them)
+     * Render all layers, a selected list of layers, or an ordered pipeline of layer groups and callbacks.
      */
 
     render(view, layers = null) {
+
+        let passes = null;
+        if (Array.isArray(layers)) passes = [{ layers }];
+        else if (layers !== null) {
+            if (!layers || !Array.isArray(layers.passes)) {
+                throw new TypeError('render() expects a layer name array or an object with a passes array');
+            }
+            passes = layers.passes;
+        }
+
+        if (passes) passes.forEach(pass => {
+            const validLayerPass = pass && Array.isArray(pass.layers) && typeof pass.render === 'undefined';
+            const validCallbackPass = pass && typeof pass.render === 'function' && typeof pass.layers === 'undefined';
+            if ((!validLayerPass && !validCallbackPass) || (validCallbackPass && pass.lit !== undefined && typeof pass.lit !== 'boolean')) {
+                throw new TypeError('Each render pass must specify either a layers array or a render callback');
+            }
+        });
 
         const ambient = this.lights.ambient;
         const hasPoints = this.lights.points.length > 0;
@@ -582,10 +599,25 @@ class Level {
 
         // Render in zband order (defaults to plain Tiled layer order) instead of raw this.layers
         const orderedLayers = [...this.layers].sort((a, b) => this.resolveZBand(a) - this.resolveZBand(b));
+        let renderPasses = passes;
+        if (passes) {
+            const layerIndicesByName = new Map();
+            orderedLayers.forEach((layer, index) => {
+                if (!layerIndicesByName.has(layer.name)) layerIndicesByName.set(layer.name, []);
+                layerIndicesByName.get(layer.name).push(index);
+            });
+            renderPasses = passes.map(pass => {
+                if (typeof pass.render === 'function') return pass;
+                const indices = new Set();
+                pass.layers.forEach(name => {
+                    for (const index of layerIndicesByName.get(name) || []) indices.add(index);
+                });
+                return [...indices].sort((a, b) => a - b);
+            });
+        }
 
-        // Iterate layers
-        orderedLayers.forEach(layer => {
-            if (layers && !layers.includes(layer.name)) return;
+        // Render one layer while sharing the lighting batch across consecutive tintable layers
+        const renderLayer = layer => {
 
             // Group consecutive tiles/colliders/objects layers into a single tint pass - in 'sprites'
             // lights.mode tiles/colliders are skipped (cheaper, relies on their baked static ambient)
@@ -616,9 +648,40 @@ class Level {
             // Render custom
             else this.renderCustomLayer(view, layer);
 
-        });
+        };
 
-        flushLighting();
+        try {
+            if (renderPasses) {
+                renderPasses.forEach(pass => {
+                    if (typeof pass.render === 'function') {
+                        if (pass.lit && (ambient || hasPoints || hasSpots)) {
+                            if (!lighting) {
+                                this.lightRender.begin(view);
+                                lighting = true;
+                            }
+                        }
+                        else {
+                            // Custom passes are unlit by default; lit passes join the active batch.
+                            flushLighting();
+                        }
+                        const renderPass = pass.render;
+                        renderPass(view, this);
+                    }
+                    else {
+                        pass.forEach(index => renderLayer(orderedLayers[index]));
+                    }
+                });
+            }
+            else {
+                // Legacy behavior: null renders all layers, an array filters them.
+                orderedLayers.forEach(layer => {
+                    if (!layers || layers.includes(layer.name)) renderLayer(layer);
+                });
+            }
+        }
+        finally {
+            flushLighting();
+        }
 
     }
 

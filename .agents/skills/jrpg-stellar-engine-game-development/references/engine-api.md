@@ -6,6 +6,7 @@ The installed engine source is authoritative. These notes describe the current r
 
 - `new View({ canvas, bounds, debug })` creates a Canvas view and installs a resize handler. The canvas must exist in the DOM before construction.
 - A typical frame clears with `view.cls()`, updates simulation with a delta time in seconds, calls `level.update(deltaTime)`, and renders with `level.render(view)`.
+- `level.render(view, layerNames)` filters rendering to the named layers. For multiple render slices and custom content within one frame, use `level.render(view, { passes: [{ layers: [...] }, { render: (view, level) => { ... }, lit: true }] })`. Pipeline entries execute in order; layers within each group retain z-band order, and repeated layer names render repeatedly. Actor culling, sorting, and ZGate preparation run once per call. Custom callbacks run outside any lighting batch by default; `lit: true` draws the callback into the active lighting batch and applies level lighting to that content.
 - Keep the engine's coordinate/scale conventions consistent. Do not multiply movement or tile dimensions by the visual scale twice.
 - Bound unusually large frame deltas after a stalled tab. The engine example clamps delta to `0.1` seconds; choose and document a policy appropriate to the game.
 - Optional chunk baking is `level.bakeChunks()` after tilesets and tile layers are ready. It is opt-in, and baked tile layers must not be mutated without the appropriate invalidation path.
