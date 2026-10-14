@@ -50,7 +50,38 @@ Compatible with "Tiled" map editor format (tsx+tmx) https://www.mapeditor.org/.
 
 `LoaderTMX.loadLevel()` and `LoaderTMX.parseLevel()` accept an optional `cullingMargin` in rendered pixels. It expands actor visibility checks on each edge of the viewport; the default is `0`.
 
-`level.render(view)` renders every layer. Pass a layer-name array to render only selected layers, or use an ordered pipeline to interleave layer groups with custom rendering:
+## Level layers
+
+Layers can be ordered in three ways, from the simplest to the most flexible. Layer names are lowercase.
+
+### 1. Natural order
+
+`level.render(view)` renders every layer in natural Tiled order (bottom to top). Pass a layer-name array, e.g. `level.render(view, ['floor', 'objects'])`, to render only the selected layers.
+
+### 2. Forced order (`zband`)
+
+Add a numeric custom property `zband` to a layer in Tiled to override its position in the render order. Layers are rendered in ascending `zband`; layers with equal values keep their natural order.
+
+* A layer without `zband` uses its natural index (0, 1, 2, ...), so maps without any `zband` are unaffected.
+* When mixing, pick values from the same scale, e.g. to draw `cover` before the first `objects` layer give it a `zband` lower than that layer's natural index.
+* `zband` applies to every layer type (tiles, objects, image, colliders) and reorders whole layers only; it does not sort actors across layers.
+* It also defines the order of layers inside each group of a render pass (see below).
+
+Example:
+
+| Layer | Natural index | `zband` | Rendered |
+|-------|---------------|---------|----------|
+| `floor` | 0 | - | 1st |
+| `objects` | 1 | - | 3rd |
+| `cover` | 2 | `0.5` | 2nd |
+
+#### Actor sorting and ZGate
+
+Actors inside an objects layer with the custom property `sort` set to `true` are sorted by their baseline Y. To draw an actor above a specific tile layer (e.g. in front of a shelf), place a `ZGate` object in Tiled: a rectangle with the properties `layer` (tile layer name, e.g. `cover`), `scope` (`actor` by default, or `mount:<slot>` to flip only a mounted child) and optional `anchor` (offset of the seam line from the gate's top; default is its bottom edge). An actor whose mask overlaps the gate and whose baseline is below the seam is drawn right after that layer.
+
+### 3. Render passes
+
+For full control use an ordered pipeline that interleaves layer groups with custom rendering callbacks:
 
 ```js
 level.render(view, {
@@ -65,7 +96,9 @@ level.render(view, {
 });
 ```
 
-Layers in each group retain their z-band order, while pipeline entries render in the order listed. A layer may appear in multiple groups. Actor culling, sorting, and ZGate preparation run once per `render()` call. Custom callbacks run outside the lighting batch by default; set `lit: true` to render a callback inside the current batch and avoid an extra full-canvas lighting pass. Lit custom content receives the level's dynamic lighting.
+Layers in each group retain their `zband` order, while pipeline entries render in the order listed. A layer may appear in multiple groups. Actor culling, sorting, and ZGate preparation run once per `render()` call. Custom callbacks run outside the lighting batch by default; set `lit: true` to render a callback inside the current batch and avoid an extra full-canvas lighting pass. Lit custom content receives the level's dynamic lighting.
+
+## Colliders
 
 For levels with many colliders, `level.getColliderGrid()` provides an opt-in spatial index. Use `actor.collideGrid(level.getColliderGrid(), deltaTime)` in place of `actor.collide(level.getColliders(), deltaTime)`. The default grid cell size is 64 pixels and can be set with `colliderGridCellSize` when creating a `Level`. Call `level.invalidateColliderGrid()` after mutating the collider list in place.
 
