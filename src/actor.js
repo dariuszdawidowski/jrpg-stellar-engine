@@ -92,8 +92,8 @@ class Actor extends AnimSprite {
         // Parent this actor is mounted onto (null if not mounted)
         this.mountParent = null;
 
-        // Per-slot behind/front override, set per-frame by Level from ZGate scope 'mount:<slot>'
-        this.mountOverrides = {};
+        // Slots lifted above a cover layer, keyed by slot name, set per-frame by Level from ZGate scope 'mount:<slot>' (Level draws them)
+        this.mountDeferred = {};
     }
 
     /**
@@ -153,16 +153,13 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Merge a slot's per-direction offset with defaults, letting a per-frame ZGate override win over the static table
+     * Merge a slot's per-direction offset with defaults
      * @param offsets: {up, down, left, right} - offset table
      * @param facing: string - current facing bucket
-     * @param slot: string - slot name, used to look up a dynamic mountOverrides[slot] value
      */
 
-    _resolveMountOffset(offsets, facing, slot = null) {
-        const resolved = { x: 0, y: 0, angle: 0, rotate: false, behind: false, ...offsets[facing] };
-        if (slot !== null && slot in this.mountOverrides) resolved.behind = this.mountOverrides[slot];
-        return resolved;
+    _resolveMountOffset(offsets, facing) {
+        return { x: 0, y: 0, angle: 0, rotate: false, behind: false, ...offsets[facing] };
     }
 
     /**
@@ -173,7 +170,7 @@ class Actor extends AnimSprite {
         const facing = this.getFacing();
         for (const name in this.mounts) {
             const { child, offsets } = this.mounts[name];
-            const offset = this._resolveMountOffset(offsets, facing, name);
+            const offset = this._resolveMountOffset(offsets, facing);
             child.transform.x = this.transform.x + offset.x;
             child.transform.y = this.transform.y + offset.y;
             child.transform.rotation = offset.rotate ? { angle: offset.angle, offsetX: 0, offsetY: 0 } : null;
@@ -200,8 +197,10 @@ class Actor extends AnimSprite {
         const behind = [];
         const front = [];
         for (const name in this.mounts) {
+            // Lifted above a cover layer by a ZGate, drawn later by Level
+            if (name in this.mountDeferred) continue;
             const { child, offsets } = this.mounts[name];
-            (this._resolveMountOffset(offsets, facing, name).behind ? behind : front).push(child);
+            (this._resolveMountOffset(offsets, facing).behind ? behind : front).push(child);
         }
         behind.forEach(child => child.render(view, true, cullingMargin));
         super.render(view, cullingMargin);

@@ -25,12 +25,13 @@ function createLevel() {
     return vm.runInContext('new Level({})', context);
 }
 
-function makeActor(y, mountOverrides = {}) {
+function makeActor(y, mounts = {}) {
     return {
         transform: { y },
         origin: { y: 0 },
         tile: { scaled: { halfHeight: 0 } },
-        mountOverrides,
+        mounts,
+        mountDeferred: {},
         getMask() {
             return { left: 0, top: y, right: 10, bottom: y };
         }
@@ -67,16 +68,17 @@ test('applyZGates moves actors past a gate into deferredActors and compacts the 
     assert.equal(level.deferredActors.cover[1], above2);
 });
 
-test('applyZGates sets a mount slot override without deferring the actor', () => {
+test('applyZGates lifts a mount slot above the layer without deferring the actor', () => {
     const level = createLevel();
     level.zgates = [{ layer: 'cover', anchorY: 0, scope: 'mount:hand', left: -100, top: -100, right: 100, bottom: 100 }];
-    const actor = makeActor(10);
+    const actor = makeActor(10, { hand: { child: {} } });
     const actors = [actor];
 
     level.applyZGates(actors);
 
     assert.equal(actors.length, 1);
     assert.equal(actors[0], actor);
-    assert.equal(actor.mountOverrides.hand, true);
+    assert.equal(actor.mountDeferred.hand, 'cover');
+    assert.equal(level.deferredMounts.cover[0].actor, actor);
     assert.equal(Object.keys(level.deferredActors).length, 0);
 });

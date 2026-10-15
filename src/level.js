@@ -60,6 +60,9 @@ class Level {
         // Actors deferred past their home 'objects' layer into a later cover layer's overlay pass, keyed by cover layer name, rebuilt every frame
         this.deferredActors = {};
 
+        // Mounted children lifted above a cover layer by a ZGate scope 'mount:<slot>' [{actor, slot}], keyed by layer name, rebuilt every frame
+        this.deferredMounts = {};
+
         // Generic shapes [{name, x, y, points: [{x, y}, ...], properties: {}}, ...]
         this.shapes = [];
 
@@ -585,11 +588,12 @@ class Level {
 
         // Clear last frame's ZGate overrides before recomputing them below
         this.deferredActors = {};
+        this.deferredMounts = {};
         // Skip entirely when there are no ZGates, and reuse each actor's object instead of reallocating it every frame
         if (this.zgates.length > 0) {
             this.zgates.forEach(gate => { gate.active = false; });
             Object.values(this.actors).forEach(group => Object.values(group).forEach(actor => {
-                for (const slot in actor.mountOverrides) delete actor.mountOverrides[slot];
+                for (const slot in actor.mountDeferred) delete actor.mountDeferred[slot];
             }));
         }
 
@@ -739,13 +743,18 @@ class Level {
             const baselineY = actor.transform.y - actor.origin.y + actor.tile.scaled.halfHeight;
             const mask = actor.getMask();
             let deferredTo = null;
+            let liftedMounts = null;
 
             for (const gate of this.zgates) {
                 if (baselineY < gate.anchorY || !box4Box(mask, gate)) continue;
                 gate.active = true;
 
                 if (gate.scope.startsWith('mount:')) {
-                    actor.mountOverrides[gate.scope.slice('mount:'.length)] = true;
+                    const slot = gate.scope.slice('mount:'.length);
+                    if (slot in actor.mounts && !(slot in actor.mountDeferred)) {
+                        actor.mountDeferred[slot] = gate.layer;
+                        (liftedMounts ||= []).push({ actor, slot, layer: gate.layer });
+                    }
                 }
                 else if (!deferredTo) {
                     deferredTo = gate.layer;
@@ -754,11 +763,17 @@ class Level {
 
             // Move the whole actor out of its home layer into the target cover layer's overlay pass
             if (deferredTo) {
+                // The whole actor (with its mounts) is drawn there, so mounts must not be lifted separately
+                for (const slot in actor.mountDeferred) delete actor.mountDeferred[slot];
                 if (!(deferredTo in this.deferredActors)) this.deferredActors[deferredTo] = [];
                 this.deferredActors[deferredTo].push(actor);
             }
             else {
                 actors[writeIndex++] = actor;
+                if (liftedMounts) liftedMounts.forEach(lifted => {
+                    if (!(lifted.layer in this.deferredMounts)) this.deferredMounts[lifted.layer] = [];
+                    this.deferredMounts[lifted.layer].push(lifted);
+                });
             }
         }
         actors.length = writeIndex;
@@ -797,8 +812,14 @@ class Level {
      */
 
     renderDeferredActors(view, layer) {
-        if (!(layer.name in this.deferredActors)) return;
-        this.deferredActors[layer.name].forEach(actor => actor.render(view, false, this.cullingMargin));
+        if (layer.name in this.deferredActors) {
+            this.deferredActors[layer.name].forEach(actor => actor.render(view, false, this.cullingMargin));
+        }
+        if (layer.name in this.deferredMounts) {
+            this.deferredMounts[layer.name].forEach(({ actor, slot }) => {
+                if (slot in actor.mounts) actor.mounts[slot].child.render(view, true, this.cullingMargin);
+            });
+        }
     }
 
     /**
