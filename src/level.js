@@ -587,6 +587,7 @@ class Level {
         this.deferredActors = {};
         // Skip entirely when there are no ZGates, and reuse each actor's object instead of reallocating it every frame
         if (this.zgates.length > 0) {
+            this.zgates.forEach(gate => { gate.active = false; });
             Object.values(this.actors).forEach(group => Object.values(group).forEach(actor => {
                 for (const slot in actor.mountOverrides) delete actor.mountOverrides[slot];
             }));
@@ -741,6 +742,7 @@ class Level {
 
             for (const gate of this.zgates) {
                 if (baselineY < gate.anchorY || !box4Box(mask, gate)) continue;
+                gate.active = true;
 
                 if (gate.scope.startsWith('mount:')) {
                     actor.mountOverrides[gate.scope.slice('mount:'.length)] = true;
@@ -1011,9 +1013,10 @@ class Level {
         });
 
         // ZGates (box) with their anchorY seam line
-        view.ctx.fillStyle = 'rgba(255, 128, 0, 0.35)';
-        view.ctx.strokeStyle = 'rgba(255, 128, 0, 0.9)';
         this.zgates.forEach(gate => {
+            // Blue when idle, green while it is overriding an actor/mount's render order
+            view.ctx.fillStyle = gate.active ? 'rgba(0, 230, 120, 0.45)' : 'rgba(40, 120, 255, 0.3)';
+            view.ctx.strokeStyle = gate.active ? 'rgba(0, 255, 140, 1)' : 'rgba(90, 160, 255, 0.9)';
             view.ctx.fillRect(
                 gate.left + ox,
                 gate.top + oy,

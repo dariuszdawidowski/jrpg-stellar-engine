@@ -566,7 +566,7 @@ class LoaderTMX {
             name: name.trim(),
             layer: (properties.layer || '').toLowerCase(),
             // Seam line an actor's baseline must cross to be drawn above this cover layer, defaults to the gate's bottom edge
-            anchorY: ('anchor' in properties) ? y + properties.anchor : y + h,
+            anchorY: ('anchor' in properties) ? y + properties.anchor * level.scale : y + h,
             scope: properties.scope || 'actor',
             left: x,
             top: y,

@@ -77,7 +77,7 @@ Example:
 
 #### Actor sorting and ZGate
 
-Actors inside an objects layer with the custom property `sort` set to `true` are sorted by their baseline Y. To draw an actor above a specific tile layer (e.g. in front of a shelf), place a `ZGate` object in Tiled: a rectangle with the properties `layer` (tile layer name, e.g. `cover`), `scope` (`actor` by default, or `mount:<slot>` to flip only a mounted child) and optional `anchor` (offset of the seam line from the gate's top; default is its bottom edge). An actor whose mask overlaps the gate and whose baseline is below the seam is drawn right after that layer.
+Actors inside an objects layer with the custom property `sort` set to `true` are sorted by their baseline Y. To draw an actor above a specific tile layer (e.g. in front of a shelf), place a `ZGate` object in Tiled: a rectangle with the properties `layer` (tile layer name, e.g. `cover`), `scope` (`actor` by default, or `mount:<slot>` to flip only a mounted child) and optional `anchor` (offset of the seam line from the gate's top in map pixels; default is its bottom edge). An actor whose mask overlaps the gate and whose baseline is below the seam is drawn right after that layer.
 
 ### 3. Render passes
 
