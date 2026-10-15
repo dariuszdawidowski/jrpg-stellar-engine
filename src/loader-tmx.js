@@ -553,10 +553,14 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <object id="1" name="foo" type="ZGate" x="10" y="20" width="30" height="40"> <properties layer="cover" scope="actor|mount:slot" anchor=".."/> </object>
+     * Parse <object id="1" name="foo" type="ZGate" x="10" y="20" width="30" height="40"> <properties layer="cover" scope="actor|mount:slot" anchor=".." include="type,.." exclude="type,.."/> </object>
      */
 
     parseObjectZGate(level, node, properties) {
+        const parseTypeList = value => {
+            const list = String(value ?? '').split(',').map(type => type.trim().toLowerCase()).filter(Boolean);
+            return list.length ? list : null;
+        };
         const name = node.getAttribute('name');
         const x = parseFloat(node.getAttribute('x')) * level.scale;
         const y = parseFloat(node.getAttribute('y')) * level.scale;
@@ -568,6 +572,9 @@ class LoaderTMX {
             // Seam line an actor's baseline must cross to be drawn above this cover layer, defaults to the gate's bottom edge
             anchorY: ('anchor' in properties) ? y + properties.anchor * level.scale : y + h,
             scope: properties.scope || 'actor',
+            // Optional actor type filters (actor.type), null when not set
+            include: parseTypeList(properties.include),
+            exclude: parseTypeList(properties.exclude),
             left: x,
             top: y,
             right: x + w,

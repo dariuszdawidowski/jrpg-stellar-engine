@@ -25,8 +25,9 @@ function createLevel() {
     return vm.runInContext('new Level({})', context);
 }
 
-function makeActor(y, mounts = {}) {
+function makeActor(y, mounts = {}, type = 'actor') {
     return {
+        type,
         transform: { y },
         origin: { y: 0 },
         tile: { scaled: { halfHeight: 0 } },
@@ -81,4 +82,24 @@ test('applyZGates lifts a mount slot above the layer without deferring the actor
     assert.equal(actor.mountDeferred.hand, 'cover');
     assert.equal(level.deferredMounts.cover[0].actor, actor);
     assert.equal(Object.keys(level.deferredActors).length, 0);
+});
+
+test('applyZGates honors include/exclude type filters and only activates gates that act', () => {
+    const level = createLevel();
+    const gate = { layer: 'cover', anchorY: 0, scope: 'actor', exclude: ['item'], left: -100, top: -100, right: 100, bottom: 100 };
+    level.zgates = [gate];
+    const item = makeActor(10, {}, 'item');
+
+    level.applyZGates([item]);
+    assert.equal(Object.keys(level.deferredActors).length, 0);
+    assert.notEqual(gate.active, true);
+
+    gate.exclude = null;
+    gate.include = ['npc'];
+    level.applyZGates([item]);
+    assert.equal(Object.keys(level.deferredActors).length, 0);
+
+    level.applyZGates([makeActor(10, {}, 'npc')]);
+    assert.equal(level.deferredActors.cover.length, 1);
+    assert.equal(gate.active, true);
 });

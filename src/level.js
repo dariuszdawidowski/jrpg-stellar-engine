@@ -747,17 +747,21 @@ class Level {
 
             for (const gate of this.zgates) {
                 if (baselineY < gate.anchorY || !box4Box(mask, gate)) continue;
-                gate.active = true;
+                if (gate.include && !gate.include.includes(actor.type)) continue;
+                if (gate.exclude && gate.exclude.includes(actor.type)) continue;
 
                 if (gate.scope.startsWith('mount:')) {
                     const slot = gate.scope.slice('mount:'.length);
-                    if (slot in actor.mounts && !(slot in actor.mountDeferred)) {
+                    if (!(slot in actor.mounts)) continue;
+                    gate.active = true;
+                    if (!(slot in actor.mountDeferred)) {
                         actor.mountDeferred[slot] = gate.layer;
                         (liftedMounts ||= []).push({ actor, slot, layer: gate.layer });
                     }
                 }
-                else if (!deferredTo) {
-                    deferredTo = gate.layer;
+                else {
+                    gate.active = true;
+                    if (!deferredTo) deferredTo = gate.layer;
                 }
             }
 
