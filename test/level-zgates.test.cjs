@@ -125,3 +125,15 @@ test('setZGateFilter lets a custom callback veto actors per gate', () => {
     assert.equal(level.setZGateFilter('missing', null), 0);
     assert.throws(() => level.setZGateFilter('A', 'nope'), { name: 'TypeError' });
 });
+
+test('lifted mount with splitRender is rendered by Level with part "lifted"', () => {
+    const level = createLevel();
+    const calls = [];
+    const child = { render: (...args) => calls.push(args), splitRender: true };
+    const actor = makeActor(10, { hand: { child } });
+    level.zgates = [{ layer: 'cover', anchorY: 0, scope: 'mount:hand', left: -100, top: -100, right: 100, bottom: 100 }];
+    level.applyZGates([actor]);
+    level.renderDeferredActors({}, { name: 'cover' });
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0][3], 'lifted');
+});

@@ -840,7 +840,7 @@ class Level {
         }
         if (layer.name in this.deferredMounts) {
             this.deferredMounts[layer.name].forEach(({ actor, slot }) => {
-                if (slot in actor.mounts) actor.mounts[slot].child.render(view, true, this.cullingMargin);
+                if (slot in actor.mounts) actor.mounts[slot].child.render(view, true, this.cullingMargin, 'lifted');
             });
         }
     }
