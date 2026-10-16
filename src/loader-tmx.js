@@ -62,7 +62,7 @@ class LoaderTMX {
         const tileHeight = getPositiveIntegerAttribute(root, 'tileheight', source, 'map');
 
         // Create Level instance to return to
-        const level = new Level({ view: args.view, cullingMargin });
+        const level = this.createLevel({ view: args.view, cullingMargin });
 
         // Scale
         level.scale = scale;
@@ -105,6 +105,14 @@ class LoaderTMX {
         }
 
         return level;
+    }
+
+    /**
+     * Create level instance
+     */
+
+    createLevel(args) {
+        return new Level({ view: args.view, cullingMargin: args.cullingMargin || 0 });
     }
 
     /**
