@@ -183,9 +183,7 @@ class Actor extends AnimSprite {
     }
 
     /**
-     * Render self and mounted children, respecting per-direction behind/front order.
-     * A child lifted by a ZGate is normally skipped here, unless it sets child.splitRender = true: then it is rendered
-     * here with part 'base' (4th render() argument) and by Level above the cover layer with part 'lifted'
+     * Render self and mounted children, respecting per-direction behind/front order
      * @param calledFromMount: bool - true when invoked by the mounting parent, bypasses the mountParent guard
      */
 
@@ -199,24 +197,14 @@ class Actor extends AnimSprite {
         const behind = [];
         const front = [];
         for (const name in this.mounts) {
+            // Lifted above a cover layer by a ZGate, drawn later by Level
+            if (name in this.mountDeferred) continue;
             const { child, offsets } = this.mounts[name];
-            // Lifted above a cover layer by a ZGate, drawn later by Level (a split child still draws its base part here)
-            if (name in this.mountDeferred && !child.splitRender) continue;
             (this._resolveMountOffset(offsets, facing).behind ? behind : front).push(child);
         }
-        const part = child => (child.splitRender && this._isLifted(child)) ? 'base' : undefined;
-        behind.forEach(child => child.render(view, true, cullingMargin, part(child)));
+        behind.forEach(child => child.render(view, true, cullingMargin));
         super.render(view, cullingMargin);
-        front.forEach(child => child.render(view, true, cullingMargin, part(child)));
-    }
-
-    /**
-     * True when the given mounted child is currently lifted above a cover layer by a ZGate
-     */
-
-    _isLifted(child) {
-        for (const name in this.mountDeferred) if (this.mounts[name]?.child === child) return true;
-        return false;
+        front.forEach(child => child.render(view, true, cullingMargin));
     }
 
     /**

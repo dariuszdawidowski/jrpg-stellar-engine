@@ -103,37 +103,3 @@ test('applyZGates honors include/exclude type filters and only activates gates t
     assert.equal(level.deferredActors.cover.length, 1);
     assert.equal(gate.active, true);
 });
-
-test('setZGateFilter lets a custom callback veto actors per gate', () => {
-    const level = createLevel();
-    level.zgates = [{ name: 'A', layer: 'cover', anchorY: 0, scope: 'actor', left: -100, top: -100, right: 100, bottom: 100 }];
-    const actor = makeActor(10);
-
-    assert.equal(level.setZGateFilter('A', (a, gate, lvl) => a === actor && gate === level.zgates[0] && lvl === level), 1);
-    level.applyZGates([actor]);
-    assert.equal(level.deferredActors.cover.length, 1);
-
-    level.deferredActors = {};
-    level.zgates[0].active = false;
-    level.setZGateFilter('A', () => false);
-    const actors = [actor];
-    level.applyZGates(actors);
-    assert.equal(actors.length, 1);
-    assert.equal(Object.keys(level.deferredActors).length, 0);
-    assert.equal(level.zgates[0].active, false);
-
-    assert.equal(level.setZGateFilter('missing', null), 0);
-    assert.throws(() => level.setZGateFilter('A', 'nope'), { name: 'TypeError' });
-});
-
-test('lifted mount with splitRender is rendered by Level with part "lifted"', () => {
-    const level = createLevel();
-    const calls = [];
-    const child = { render: (...args) => calls.push(args), splitRender: true };
-    const actor = makeActor(10, { hand: { child } });
-    level.zgates = [{ layer: 'cover', anchorY: 0, scope: 'mount:hand', left: -100, top: -100, right: 100, bottom: 100 }];
-    level.applyZGates([actor]);
-    level.renderDeferredActors({}, { name: 'cover' });
-    assert.equal(calls.length, 1);
-    assert.equal(calls[0][3], 'lifted');
-});

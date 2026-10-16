@@ -731,24 +731,6 @@ class Level {
     }
 
     /**
-     * Set a custom filter on ZGate(s) by name, run last for every actor that already passed the box/anchor/include/exclude tests
-     * @param name: string - ZGate object name from Tiled (every gate with this name gets the filter)
-     * @param filter: function(actor, gate, level) => bool - true lets the actor through the gate, false keeps it where it is; null removes the filter
-     * @returns number of gates affected
-     */
-
-    setZGateFilter(name, filter) {
-        if (filter !== null && typeof filter !== 'function') throw new TypeError('ZGate filter must be a function or null');
-        let count = 0;
-        for (const gate of this.zgates) {
-            if (gate.name !== name) continue;
-            gate.filter = filter;
-            count++;
-        }
-        return count;
-    }
-
-    /**
      * Check every actor against every ZGate, moving matches into this.deferredActors (scope 'actor') or
      * flagging a mount slot override (scope 'mount:<slot>') - only actors past a gate's anchorY are affected
      */
@@ -767,7 +749,6 @@ class Level {
                 if (baselineY < gate.anchorY || !box4Box(mask, gate)) continue;
                 if (gate.include && !gate.include.includes(actor.type)) continue;
                 if (gate.exclude && gate.exclude.includes(actor.type)) continue;
-                if (gate.filter && !gate.filter(actor, gate, this)) continue;
 
                 if (gate.scope.startsWith('mount:')) {
                     const slot = gate.scope.slice('mount:'.length);
@@ -840,7 +821,7 @@ class Level {
         }
         if (layer.name in this.deferredMounts) {
             this.deferredMounts[layer.name].forEach(({ actor, slot }) => {
-                if (slot in actor.mounts) actor.mounts[slot].child.render(view, true, this.cullingMargin, 'lifted');
+                if (slot in actor.mounts) actor.mounts[slot].child.render(view, true, this.cullingMargin);
             });
         }
     }
