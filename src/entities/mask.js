@@ -14,6 +14,7 @@ class Mask {
      * @param {number} right - The right coordinate of the mask.
      * @param {number} bottom - The bottom coordinate of the mask.
      */
+
     constructor({ name, x, y, radius, left, top, right, bottom }) {
         this.name = name;
         this.x = x;
@@ -24,4 +25,20 @@ class Mask {
         this.right = right;
         this.bottom = bottom;
     }
+
+    /**
+     * Returns mask in world coords
+     * @param extend: Number - how many pixels to extend the mask in all directions
+     * @returns {left, top, right, bottom}: Direction vector
+     */
+
+    getMask(extend = 0) {
+        return {
+            left: this.left - extend,
+            top: this.top - extend,
+            right: this.right + extend,
+            bottom: this.bottom + extend
+        };
+    }
+
 }

@@ -475,11 +475,27 @@ class Level {
     }
 
     /**
+     * Returns a portal object by name, or undefined if not found
+     */
+
+    getPortal(name) {
+        return this.portals.find(portal => portal.name.toLowerCase() === name.toLowerCase());
+    }
+
+    /**
      * Returns list of all objects with class 'portal'
      */
 
     getPortals() {
         return this.portals;
+    }
+
+    /**
+     * Returns a mask object by name, or undefined if not found
+     */
+
+    getMask(name) {
+        return this.masks.find(mask => mask.name.toLowerCase() === name.toLowerCase());
     }
 
     /**
