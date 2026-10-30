@@ -55,21 +55,29 @@
     <body>
 
         <!-- Scripts -->
+        <script src="../src/primitives/transform.js"></script>
+        <script src="../src/primitives/color.js"></script>
+        <script src="../src/entities/spawnpoint.js"></script>
+        <script src="../src/entities/respawnpoint.js"></script>
+        <script src="../src/entities/portal.js"></script>
+        <script src="../src/entities/stairs.js"></script>
+        <script src="../src/entities/sprite.js"></script>
+        <script src="../src/entities/animsprite.js"></script>
+        <script src="../src/entities/tileset.js"></script>
+        <script src="../src/entities/actor.js"></script>
+        <script src="../src/entities/mask.js"></script>
+        <script src="../src/entities/shape.js"></script>
+        <script src="../src/entities/geometry.js"></script>
+        <script src="../src/entities/text.js"></script>
+        <script src="../src/entities/light.js"></script>
+        <script src="../src/entities/zgate.js"></script>
+        <script src="../src/loaders/acx.js"></script>
+        <script src="../src/loaders/tsx.js"></script>
+        <script src="../src/loaders/tmx.js"></script>
         <script src="../src/cache.js"></script>
-        <script src="../src/spawnpoint.js"></script>
-        <script src="../src/respawnpoint.js"></script>
-        <script src="../src/portal.js"></script>
-        <script src="../src/stairs.js"></script>
-        <script src="../src/sprite.js"></script>
-        <script src="../src/animsprite.js"></script>
-        <script src="../src/tileset.js"></script>
-        <script src="../src/lighting.js"></script>
         <script src="../src/spatial-grid.js"></script>
-        <script src="../src/actor.js"></script>
         <script src="../src/level.js"></script>
-        <script src="../src/loader-acx.js"></script>
-        <script src="../src/loader-tsx.js"></script>
-        <script src="../src/loader-tmx.js"></script>
+        <script src="../src/lighting.js"></script>
         <script src="../src/utils.js"></script>
         <script src="../src/view.js"></script>
 
@@ -399,7 +407,7 @@
                 <item type="int" value="-30"/>
                 <item type="int" value="-30"/>
                 </property>
-                <property name="static" type="bool" value="true"/>
+                <property name="baked" type="bool" value="true"/>
             </properties>
             <point/>
             </object>

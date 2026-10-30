@@ -33,15 +33,11 @@ class Sprite {
         this.resource = args.resource;
 
         // Current position in space - x, y, {angle, offsetX, offsetY}: screen
-        this.transform = {
+        this.transform = new Transform({
             x: ('transform' in args) && ('x' in args.transform) ? args.transform.x : 0,
             y: ('transform' in args) && ('y' in args.transform) ? args.transform.y : 0,
             rotation: ('transform' in args) && ('rotation' in args.transform) ? args.transform.rotation : null,
-            clear: function() {
-                this.x = this.y = 0;
-                this.rotation = null;
-            }
-        };
+        });
 
         // Sprite atlas
         this.atlas = {

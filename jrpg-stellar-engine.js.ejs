@@ -1,25 +1,33 @@
-/* JRPG Stellar Engine v0.8.3.build.364 */
+/* JRPG Stellar Engine v0.8.3.build.365 */
 (function (root, factory) {
     if (typeof module === 'object' && module.exports) module.exports = factory();
     else Object.assign(root, factory());
 })(typeof self !== 'undefined' ? self : this, function () {
+<%- await minjs('src/primitives/transform.js') %>
+<%- await minjs('src/primitives/color.js') %>
+<%- await minjs('src/entities/sprite.js') %>
+<%- await minjs('src/entities/animsprite.js') %>
+<%- await minjs('src/entities/tileset.js') %>
+<%- await minjs('src/entities/actor.js') %>
+<%- await minjs('src/entities/portal.js') %>
+<%- await minjs('src/entities/stairs.js') %>
+<%- await minjs('src/entities/spawnpoint.js') %>
+<%- await minjs('src/entities/respawnpoint.js') %>
+<%- await minjs('src/entities/mask.js') %>
+<%- await minjs('src/entities/shape.js') %>
+<%- await minjs('src/entities/geometry.js') %>
+<%- await minjs('src/entities/text.js') %>
+<%- await minjs('src/entities/light.js') %>
+<%- await minjs('src/entities/zgate.js') %>
+<%- await minjs('src/loaders/acx.js') %>
+<%- await minjs('src/loaders/tsx.js') %>
+<%- await minjs('src/loaders/tmx.js') %>
 <%- await minjs('src/cache.js') %>
-<%- await minjs('src/sprite.js') %>
-<%- await minjs('src/animsprite.js') %>
-<%- await minjs('src/tileset.js') %>
-<%- await minjs('src/lighting.js') %>
 <%- await minjs('src/spatial-grid.js') %>
-<%- await minjs('src/actor.js') %>
-<%- await minjs('src/portal.js') %>
-<%- await minjs('src/stairs.js') %>
-<%- await minjs('src/spawnpoint.js') %>
-<%- await minjs('src/respawnpoint.js') %>
+<%- await minjs('src/lighting.js') %>
 <%- await minjs('src/level.js') %>
-<%- await minjs('src/loader-acx.js') %>
-<%- await minjs('src/loader-tsx.js') %>
-<%- await minjs('src/loader-tmx.js') %>
 <%- await minjs('src/view.js') %>
 <%- await minjs('src/utils.js') %>
 <%- await minjs('src/pathfinder.js') %>
-return { Cache, Sprite, AnimSprite, TileSet, Lighting, SpatialGrid, Actor, Portal, Stairs, SpawnPoint, RespawnPoint, Level, LoaderACX, LoaderTSX, LoaderTMX, View, Pathfinder, EPSILON, BAYER_4X4, randomRangeInt, randomRangeFloat, roundToNearestEven, create2DArray, resolvePath, point4Box, anglePoints, distancePoints, box4Box, parseProperties, parseIntRange, parseSlug };
+return { Transform, Color, Cache, Sprite, AnimSprite, TileSet, Lighting, SpatialGrid, Actor, Portal, Stairs, SpawnPoint, RespawnPoint, Mask, Shape, Geometry, Text, Light, AmbientLight, PointLight, SpotLight, ZGate, Level, LoaderACX, LoaderTSX, LoaderTMX, View, Pathfinder, EPSILON, BAYER_4X4, randomRangeInt, randomRangeFloat, roundToNearestEven, create2DArray, resolvePath, point4Box, anglePoints, distancePoints, box4Box, parseProperties, parseIntRange, parseSlug };
 });

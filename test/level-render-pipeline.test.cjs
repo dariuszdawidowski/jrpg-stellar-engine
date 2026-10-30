@@ -57,7 +57,7 @@ test('render pipeline prepares actors once and renders repeated layer groups in 
 test('render pipeline ends lighting before callbacks and resumes it for later layers', () => {
     const level = createLevel();
     const trace = [];
-    level.lights.ambient = { r: 10, g: 10, b: 10 };
+    level.lights.ambient = { color: { r: 10, g: 10, b: 10 }, baked: true };
     level.layers = [
         makeLayer('first', 'objects', 0),
         makeLayer('second', 'objects', 1)
@@ -83,7 +83,7 @@ test('render pipeline ends lighting before callbacks and resumes it for later la
 test('lit render callbacks share the lighting batch across surrounding layers', () => {
     const level = createLevel();
     const trace = [];
-    level.lights.ambient = { r: 10, g: 10, b: 10 };
+    level.lights.ambient = { color: { r: 10, g: 10, b: 10 }, baked: true };
     level.layers = [
         makeLayer('first', 'objects', 0),
         makeLayer('second', 'objects', 1)

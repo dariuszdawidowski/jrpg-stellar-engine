@@ -539,7 +539,7 @@ class LoaderTMX {
     }
 
     /**
-     * Parse <object id="1" name="foo" type="Mask" x="10" y="20">
+     * Parse <object id="1" name="foo" type="Mask" x="10" y="20" width="30" height="40">
      */
 
     parseObjectMask(level, node) {
@@ -548,7 +548,7 @@ class LoaderTMX {
         const y = parseFloat(node.getAttribute('y')) * level.scale;
         const w = parseFloat(node.getAttribute('width')) * level.scale;
         const h = parseFloat(node.getAttribute('height')) * level.scale;
-        level.masks.push({
+        level.masks.push(new Mask({
             name: name.trim(),
             x: x + (w / 2),
             y: y + (h / 2),
@@ -557,7 +557,7 @@ class LoaderTMX {
             top: y,
             right: x + w,
             bottom: y + h
-        });
+        }));
     }
 
     /**
@@ -574,20 +574,18 @@ class LoaderTMX {
         const y = parseFloat(node.getAttribute('y')) * level.scale;
         const w = parseFloat(node.getAttribute('width')) * level.scale;
         const h = parseFloat(node.getAttribute('height')) * level.scale;
-        level.zgates.push({
+        level.zgates.push(new ZGate({
             name: name.trim(),
             layer: (properties.layer || '').toLowerCase(),
-            // Seam line an actor's baseline must cross to be drawn above this cover layer, defaults to the gate's bottom edge
             anchorY: ('anchor' in properties) ? y + properties.anchor * level.scale : y + h,
             scope: properties.scope || 'actor',
-            // Optional actor type filters (actor.type), null when not set
             include: parseTypeList(properties.include),
             exclude: parseTypeList(properties.exclude),
             left: x,
             top: y,
             right: x + w,
             bottom: y + h
-        });
+        }));
     }
 
     /**
@@ -602,13 +600,13 @@ class LoaderTMX {
             const [x, y] = pair.split(',');
             return {x: parseFloat(x), y: parseFloat(y)};
         });
-        level.shapes.push({
+        level.shapes.push(new Shape({
             name: name.trim(),
             x,
             y,
             points,
             properties
-        });
+        }));
     }
 
     /**
@@ -626,13 +624,13 @@ class LoaderTMX {
         const textNode = node.querySelector('text');
         const text = textNode.textContent.trim();
         const align = textNode.getAttribute('halign');
-        level.texts.push({
+        level.texts.push(new Text({
             name: name.trim(),
             x: cx,
             y: cy,
             align,
             text
-        });
+        }));
     }
 
     /**
@@ -640,9 +638,10 @@ class LoaderTMX {
      */
 
     parseObjectAmbientLight(level, node, properties) {
-        level.lights.ambient = { r: properties.rgb[0] || 0, g: properties.rgb[1] || 0, b: properties.rgb[2] || 0 };
-        if ('static' in properties) level.lights.ambient.static = properties.static;
-        else level.lights.ambient.static = false;
+        level.lights.ambient = new AmbientLight({
+            color: new Color({ r: properties.rgb[0] || 0, g: properties.rgb[1] || 0, b: properties.rgb[2] || 0 }),
+            baked: ('baked' in properties) ? properties.baked : false
+        });
     }
 
     /**
@@ -656,14 +655,14 @@ class LoaderTMX {
         const h = parseFloat(node.getAttribute('height')) * level.scale;
         const cx = x + (w / 2);
         const cy = y + (h / 2);
-        level.lights.points.push({
+        level.lights.points.push(new PointLight({
             x: cx,
             y: cy,
             radius: ((w / 2) + (h / 2)) / 2,
-            color: properties.color || {r: 255, g: 255, b: 255},
+            color: new Color(properties.color || {r: 255, g: 255, b: 255}),
             intensity: properties.intensity || 1.0,
-            dither: {size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7}
-        });
+            dither: { size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7 }
+        }));
     }
 
     /**
@@ -673,21 +672,21 @@ class LoaderTMX {
     parseObjectSpotLight(level, node, properties) {
         const x = parseFloat(node.getAttribute('x')) * level.scale;
         const y = parseFloat(node.getAttribute('y')) * level.scale;
-        level.lights.spots.push({
+        level.lights.spots.push(new SpotLight({
             x,
             y,
             radius: properties.radius || 100,
             angle: properties.angle || 90,
             width: properties.width || 40,
             cone: properties.cone || 100,
-            color: properties.color || {r: 255, g: 255, b: 255},
+            color: new Color(properties.color || {r: 255, g: 255, b: 255}),
             intensity: properties.intensity || 1.0,
-            dither: {size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7}
-        });
+            dither: { size: properties['dither size'] || 2, edge: properties['dither edge'] || 0.7 }
+        }));
     }
 
     /**
-     * Parse <object id="1" name="foo" type="" x="10" y="20"> <properties> ... </properties><point/> </object>
+     * Parse <object id="1" name="foo" type="" x="10" y="20"> <properties> ... </properties> <point/> </object>
      */
 
     parseObjectCustom(level, node, properties) {
@@ -696,32 +695,28 @@ class LoaderTMX {
         const y = parseFloat(node.getAttribute('y')) * level.scale;
         const w = node.hasAttribute('width') ? parseFloat(node.getAttribute('width')) * level.scale : null;
         const h = node.hasAttribute('height') ? parseFloat(node.getAttribute('height')) * level.scale : null;
-        const cx = w ? x + (w / 2) : x;
-        const cy = h ? y + (h / 2) : y;
 
         // Point
         const childPoint = node.querySelector('point');
-        if (childPoint) return {
+        if (childPoint) return new Geometry({
             type: 'point',
             name,
             x,
             y,
             properties
-        };
+        });
 
         // Ellipse
         const childEllipse = node.querySelector('ellipse');
-        if (childEllipse) return {
+        if (childEllipse) return new Geometry({
             type: 'ellipse',
             name,
             x,
             y,
             w,
             h,
-            cx,
-            cy,
             properties
-        };
+        });
 
         // Unknown
         return {};
@@ -777,4 +772,3 @@ class LoaderTMX {
     }
 
 }
-

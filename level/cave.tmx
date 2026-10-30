@@ -94,12 +94,12 @@
  <objectgroup id="7" name="Lights">
   <object id="8" name="Ambient" type="AmbientLight" x="0" y="0">
    <properties>
+    <property name="baked" type="bool" value="true"/>
     <property name="rgb" type="list">
      <item type="int" value="-30"/>
      <item type="int" value="-30"/>
      <item type="int" value="-30"/>
     </property>
-    <property name="static" type="bool" value="true"/>
    </properties>
    <point/>
   </object>

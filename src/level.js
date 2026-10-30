@@ -74,11 +74,11 @@ class Level {
 
         // Lighting
         this.lights = {
-            // Ambient light color {r: 0, g: 0, b: 0, static: bool} (from -255 to 255, 0 is neutral, null or static=false for no ambient dynamic light calculations)
+            // Ambient light color AmbientLight
             ambient: null,
-            // Point lights [{x, y, radius, color: {r, g, b}, intensity}, ...], brightening only
+            // Point lights [PointLight, ...], brightening only
             points: [],
-            // Spot lights [{x, y, radius, angle, cone, color: {r, g, b}, intensity}, ...], brightening only
+            // Spot lights [SpotLight, ...], brightening only
             spots: [],
             // 'scene' tints tiles/colliders/objects every frame (default), 'sprites' skips tiles/colliders (cheaper, relies on baked static ambient there)
             mode: 'scene',
@@ -125,7 +125,7 @@ class Level {
 
     async precalculateAmbient(color = null) {
 
-        const { r, g, b } = color || this.lights.ambient || { r: 0, g: 0, b: 0 };
+        const { r, g, b } = color || this.lights.ambient.color || { r: 0, g: 0, b: 0 };
 
         // Collect every atlas currently referenced by this level's tilesets and actors
         const atlases = [
@@ -271,8 +271,8 @@ class Level {
         }
 
         // Bake static ambient once - dynamic point/spot lights always stay computed per frame
-        if (this.lights.ambient?.static) {
-            const { r, g, b } = this.lights.ambient;
+        if (this.lights.ambient?.baked) {
+            const { r, g, b } = this.lights.ambient.color;
             const image = ctx.getImageData(0, 0, w, h);
             const data = image.data;
             for (let i = 0; i < data.length; i += 4) {
