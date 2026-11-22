@@ -33,7 +33,7 @@ Build maintainable browser games around JRPG Stellar Engine's actual capabilitie
 - Do not embed sprites, maps, tilesets, actor XML, or large game data in HTML or JavaScript when the content can live in separately loaded files.
 - Do not assume `fetch()` rejects HTTP 404 responses, that every image layer is loaded when a map promise resolves, or that actor spawns are complete when `LoaderTMX.loadLevel()` returns. Verify readiness against the installed version and the actual level content.
 - Do not delete or overwrite existing build, release, or staging output without an explicit clean/replace flag such as `--clean`; validate paths before destructive operations and stage replacements before swapping them into place.
-- Never put signing passwords, Steam credentials, API tokens, or provisioning secrets in tracked scripts, command history, or build logs.
+- Never put signing passwords, credentials, API tokens, or provisioning secrets in tracked scripts, command history, or build logs.
 - Avoid broad engine changes when an application-level adapter or focused game module is sufficient. Do not change engine APIs or add a backend unless the task requires it.
 
 ## Completion Criteria

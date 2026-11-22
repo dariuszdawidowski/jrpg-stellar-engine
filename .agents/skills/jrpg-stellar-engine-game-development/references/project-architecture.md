@@ -21,13 +21,12 @@ Example layout; adapt to repository conventions and project size:
 
 ```text
 index.html
-public/
-  assets/
-    actors/
-    audio/
-    images/
-    maps/
-    tilesets/
+assets/
+  actors/
+  audio/
+  images/
+  maps/
+  tilesets/
 src/
   main.js
   app/
@@ -48,7 +47,7 @@ src/
 
 Keep `main.js` as composition/bootstrap: find the canvas, create the view and services, await initial resources, establish the initial game state, and start the loop. Let focused modules own input mapping, scene/level transitions, game rules, actor behavior, and UI. Avoid both a single file containing the whole game and needless abstraction for a tiny prototype.
 
-For Vite's `public/` assets, use stable browser URLs such as `/assets/maps/start.tmx`; keep TMX references to TSX files and TSX references to images valid relative to their containing files. Check the actual deployment base path before hard-coding root-absolute URLs. Alternatively, use Vite-managed asset imports only after proving the engine's XML path resolution remains correct in dev and built output.
+For Vite's `assets/`, use stable browser URLs such as `/assets/maps/start.tmx`; keep TMX references to TSX files and TSX references to images valid relative to their containing files. Check the actual deployment base path before hard-coding root-absolute URLs. Alternatively, use Vite-managed asset imports only after proving the engine's XML path resolution remains correct in dev and built output.
 
 ## Lifecycle
 
