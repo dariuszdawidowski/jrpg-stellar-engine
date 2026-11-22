@@ -4,18 +4,18 @@ Keep game content as files that can be edited, versioned, loaded, and validated 
 
 ## Asset Layout and URLs
 
-For a Vite browser game, a simple option is to keep runtime-fetched content under `assets/` and request it at stable URLs, for example:
+Follow the [default directory layout](./project-architecture.md#default-directory-layout). Configure Vite `publicDir: 'assets'` so runtime files are served from the application root and copied unchanged into `dist/web/`. Keep editable artwork/audio projects under `assets-src/`, outside the bundle. For example:
 
 ```text
 assets/
-  actors/player.acx
-  images/characters.png
-  maps/town.tmx
-  tilesets/town.tsx
-  tilesets/town.png
+  levels/town.tmx
+  sprites/town/town.tsx
+  sprites/town/town.png
+  sprites/characters/player.acx
+  sprites/characters/player.png
 ```
 
-The corresponding map URL is `/maps/town.tmx`. Relative references in the TMX should point to `../tilesets/town.tsx`; the TSX image source should point to `town.png`. Verify these URLs under both Vite development and production, including any configured `base` path. Keep large or editable maps and actor definitions out of inline HTML/JavaScript.
+Resolve the map URL with `new URL(import.meta.env.BASE_URL + 'levels/town.tmx', document.baseURI).href`. With base `'./'`, this loads relative to the current application entrypoint. The TMX tileset source is `../sprites/town/town.tsx`; its TSX image source is `town.png`. An actor reference from the TMX is `../sprites/characters/player.acx`. Verify all references under Vite development, production hosting and the packaged native/desktop runtime. Keep maps and actor definitions out of inline HTML/JavaScript.
 
 Vite-imported assets can also work, but importing a TMX file as a URL does not automatically rewrite its nested TSX/image references. Preserve a coherent relative file layout or explicitly manage those URLs, and test the built output.
 

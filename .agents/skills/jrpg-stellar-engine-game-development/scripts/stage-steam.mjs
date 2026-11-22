@@ -6,9 +6,9 @@ import path from 'node:path';
 import process from 'node:process';
 
 const usage = `Usage:
-  node stage-steam.mjs --platform <windows|macos|linux> --source <packaged-app-dir> --target <steam-content-dir> [--clean]
+  node stage-steam.mjs --platform <windows|macos|linux> --source <packaged-app-dir> [--target <steam-content-dir>] [--clean]
 
-Creates a new staging directory. If --target already exists, --clean is required
+Creates a new staging directory (default: dist/steam/<platform>). If --target already exists, --clean is required
 before it can be replaced. The old target is preserved if copying the new source fails.
 `;
 
@@ -32,7 +32,7 @@ function parseArgs(args) {
         options[arg.slice(2)] = value;
     }
 
-    for (const required of ['platform', 'source', 'target']) {
+    for (const required of ['platform', 'source']) {
         if (!options[required]) throw new Error(`Missing required option: --${required}`);
     }
 
@@ -40,6 +40,7 @@ function parseArgs(args) {
         throw new Error(`Unsupported platform: ${options.platform}`);
     }
 
+    options.target ??= `dist/steam/${options.platform}`;
     return options;
 }
 

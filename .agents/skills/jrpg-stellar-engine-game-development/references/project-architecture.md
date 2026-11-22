@@ -1,6 +1,6 @@
 # Project Architecture
 
-Use this as a starting point for a new browser game, not as a mandatory scaffold. Prefer the smallest structure that keeps the runtime, game rules, content, and presentation understandable.
+Use this default layout for new games. Respect an established repository layout unless the user requests a migration. Prefer the smallest structure that keeps the runtime, game rules, content, and presentation understandable.
 
 ## Runtime Boundary
 
@@ -15,39 +15,50 @@ The engine README documents a browser-global build and CommonJS `require()`. It 
 
 Do not add a backend by default. Add one when requirements need authoritative shared state, accounts, matchmaking, persistence unavailable in the browser, or other server-owned behavior.
 
-## Suggested Boundaries
+## Default Directory Layout
 
-Example layout; adapt to repository conventions and project size:
+Use TypeScript for new games. Create only directories needed by the requested slice or platforms; do not add empty gameplay systems or native targets just to fill out the tree.
 
 ```text
-index.html
-assets/
-  actors/
-  audio/
-  images/
-  maps/
-  tilesets/
+index.html                 - browser entrypoint
+assets/                    - static runtime content, Vite publicDir
+  audio/                   - samples and music
+  images/                  - backgrounds, avatars and system icons
+  levels/                  - TMX maps
+  sprites/                 - images, TSX and ACX, grouped by theme
+assets-src/                - editable source assets, never bundled
 src/
-  main.js
-  app/
-    create-game.js
-    game-loop.js
-  engine/
-    engine-adapter.js
-    level-loader.js
-  input/
-    controls.js
-  game/
-    state.js
-    actors/
-    systems/
-    scenes/
-  ui/
+  main.ts                  - bootstrap, initialization and scene flow
+  loop.ts                  - frame loop and game state
+  behaviours/              - actor behaviours
+  system/                  - engine adapter, loading, input and other systems
+  ui/                      - presentation and widgets
+platforms/                 - tracked platform projects and adapters
+  electron/                - Electron main process and optional preload
+  ios/                     - Capacitor Xcode project
+  android/                 - Capacitor Android project
+scripts/                   - build, artifact collection and staging helpers
+.github/workflows/         - CI when requested
+dist/                     - final output, ignored by Git
+  web/                     - Vite bundle shared by all targets
+  windows/<arch>/          - Windows distribution archives/installers
+  macos/<arch>/            - macOS distribution archives/installers
+  linux/<arch>/            - optional Linux distribution archives/packages
+  ios/                     - exported IPA files
+  android/                 - signed APK/AAB files
+  steam/<platform>/        - staged desktop depot content
+.build/                    - intermediate output, ignored by Git
+  electron/                - packaged applications and Forge maker output
+.cache/                    - tooling caches, ignored by Git
 ```
 
-Keep `main.js` as composition/bootstrap: find the canvas, create the view and services, await initial resources, establish the initial game state, and start the loop. Let focused modules own input mapping, scene/level transitions, game rules, actor behavior, and UI. Avoid both a single file containing the whole game and needless abstraction for a tiny prototype.
+Keep `main.ts` as composition/bootstrap: find the canvas, create the view and services, await required resources, establish the initial state, and start the loop. Let focused modules own input, loading, game rules, actor behaviour and UI. Add more modules as the game grows; do not copy a demo's monolithic architecture.
 
-For Vite's `assets/`, use stable browser URLs such as `/assets/maps/start.tmx`; keep TMX references to TSX files and TSX references to images valid relative to their containing files. Check the actual deployment base path before hard-coding root-absolute URLs. Alternatively, use Vite-managed asset imports only after proving the engine's XML path resolution remains correct in dev and built output.
+Configure Vite with `publicDir: 'assets'`, `build.outDir: 'dist/web'`, and a deployment-appropriate `base` (`'./'` supports relative packaged URLs). Vite serves the contents of `assets/` at the application root and copies them into `dist/web/`, without an extra `assets/` prefix. Resolve fetched URLs from `import.meta.env.BASE_URL`; preserve TMX-to-TSX-to-image relative references. See [asset/Tiled notes](./assets-and-tiled.md) for a concrete example.
+
+Record the game's directory tree, Git tracking rules and output ownership in its `AGENTS.md`. Keep README focused on setup, commands and platform prerequisites, with a link to that section instead of a second layout description. The tree above is the skill's canonical layout; build notes describe how tools target those directories.
+
+Track authored assets, shared code, build configuration and platform project sources. Ignore `dist/`, `.build/`, `.cache/`, copied native web bundles, Xcode/Gradle outputs, local settings and signing secrets. Native projects are generated once and then versioned and synchronized, not recreated on every build.
 
 ## Lifecycle
 
@@ -73,12 +84,12 @@ Keep state transitions explicit. Prevent duplicate frame loops during scene chan
 
 Read [build target notes](./build-targets.md) before adding deployment scripts. Keep the web build as the shared source artifact, then run separate platform-specific packaging or native-build stages. Do not combine Steam uploads or mobile signing with the ordinary web build.
 
-- Web: Vite creates the deployable static site.
-- Desktop: Electron packages the web runtime; build Windows and macOS on their respective native hosts. Linux is optional unless requested.
-- Steam: SteamPipe maps already-built platform files into depots. It is distribution, not an Electron target or installer maker.
-- Mobile: Capacitor copies the Vite output into native projects, then Xcode/Android tooling produces signed release artifacts.
+- Web: Vite creates `dist/web/`; only that directory belongs to the web build and preview.
+- Desktop: Electron uses the adapter in `platforms/electron/`, packages into `.build/electron/`, and collects final artifacts into `dist/<platform>/<arch>/`; build Windows and macOS on their respective native hosts. Linux is optional unless requested.
+- Steam: stage packaged desktop applications under `dist/steam/<platform>/`; SteamPipe maps those files into depots. It is distribution, not an Electron target or installer maker.
+- Mobile: Capacitor copies `dist/web/` into tracked projects under `platforms/ios/` and `platforms/android/`. Native toolchains keep their working directories there; collect signed release artifacts into `dist/ios/` and `dist/android/`.
 
-Build scripts must preserve existing outputs unless an explicit destructive option such as `--clean` is passed. Build into a temporary sibling directory first when replacing release staging, validate source and target paths, and only swap directories after a complete successful copy.
+Vite may clear its own `dist/web/` on rebuild; never clear all of `dist/`, which also contains other platforms and Steam staging. Release collection and staging must preserve existing outputs unless an explicit destructive option such as `--clean` is passed. Build into a temporary sibling directory first when replacing release staging, validate source and target paths, and only swap directories after a complete successful copy.
 
 ## References in This Workspace
 
